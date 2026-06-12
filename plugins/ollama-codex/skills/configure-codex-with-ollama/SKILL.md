@@ -1,72 +1,121 @@
 ---
 name: configure-codex-with-ollama
-description: This skill should be used when the user asks to "set up Codex App with Ollama", "use Ollama with Codex", "switch Codex App to an Ollama model", "run Codex with a local model", "restore Codex App after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`.
-version: 0.1.0
+description: This skill should be used when the user asks to "set up Codex App with Ollama", "configure Codex CLI with Ollama", "use Ollama with Codex", "switch Codex App to an Ollama model", "run Codex with a local model", "run Codex with an Ollama Cloud model", "restore Codex after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`, `ollama launch codex`, `codex --oss`, or `codex --profile ollama-launch`.
+version: 0.2.0
 ---
 
 # Configure Codex With Ollama
 
-Use this skill to route Codex App setup through Ollama's supported launch commands. Keep the integration thin: verify local readiness, run the official Ollama command, and report what changed or what still needs attention.
+Use this skill to route Codex App and Codex CLI setup through Ollama's supported commands. Keep the integration thin: verify local readiness, run the official Ollama or Codex command, and report exactly what changed or what still needs attention.
 
 ## Core Rule
 
-Delegate configuration to Ollama. Do not edit Codex App configuration files directly.
+Delegate configuration to Ollama whenever an official `ollama launch` command exists. Avoid hand-editing Codex App config files. Prefer `ollama launch codex --config` over manually writing Codex CLI profile files.
 
-Supported commands:
-
-```bash
-ollama launch codex-app
-ollama launch codex-app --model <model>
-ollama launch codex-app --restore
-```
-
-Use the bundled wrapper for deterministic checks and dry-run support:
+Use the bundled wrapper for deterministic checks, dry-run support, and consistent command names:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
+```
+
+## Status And Discovery
+
+Run status first when the user's request includes "check", "verify", "status", "doctor", "why is this not working", or troubleshooting language:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
+```
+
+Report:
+
+- Whether `ollama` is installed.
+- Whether Ollama is at least v0.24.0.
+- Whether the Ollama HTTP API is reachable.
+- A brief local model summary when available.
+- Whether `codex` is installed.
+- Whether Codex CLI Ollama profile/catalog files exist.
+- Whether Codex App backup files exist.
+
+For model discovery:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh list-models
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh pull-model <model>
+```
+
+Preserve model names exactly, including tags such as `:cloud`.
+
+## Codex App Workflows
+
+Use these commands for OpenAI's desktop Codex App on macOS or Windows:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-model gemma4:31b
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-model kimi-k2.6:cloud
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-restore
+```
+
+Backward-compatible aliases remain available:
+
+```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh setup
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh use-model gemma4:31b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh restore
 ```
 
-For non-mutating verification:
+Use `app-setup` for "Set up Codex App with Ollama".
+Use `app-use-model <model>` for "Switch Codex App to an Ollama model".
+Use `app-restore` for "Restore Codex App's previous profile".
+
+If Codex App is already open and Ollama prompts to restart it, surface that prompt and outcome. Do not claim the switch or restore completed unless the command completed.
+
+## Codex CLI Workflows
+
+Use these commands for the `codex` terminal CLI:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run setup
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run use-model gemma4:31b
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run restore
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-config
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-restore
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-model gpt-oss:120b
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-model gpt-oss:120b-cloud
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-profile
 ```
 
-## Workflow
+Use `cli-setup` for `ollama launch codex`, which refreshes the model catalog and uses a dedicated Codex profile for that session.
+Use `cli-config` for `ollama launch codex --config`, which configures without launching.
+Use `cli-restore` for `ollama launch codex --restore`, which removes the Ollama launch profile and generated model catalog.
+Use `cli-run` for `codex --oss`.
+Use `cli-run-model <model>` for `codex --oss -m <model>`.
+Use `cli-run-profile` for `codex --profile ollama-launch`.
 
-1. Run status first when the user's request includes "check", "verify", "status", "why is this not working", or any troubleshooting language.
-2. Confirm Ollama is installed and at least v0.24.0 before setup, model switching, or restore.
-3. For setup, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh setup`.
-4. For a specific model, require an exact model name and run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh use-model <model>`.
-5. For restore, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh restore`.
-6. If Codex App is already open and Ollama prompts to restart it, surface that prompt honestly instead of claiming the switch is complete.
-7. After setup or restore, report the command that ran and any output that affects the next user action.
+For Codex CLI model selection, prefer models with at least a 64k context window, per Ollama's guidance.
 
-## Model Names
+## Dry Runs
 
-Accept both local model names and Ollama Cloud model names exactly as provided. Examples from the official docs include:
+Use `--dry-run` before mutating App or CLI state when verifying command routing:
 
-```text
-gemma4:31b
-kimi-k2.6:cloud
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-use-model gemma4:31b
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-restore
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-config
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-restore
 ```
 
-Do not invent model names. If no model is provided, ask for the exact model name or suggest running status/listing commands first.
+## Restore Boundaries
 
-## Restore Behavior
-
-Treat plugin disablement and Codex App restore as separate actions:
+Treat plugin disablement, Codex App restore, and Codex CLI restore as separate actions:
 
 - Disabling or removing this plugin stops the plugin from being available in Codex.
-- Restoring Codex App requires `ollama launch codex-app --restore` or the bundled `restore` wrapper.
+- Restoring Codex App requires `ollama launch codex-app --restore` or `app-restore`.
+- Restoring Codex CLI requires `ollama launch codex --restore` or `cli-restore`.
 
-Ollama stores backups under `~/.ollama/backup/codex-app/` before overwriting Codex App config files. Do not claim a restore happened unless the restore command was actually run.
+Do not imply one restore command affects both profiles.
 
 ## References
 
-Read `references/ollama-codex-docs.md` when exact official command behavior, minimum version, backups, or CLI versus App distinctions matter.
+Read `references/ollama-codex-docs.md` when exact official command behavior, minimum version, model examples, backups, troubleshooting, or Codex CLI versus Codex App distinctions matter.

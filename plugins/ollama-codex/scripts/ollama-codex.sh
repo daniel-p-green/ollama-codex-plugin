@@ -9,18 +9,31 @@ usage() {
   cat <<'USAGE'
 Usage:
   ollama-codex.sh [--dry-run] status
-  ollama-codex.sh [--dry-run] setup
-  ollama-codex.sh [--dry-run] use-model <model>
-  ollama-codex.sh [--dry-run] restore
 
-Commands:
-  status             Check Ollama, Ollama server, Codex CLI, and minimum version.
-  setup              Run: ollama launch codex-app
-  use-model <model>  Run: ollama launch codex-app --model <model>
-  restore            Run: ollama launch codex-app --restore
+  # Codex App
+  ollama-codex.sh [--dry-run] app-setup
+  ollama-codex.sh [--dry-run] app-use-model <model>
+  ollama-codex.sh [--dry-run] app-restore
+
+  # Codex CLI
+  ollama-codex.sh [--dry-run] cli-setup
+  ollama-codex.sh [--dry-run] cli-config
+  ollama-codex.sh [--dry-run] cli-restore
+  ollama-codex.sh [--dry-run] cli-run [model]
+  ollama-codex.sh [--dry-run] cli-run-model <model>
+  ollama-codex.sh [--dry-run] cli-run-profile
+
+  # Ollama model helpers
+  ollama-codex.sh [--dry-run] list-models
+  ollama-codex.sh [--dry-run] pull-model <model>
+
+Backward-compatible aliases:
+  setup              Alias for app-setup
+  use-model <model>  Alias for app-use-model <model>
+  restore            Alias for app-restore
 
 Options:
-  --dry-run          Print the command that would run without changing Codex App.
+  --dry-run          Print the command that would run without changing local state.
   -h, --help         Show this help.
 USAGE
 }
@@ -79,6 +92,40 @@ ollama_version() {
   ollama --version 2>&1 | first_semver
 }
 
+print_file_status() {
+  local label="$1"
+  local path="$2"
+
+  if [[ -e "$path" ]]; then
+    ok "$label: $path"
+  else
+    info "$label: not found at $path"
+  fi
+}
+
+print_model_summary() {
+  if ! command -v ollama >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local model_output
+  model_output="$(ollama ls 2>/dev/null || true)"
+  if [[ -z "$model_output" ]]; then
+    warn "ollama models: unavailable; start Ollama or run 'ollama pull <model>'"
+    return 0
+  fi
+
+  local model_count
+  model_count="$(printf '%s\n' "$model_output" | awk 'NR > 1 && NF > 0 { count++ } END { print count + 0 }')"
+  ok "ollama local models: $model_count installed"
+  if (( model_count > 0 )); then
+    printf '%s\n' "$model_output" | sed -n '1,6p'
+    if (( model_count > 5 )); then
+      info "showing first 5 models; run 'ollama-codex.sh list-models' for the full list"
+    fi
+  fi
+}
+
 print_status() {
   printf 'Ollama for Codex status\n'
   printf '\n'
@@ -104,16 +151,18 @@ print_status() {
 
   if command -v curl >/dev/null 2>&1; then
     local server_payload
-    server_payload="$(curl -fsS --max-time 2 "$OLLAMA_HOST_URL/api/version" 2>/dev/null || true)"
+    server_payload="$(curl -fsS --max-time 2 "${OLLAMA_HOST_URL%/}/api/version" 2>/dev/null || true)"
     if [[ -n "$server_payload" ]]; then
-      ok "ollama server: reachable at $OLLAMA_HOST_URL"
+      ok "ollama HTTP API: reachable at $OLLAMA_HOST_URL"
       info "server response: $server_payload"
     else
-      warn "ollama server: not reachable at $OLLAMA_HOST_URL"
+      warn "ollama HTTP API: not reachable at $OLLAMA_HOST_URL"
     fi
   else
-    warn "ollama server: curl is not available, skipped reachability check"
+    warn "ollama HTTP API: curl is not available, skipped reachability check"
   fi
+
+  print_model_summary
 
   local codex_bin
   codex_bin="$(codex_path)"
@@ -127,6 +176,12 @@ print_status() {
   else
     warn "codex executable: not found in PATH"
   fi
+
+  print_file_status "Codex CLI Ollama profile" "$HOME/.codex/ollama-launch.config.toml"
+  print_file_status "Codex CLI Ollama model catalog" "$HOME/.codex/model.json"
+  print_file_status "Codex App Ollama backups" "$HOME/.ollama/backup/codex-app"
+  printf '\n'
+  info "Codex CLI works best with models configured for at least a 64k context window."
 }
 
 require_ollama() {
@@ -149,6 +204,29 @@ require_ollama() {
   fi
 }
 
+require_codex() {
+  local codex_bin
+  codex_bin="$(codex_path)"
+  if [[ -z "$codex_bin" ]]; then
+    error "codex is not installed or not in PATH."
+    return 1
+  fi
+}
+
+ensure_ollama() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    return 0
+  fi
+  require_ollama
+}
+
+ensure_codex() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    return 0
+  fi
+  require_codex
+}
+
 run_or_print() {
   if [[ "$DRY_RUN" == "true" ]]; then
     printf '+'
@@ -157,6 +235,29 @@ run_or_print() {
     return 0
   fi
   "$@"
+}
+
+require_exact_args() {
+  local command_label="$1"
+  local expected_count="$2"
+  local actual_count="$3"
+
+  if [[ "$actual_count" -ne "$expected_count" ]]; then
+    error "$command_label requires exactly $expected_count argument(s)."
+    usage
+    exit 2
+  fi
+}
+
+require_no_args() {
+  local command_label="$1"
+  local actual_count="$2"
+
+  if [[ "$actual_count" -ne 0 ]]; then
+    error "$command_label does not accept extra arguments."
+    usage
+    exit 2
+  fi
 }
 
 args=()
@@ -183,39 +284,73 @@ fi
 
 case "$command_name" in
   status)
-    if [[ $# -ne 0 ]]; then
-      error "status does not accept extra arguments."
-      usage
-      exit 2
-    fi
+    require_no_args "$command_name" "$#"
     print_status
     ;;
-  setup)
-    if [[ $# -ne 0 ]]; then
-      error "setup does not accept extra arguments."
-      usage
-      exit 2
-    fi
-    require_ollama || exit 1
+  setup|app-setup)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
     run_or_print ollama launch codex-app
     ;;
-  use-model)
-    if [[ $# -ne 1 ]]; then
-      error "use-model requires exactly one model name."
-      usage
-      exit 2
-    fi
-    require_ollama || exit 1
+  use-model|app-use-model)
+    require_exact_args "$command_name" 1 "$#"
+    ensure_ollama || exit 1
     run_or_print ollama launch codex-app --model "$1"
     ;;
-  restore)
-    if [[ $# -ne 0 ]]; then
-      error "restore does not accept extra arguments."
+  restore|app-restore)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
+    run_or_print ollama launch codex-app --restore
+    ;;
+  cli-setup)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
+    ensure_codex || exit 1
+    run_or_print ollama launch codex
+    ;;
+  cli-config)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
+    ensure_codex || exit 1
+    run_or_print ollama launch codex --config
+    ;;
+  cli-restore)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
+    run_or_print ollama launch codex --restore
+    ;;
+  cli-run)
+    if [[ $# -gt 1 ]]; then
+      error "cli-run accepts zero arguments or one model name."
       usage
       exit 2
     fi
-    require_ollama || exit 1
-    run_or_print ollama launch codex-app --restore
+    ensure_codex || exit 1
+    if [[ $# -eq 1 ]]; then
+      run_or_print codex --oss -m "$1"
+    else
+      run_or_print codex --oss
+    fi
+    ;;
+  cli-run-model)
+    require_exact_args "$command_name" 1 "$#"
+    ensure_codex || exit 1
+    run_or_print codex --oss -m "$1"
+    ;;
+  cli-run-profile)
+    require_no_args "$command_name" "$#"
+    ensure_codex || exit 1
+    run_or_print codex --profile ollama-launch
+    ;;
+  list-models)
+    require_no_args "$command_name" "$#"
+    ensure_ollama || exit 1
+    run_or_print ollama ls
+    ;;
+  pull-model)
+    require_exact_args "$command_name" 1 "$#"
+    ensure_ollama || exit 1
+    run_or_print ollama pull "$1"
     ;;
   *)
     error "unknown command: $command_name"
