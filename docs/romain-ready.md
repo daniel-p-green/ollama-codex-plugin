@@ -4,6 +4,8 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 
 ## Ready Signals
 
+- The README first screen clearly frames the problem: Ollama already works with Codex, but most people do not know that and using it is tedious.
+- The README states the product answer: the easiest visual way to enable, use, and safely switch back from Ollama options in Codex.
 - Public GitHub repo with a clear README and install path.
 - Release tag and changelog.
 - MIT license.

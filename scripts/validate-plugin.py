@@ -186,7 +186,15 @@ def validate_docs() -> None:
     ):
         require_file(path)
     readme = (ROOT / "README.md").read_text()
-    for required in ("actions/workflows/validate.yml/badge.svg", "30-Second Demo", "docs/romain-ready.md"):
+    for required in (
+        "plugins/ollama-codex/assets/logo.svg",
+        "actions/workflows/validate.yml/badge.svg",
+        "30-Second Install",
+        "docs/romain-ready.md",
+        "The missing Codex plugin GUI for Ollama",
+        "Ollama can already work with Codex",
+        "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
+    ):
         if required not in readme:
             fail(f"README missing Romain-ready marker: {required}")
     ok("public docs")

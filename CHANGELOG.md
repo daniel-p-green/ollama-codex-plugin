@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Reframed the README and plugin card around the core product point: the missing Codex plugin GUI for Ollama.
+- Moved the GUI starter-prompt experience into the first screen of the README.
+- Tightened share copy for a clearer public launch message.
+
 ## 0.3.0
 
 - Added a Romain-ready sharing pass with README badges, a 30-second demo, proof links, and public-friendly positioning.
