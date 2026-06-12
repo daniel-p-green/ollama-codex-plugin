@@ -1,0 +1,38 @@
+{
+  "name": "ollama-codex",
+  "version": "0.1.0+codex.20260612211129",
+  "description": "Configure Codex App to use Ollama for local and Ollama Cloud models.",
+  "author": {
+    "name": "Daniel Green"
+  },
+  "homepage": "https://docs.ollama.com/integrations/codex-app",
+  "license": "MIT",
+  "keywords": [
+    "ollama",
+    "codex",
+    "codex-app",
+    "local-models",
+    "developer-tools"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Ollama for Codex",
+    "shortDescription": "Use local and Ollama Cloud models in Codex App.",
+    "longDescription": "Use Ollama for Codex to configure Codex App through Ollama's official OpenAI-compatible endpoint. The plugin checks local readiness, runs `ollama launch codex-app`, switches directly to a chosen local or Ollama Cloud model, and restores the previous Codex App profile with `ollama launch codex-app --restore`. Codex App support requires Ollama v0.24.0 or newer; model selections persist for future Codex App launches; Ollama saves backups under `~/.ollama/backup/codex-app/`; and the Codex CLI profile managed by `ollama launch codex` stays separate. Codex App features such as the built-in browser and review mode continue to work normally after setup.",
+    "developerName": "Daniel Green",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://docs.ollama.com/integrations/codex-app",
+    "brandColor": "#000000",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg",
+    "defaultPrompt": [
+      "Set up Codex App with Ollama",
+      "Switch Codex App to an Ollama model",
+      "Restore Codex App's previous profile"
+    ]
+  }
+}

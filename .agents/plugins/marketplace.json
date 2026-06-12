@@ -1,0 +1,20 @@
+{
+  "name": "ollama-codex-local",
+  "interface": {
+    "displayName": "Ollama Codex Local"
+  },
+  "plugins": [
+    {
+      "name": "ollama-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ollama-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
