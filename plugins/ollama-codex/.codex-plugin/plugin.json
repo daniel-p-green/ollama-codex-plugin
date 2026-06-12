@@ -1,6 +1,6 @@
 {
   "name": "ollama-codex",
-  "version": "0.2.0+codex.20260612174851",
+  "version": "0.3.0+codex.20260612181347",
   "description": "Configure Codex App and Codex CLI to use Ollama for local and Ollama Cloud models.",
   "author": {
     "name": "Daniel Green"

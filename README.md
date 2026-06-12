@@ -1,14 +1,41 @@
 # Ollama for Codex
 
+[![Validate](https://github.com/daniel-p-green/ollama-codex-plugin/actions/workflows/validate.yml/badge.svg)](https://github.com/daniel-p-green/ollama-codex-plugin/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/daniel-p-green/ollama-codex-plugin)](https://github.com/daniel-p-green/ollama-codex-plugin/releases)
+[![License](https://img.shields.io/github/license/daniel-p-green/ollama-codex-plugin)](LICENSE)
+
 A Codex plugin that makes Ollama a first-class option for both Codex App and Codex CLI.
 
 The plugin does not patch Codex config files by hand. It delegates to Ollama's official integration commands, adds Codex GUI starter prompts and slash commands, and provides a deterministic wrapper for status checks, dry runs, model helpers, setup, launch, and restore.
+
+Install the repo as a local Codex marketplace, enable **Ollama for Codex**, then ask Codex to set up the App, configure the CLI, switch models, list or pull Ollama models, or restore profiles. The plugin keeps Codex App and Codex CLI state separate and makes restore explicit.
 
 Official Ollama docs:
 
 - [Codex App](https://docs.ollama.com/integrations/codex-app)
 - [Codex CLI](https://docs.ollama.com/integrations/codex)
 - [Ollama CLI Reference](https://docs.ollama.com/cli)
+
+## 30-Second Demo
+
+```bash
+git clone https://github.com/daniel-p-green/ollama-codex-plugin.git
+cd ollama-codex-plugin
+bash scripts/validate.sh
+codex plugin marketplace add "$PWD"
+codex plugin add ollama-codex@ollama-codex-local
+```
+
+Then try:
+
+```text
+/ollama-codex-status
+/ollama-codex-app-use-model gemma4:31b
+/ollama-codex-cli-config
+/ollama-codex-cli-run-model gpt-oss:120b
+```
+
+See [docs/demo.md](docs/demo.md) for a fuller dry-run demo and [docs/share.md](docs/share.md) for a short public post.
 
 ## What It Enables
 
@@ -224,6 +251,13 @@ codex plugin add ollama-codex@ollama-codex-local
 ```
 
 Open a new Codex thread to pick up updated skills and commands.
+
+## Proof
+
+- [GitHub Actions validation](https://github.com/daniel-p-green/ollama-codex-plugin/actions/workflows/validate.yml)
+- [Release notes](https://github.com/daniel-p-green/ollama-codex-plugin/releases)
+- [Demo walkthrough](docs/demo.md)
+- [Romain-ready checklist](docs/romain-ready.md)
 
 ## Assets And License
 

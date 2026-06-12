@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Added a Romain-ready sharing pass with README badges, a 30-second demo, proof links, and public-friendly positioning.
+- Added demo and share docs so the project is easier to inspect quickly from GitHub.
+- Added a demo script for repeatable local proof without mutating Codex profile state.
+
 ## 0.2.0
 
 - Expanded the plugin from Codex App-only setup to the full official Ollama/Codex surface.

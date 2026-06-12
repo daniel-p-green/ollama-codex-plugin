@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import stat
 import sys
@@ -16,6 +15,7 @@ PLUGIN = ROOT / "plugins" / "ollama-codex"
 MANIFEST = PLUGIN / ".codex-plugin" / "plugin.json"
 MARKETPLACE = ROOT / ".agents" / "plugins" / "marketplace.json"
 WRAPPER = PLUGIN / "scripts" / "ollama-codex.sh"
+DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
 
 EXPECTED_COMMANDS = {
     "ollama-codex-status.md",
@@ -150,9 +150,13 @@ def validate_skill() -> None:
 
 def validate_wrapper() -> None:
     require_file(WRAPPER)
+    require_file(DEMO_SCRIPT)
     mode = WRAPPER.stat().st_mode
     if not (mode & stat.S_IXUSR):
         fail("wrapper script must be executable")
+    demo_mode = DEMO_SCRIPT.stat().st_mode
+    if not (demo_mode & stat.S_IXUSR):
+        fail("demo script must be executable")
     text = WRAPPER.read_text()
     for command in (
         "app-setup",
@@ -169,6 +173,23 @@ def validate_wrapper() -> None:
         if command not in text:
             fail(f"wrapper missing command: {command}")
     ok("wrapper command surface")
+
+
+def validate_docs() -> None:
+    for path in (
+        ROOT / "README.md",
+        ROOT / "docs" / "demo.md",
+        ROOT / "docs" / "share.md",
+        ROOT / "docs" / "romain-ready.md",
+        ROOT / "CHANGELOG.md",
+        ROOT / "LICENSE",
+    ):
+        require_file(path)
+    readme = (ROOT / "README.md").read_text()
+    for required in ("actions/workflows/validate.yml/badge.svg", "30-Second Demo", "docs/romain-ready.md"):
+        if required not in readme:
+            fail(f"README missing Romain-ready marker: {required}")
+    ok("public docs")
 
 
 def validate_references() -> None:
@@ -204,6 +225,7 @@ def main() -> None:
     validate_commands()
     validate_skill()
     validate_wrapper()
+    validate_docs()
     validate_references()
     validate_repo_hygiene()
     ok("all plugin checks passed")
