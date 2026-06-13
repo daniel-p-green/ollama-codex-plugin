@@ -15,6 +15,8 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - Codex plugin metadata includes GUI starter prompts.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
+- CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
+- Interactive CLI launch commands are guarded in non-interactive Codex shells and provide terminal handoff commands.
 - Restore boundaries are explicit: App restore and CLI restore are separate.
 - Docs are grounded in current Ollama Codex App, Codex CLI, and CLI Reference pages.
 
@@ -23,7 +25,11 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 Latest local checks performed during the Romain-ready pass:
 
 - `bash scripts/validate.sh` passed.
+- `bash scripts/demo.sh` passed.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh status` detected Ollama, Codex CLI, local models, and Codex App backup state.
+- `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b` wrote `~/.codex/ollama-launch.config.toml` and `~/.codex/model.json` without launching Codex.
+- `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore` removed the generated CLI profile/catalog.
+- `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-run-model gpt-oss:20b` refused to launch from the non-interactive plugin shell, while `--dry-run` printed the exact terminal command.
 - `codex plugin add ollama-codex@ollama-codex-local` installed the current plugin version into the local Codex plugin cache.
 - Fresh-clone validation from GitHub passed.
 

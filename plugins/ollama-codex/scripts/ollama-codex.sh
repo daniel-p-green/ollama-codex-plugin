@@ -17,7 +17,7 @@ Usage:
 
   # Codex CLI
   ollama-codex.sh [--dry-run] cli-setup
-  ollama-codex.sh [--dry-run] cli-config
+  ollama-codex.sh [--dry-run] cli-config <model>
   ollama-codex.sh [--dry-run] cli-restore
   ollama-codex.sh [--dry-run] cli-run [model]
   ollama-codex.sh [--dry-run] cli-run-model <model>
@@ -103,6 +103,130 @@ print_file_status() {
   fi
 }
 
+codex_home() {
+  printf '%s\n' "${CODEX_HOME:-$HOME/.codex}"
+}
+
+codex_cli_config_path() {
+  printf '%s/ollama-launch.config.toml\n' "$(codex_home)"
+}
+
+codex_cli_catalog_path() {
+  printf '%s/model.json\n' "$(codex_home)"
+}
+
+ollama_openai_base_url() {
+  local host="${OLLAMA_HOST_URL%/}"
+  case "$host" in
+    */v1)
+      printf '%s/\n' "$host"
+      ;;
+    *)
+      printf '%s/v1/\n' "$host"
+      ;;
+  esac
+}
+
+require_interactive_terminal() {
+  local command_label="$1"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    return 0
+  fi
+  if [[ "${OLLAMA_CODEX_ALLOW_INTERACTIVE:-}" == "1" ]]; then
+    return 0
+  fi
+  if [[ -t 0 && -t 1 ]]; then
+    return 0
+  fi
+
+  error "$command_label launches an interactive Codex CLI session."
+  error "Run this from a real terminal, or set OLLAMA_CODEX_ALLOW_INTERACTIVE=1 if you intentionally want nested Codex."
+  return 1
+}
+
+escape_basic_string() {
+  local value="$1"
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\n'/\\n}
+  value=${value//$'\r'/\\r}
+  value=${value//$'\t'/\\t}
+  printf '%s' "$value"
+}
+
+write_cli_config() {
+  local model="$1"
+  local config_path
+  local catalog_path
+  local base_url
+  local escaped_model
+  local escaped_catalog_path
+  local escaped_base_url
+
+  config_path="$(codex_cli_config_path)"
+  catalog_path="$(codex_cli_catalog_path)"
+  base_url="$(ollama_openai_base_url)"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    info "would write Codex CLI profile: $config_path"
+    info "would write Codex CLI model catalog: $catalog_path"
+    info "model: $model"
+    info "base URL: $base_url"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$config_path")"
+
+  escaped_model="$(escape_basic_string "$model")"
+  escaped_catalog_path="$(escape_basic_string "$catalog_path")"
+  escaped_base_url="$(escape_basic_string "$base_url")"
+
+  {
+    printf 'model = "%s"\n' "$escaped_model"
+    printf 'model_provider = "ollama-launch"\n'
+    printf 'model_catalog_json = "%s"\n' "$escaped_catalog_path"
+    printf '\n'
+    printf '[model_providers.ollama-launch]\n'
+    printf 'name = "Ollama"\n'
+    printf 'base_url = "%s"\n' "$escaped_base_url"
+    printf 'wire_api = "responses"\n'
+  } >"$config_path"
+
+  {
+    printf '{\n'
+    printf '  "models": [\n'
+    printf '    {\n'
+    printf '      "slug": "%s",\n' "$escaped_model"
+    printf '      "display_name": "%s",\n' "$escaped_model"
+    printf '      "base_instructions": "",\n'
+    printf '      "context_window": 131072,\n'
+    printf '      "default_verbosity": "low",\n'
+    printf '      "experimental_supported_tools": [],\n'
+    printf '      "input_modalities": [\n'
+    printf '        "text"\n'
+    printf '      ],\n'
+    printf '      "priority": 0,\n'
+    printf '      "shell_type": "default",\n'
+    printf '      "support_verbosity": true,\n'
+    printf '      "supported_in_api": true,\n'
+    printf '      "supported_reasoning_levels": [],\n'
+    printf '      "supports_parallel_tool_calls": false,\n'
+    printf '      "supports_reasoning_summaries": false,\n'
+    printf '      "truncation_policy": {\n'
+    printf '        "limit": 10000,\n'
+    printf '        "mode": "bytes"\n'
+    printf '      },\n'
+    printf '      "visibility": "list"\n'
+    printf '    }\n'
+    printf '  ]\n'
+    printf '}\n'
+  } >"$catalog_path"
+
+  ok "Codex CLI Ollama profile written: $config_path"
+  ok "Codex CLI Ollama model catalog written: $catalog_path"
+}
+
 print_model_summary() {
   if ! command -v ollama >/dev/null 2>&1; then
     return 0
@@ -177,8 +301,8 @@ print_status() {
     warn "codex executable: not found in PATH"
   fi
 
-  print_file_status "Codex CLI Ollama profile" "$HOME/.codex/ollama-launch.config.toml"
-  print_file_status "Codex CLI Ollama model catalog" "$HOME/.codex/model.json"
+  print_file_status "Codex CLI Ollama profile" "$(codex_cli_config_path)"
+  print_file_status "Codex CLI Ollama model catalog" "$(codex_cli_catalog_path)"
   print_file_status "Codex App Ollama backups" "$HOME/.ollama/backup/codex-app"
   printf '\n'
   info "Codex CLI works best with models configured for at least a 64k context window."
@@ -306,13 +430,14 @@ case "$command_name" in
     require_no_args "$command_name" "$#"
     ensure_ollama || exit 1
     ensure_codex || exit 1
+    require_interactive_terminal "$command_name" || exit 1
     run_or_print ollama launch codex
     ;;
   cli-config)
-    require_no_args "$command_name" "$#"
+    require_exact_args "$command_name" 1 "$#"
     ensure_ollama || exit 1
     ensure_codex || exit 1
-    run_or_print ollama launch codex --config
+    write_cli_config "$1"
     ;;
   cli-restore)
     require_no_args "$command_name" "$#"
@@ -326,6 +451,7 @@ case "$command_name" in
       exit 2
     fi
     ensure_codex || exit 1
+    require_interactive_terminal "$command_name" || exit 1
     if [[ $# -eq 1 ]]; then
       run_or_print codex --oss -m "$1"
     else
@@ -335,11 +461,13 @@ case "$command_name" in
   cli-run-model)
     require_exact_args "$command_name" 1 "$#"
     ensure_codex || exit 1
+    require_interactive_terminal "$command_name" || exit 1
     run_or_print codex --oss -m "$1"
     ;;
   cli-run-profile)
     require_no_args "$command_name" "$#"
     ensure_codex || exit 1
+    require_interactive_terminal "$command_name" || exit 1
     run_or_print codex --profile ollama-launch
     ;;
   list-models)

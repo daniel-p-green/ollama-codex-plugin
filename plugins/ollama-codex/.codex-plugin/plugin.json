@@ -1,6 +1,6 @@
 {
   "name": "ollama-codex",
-  "version": "0.3.1+codex.20260612181842",
+  "version": "0.3.2+codex.20260613000618",
   "description": "The missing Codex plugin GUI for configuring Codex App and Codex CLI with Ollama.",
   "author": {
     "name": "Daniel Green"
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Ollama for Codex",
     "shortDescription": "Add a GUI and slash-command layer for Ollama in Codex.",
-    "longDescription": "Ollama can already work with Codex, but discovery is low and the command surface is tedious to remember. Ollama for Codex gives Ollama a visual, reversible home in Codex: starter prompts, slash commands, status checks, dry runs, model helpers, and explicit restore flows. For Codex App, run `ollama launch codex-app`, switch to a local or Ollama Cloud model with `ollama launch codex-app --model <model>`, and restore the previous App profile with `ollama launch codex-app --restore`. For Codex CLI, run `ollama launch codex`, configure without launching via `ollama launch codex --config`, restore via `ollama launch codex --restore`, run manually with `codex --oss`, use a specific local or cloud model with `codex --oss -m <model>`, or use the generated `ollama-launch` profile with `codex --profile ollama-launch`. The plugin preserves App/CLI profile separation and delegates configuration to Ollama instead of hand-editing Codex config files.",
+    "longDescription": "Ollama can already work with Codex, but discovery is low and the command surface is tedious to remember. Ollama for Codex gives Ollama a visual, reversible home in Codex: starter prompts, slash commands, status checks, dry runs, model helpers, and explicit restore flows. For Codex App, run `ollama launch codex-app`, switch to a local or Ollama Cloud model with `ollama launch codex-app --model <model>`, and restore the previous App profile with `ollama launch codex-app --restore`. For Codex CLI, create a non-launching `ollama-launch` profile for a chosen model, restore via `ollama launch codex --restore`, prepare terminal commands for `codex --oss`, use a specific local or cloud model with `codex --oss -m <model>`, or use the generated `ollama-launch` profile with `codex --profile ollama-launch`. The plugin preserves App/CLI profile separation, delegates Codex App configuration to Ollama, and keeps interactive CLI launches out of the Codex GUI unless the user explicitly opts in.",
     "developerName": "Daniel Green",
     "category": "Developer Tools",
     "capabilities": [

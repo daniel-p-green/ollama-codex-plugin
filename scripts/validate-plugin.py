@@ -217,8 +217,15 @@ def validate_references() -> None:
 
 
 def validate_repo_hygiene() -> None:
+    ignored_names = {
+        line.strip()
+        for line in (ROOT / ".gitignore").read_text().splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    }
     for path in ROOT.rglob(".DS_Store"):
         if ".git" not in path.parts:
+            if path == ROOT / ".DS_Store" and ".DS_Store" in ignored_names:
+                continue
             fail(f"remove .DS_Store: {path.relative_to(ROOT)}")
     local_path_pattern = re.compile(r"/Users/[A-Za-z0-9._-]+/")
     for path in PLUGIN.rglob("*"):

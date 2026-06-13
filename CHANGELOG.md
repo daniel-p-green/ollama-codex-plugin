@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Hardened Codex CLI behavior after live testing showed `ollama launch codex --config --model <model>` can still launch an interactive Codex TUI after writing config.
+- Changed `cli-config` to require a model and write the documented `ollama-launch` CLI profile/catalog without launching nested Codex.
+- Added non-interactive guards for CLI launch commands and updated slash commands to hand off exact terminal commands safely.
+- Updated validation, demo docs, and the Romain-ready checklist with the tested behavior.
+
 ## 0.3.1
 
 - Reframed the README and plugin card around the core product point: the missing Codex plugin GUI for Ollama.

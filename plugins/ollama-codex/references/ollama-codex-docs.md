@@ -87,6 +87,8 @@ Supported config-only setup:
 ollama launch codex --config
 ```
 
+Live plugin acceptance testing on Ollama 0.30.8 found that `ollama launch codex --config --model <model>` wrote the expected `~/.codex/ollama-launch.config.toml` and `~/.codex/model.json` files, then still launched an interactive Codex TUI. To keep Codex plugin use non-surprising, the wrapper's `cli-config <model>` writes the documented CLI profile and model catalog directly. Codex App configuration is still delegated to `ollama launch codex-app`.
+
 Supported CLI restore:
 
 ```bash
@@ -122,7 +124,7 @@ base_url = "http://localhost:11434/v1/"
 wire_api = "responses"
 ```
 
-Prefer `ollama launch codex --config` over manually writing this file when possible.
+Prefer Ollama's official CLI behavior when launching from a real terminal. From inside the Codex plugin GUI, prefer the wrapper's deterministic `cli-config <model>` command so setup does not nest a second Codex session.
 
 ## Ollama Model Helpers
 
@@ -137,8 +139,8 @@ Use model names exactly as supplied by the user or Ollama docs. Preserve tags su
 
 ## Implementation Rules
 
-- Delegate App setup, App model selection, App restore, CLI setup, CLI config, and CLI restore to `ollama launch`.
+- Delegate App setup, App model selection, App restore, CLI setup, and CLI restore to `ollama launch`.
 - Do not patch Codex App configuration files directly.
-- Prefer `ollama launch codex --config` over hand-editing Codex CLI profile files.
+- Use the wrapper's documented CLI profile writer for non-launching CLI config inside Codex.
 - Keep Codex App restore and Codex CLI restore separate.
 - Treat plugin disablement as separate from restore. Disabling the plugin should not silently restore App or CLI profile state.

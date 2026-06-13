@@ -20,8 +20,8 @@ Use it when you want a GUI-enabled Codex plugin for:
 
 - Setting up Codex App with local or Ollama Cloud models.
 - Switching Codex App to a specific Ollama model.
-- Configuring Codex CLI for Ollama without launching it.
-- Running Codex CLI with `codex --oss`, a specific model, or the generated `ollama-launch` profile.
+- Configuring a Codex CLI Ollama profile without launching a nested Codex session.
+- Preparing exact terminal commands for Codex CLI runs with `codex --oss`, a specific model, or the generated `ollama-launch` profile.
 - Listing or pulling Ollama models from inside Codex.
 - Restoring Codex App or Codex CLI profiles safely and separately.
 
@@ -48,7 +48,7 @@ Open a new Codex thread, then try the GUI starter prompts or these slash command
 ```text
 /ollama-codex-status
 /ollama-codex-app-use-model gemma4:31b
-/ollama-codex-cli-config
+/ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
@@ -80,7 +80,7 @@ For Codex App:
 For Codex CLI:
 
 - Launch Codex through Ollama with `ollama launch codex`.
-- Configure Codex CLI without launching via `ollama launch codex --config`.
+- Configure Codex CLI without launching a nested Codex session by writing the documented `ollama-launch` profile and model catalog.
 - Restore the Codex CLI Ollama launch profile and generated model catalog.
 - Run `codex --oss`, `codex --oss -m <model>`, or `codex --profile ollama-launch`.
 - List and pull Ollama models from inside Codex.
@@ -155,7 +155,7 @@ Codex CLI:
 
 ```text
 /ollama-codex-cli-setup
-/ollama-codex-cli-config
+/ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run
 /ollama-codex-cli-run-model gpt-oss:120b
 /ollama-codex-cli-run-model gpt-oss:120b-cloud
@@ -183,7 +183,7 @@ Codex CLI:
 
 ```bash
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-setup
-bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config
+bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-run
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-run-model gpt-oss:120b
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-run-profile
@@ -204,7 +204,7 @@ bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run app-setup
 bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run app-use-model gemma4:31b
 bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run app-restore
 bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run cli-setup
-bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run cli-config
+bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run cli-run-model gpt-oss:120b
 bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run cli-restore
 ```
@@ -246,8 +246,10 @@ If Codex App is already running and does not switch models, allow Ollama to rest
 If Codex CLI does not find the Ollama profile, run:
 
 ```bash
-bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config
+bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 ```
+
+`cli-setup`, `cli-run`, `cli-run-model`, and `cli-run-profile` launch interactive Codex CLI sessions. The wrapper refuses to launch those from a non-interactive Codex shell by default; use the printed dry-run command in a real terminal, or set `OLLAMA_CODEX_ALLOW_INTERACTIVE=1` only when you intentionally want nested Codex.
 
 If the status command reports the Ollama HTTP API is not reachable, start Ollama or run:
 

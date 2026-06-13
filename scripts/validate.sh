@@ -20,7 +20,7 @@ dry_run setup
 dry_run use-model gemma4:31b
 dry_run restore
 dry_run cli-setup
-dry_run cli-config
+dry_run cli-config gpt-oss:20b
 dry_run cli-restore
 dry_run cli-run
 dry_run cli-run-model gpt-oss:120b

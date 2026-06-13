@@ -10,7 +10,9 @@ Use this skill to route Codex App and Codex CLI setup through Ollama's supported
 
 ## Core Rule
 
-Delegate configuration to Ollama whenever an official `ollama launch` command exists. Avoid hand-editing Codex App config files. Prefer `ollama launch codex --config` over manually writing Codex CLI profile files.
+Delegate Codex App configuration to Ollama whenever an official `ollama launch codex-app` command exists. Avoid hand-editing Codex App config files.
+
+For Codex CLI profile setup, use the wrapper's deterministic `cli-config <model>` command. Live acceptance testing on Ollama 0.30.8 showed that `ollama launch codex --config --model <model>` writes the expected profile/catalog and then can still launch an interactive Codex TUI. The plugin avoids that nested-session surprise by writing the documented `ollama-launch` CLI profile and model catalog directly.
 
 Use the bundled wrapper for deterministic checks, dry-run support, and consistent command names:
 
@@ -76,7 +78,7 @@ Use these commands for the `codex` terminal CLI:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-setup
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-config
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-restore
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-model gpt-oss:120b
@@ -84,14 +86,16 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-model gpt-oss:120b-cl
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh cli-run-profile
 ```
 
-Use `cli-setup` for `ollama launch codex`, which refreshes the model catalog and uses a dedicated Codex profile for that session.
-Use `cli-config` for `ollama launch codex --config`, which configures without launching.
+Use `cli-setup` for `ollama launch codex`, which refreshes the model catalog and launches a dedicated interactive Codex profile for that session.
+Use `cli-config <model>` to write the documented `ollama-launch` profile and model catalog without launching a nested Codex session.
 Use `cli-restore` for `ollama launch codex --restore`, which removes the Ollama launch profile and generated model catalog.
 Use `cli-run` for `codex --oss`.
 Use `cli-run-model <model>` for `codex --oss -m <model>`.
 Use `cli-run-profile` for `codex --profile ollama-launch`.
 
 For Codex CLI model selection, prefer models with at least a 64k context window, per Ollama's guidance.
+
+`cli-setup`, `cli-run`, `cli-run-model`, and `cli-run-profile` launch interactive Codex CLI sessions. In normal Codex plugin use, run them with `--dry-run` and tell the user to run the printed command in a real terminal. Only run them directly when the user explicitly asks for nested Codex and `OLLAMA_CODEX_ALLOW_INTERACTIVE=1` is set.
 
 ## Dry Runs
 
@@ -102,7 +106,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-setup
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-use-model gemma4:31b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-restore
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-setup
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-config
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-config gpt-oss:20b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-restore
 ```
 

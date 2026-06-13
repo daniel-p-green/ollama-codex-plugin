@@ -23,7 +23,7 @@ bash "$WRAPPER" --dry-run app-restore
 echo
 echo "== safe CLI dry runs =="
 bash "$WRAPPER" --dry-run cli-setup
-bash "$WRAPPER" --dry-run cli-config
+bash "$WRAPPER" --dry-run cli-config gpt-oss:20b
 bash "$WRAPPER" --dry-run cli-run
 bash "$WRAPPER" --dry-run cli-run-model gpt-oss:120b
 bash "$WRAPPER" --dry-run cli-run-model gpt-oss:120b-cloud

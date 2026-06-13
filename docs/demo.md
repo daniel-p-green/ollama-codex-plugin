@@ -16,7 +16,7 @@ Open a new Codex thread and try:
 ```text
 /ollama-codex-status
 /ollama-codex-app-use-model gemma4:31b
-/ollama-codex-cli-config
+/ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
@@ -42,7 +42,9 @@ The demo runs:
 + ollama launch codex-app --model kimi-k2.6:cloud
 + ollama launch codex-app --restore
 + ollama launch codex
-+ ollama launch codex --config
+[info] would write Codex CLI profile: ~/.codex/ollama-launch.config.toml
+[info] would write Codex CLI model catalog: ~/.codex/model.json
+[info] model: gpt-oss:20b
 + codex --oss
 + codex --oss -m gpt-oss:120b
 + codex --oss -m gpt-oss:120b-cloud
@@ -58,7 +60,7 @@ The demo intentionally avoids real setup and restore commands. Real commands cha
 
 ```bash
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-setup
-bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config
+bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-restore
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore
 ```
