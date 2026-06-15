@@ -313,6 +313,7 @@ def validate_docs() -> None:
     for path in (
         ROOT / "README.md",
         ROOT / "docs" / "demo.md",
+        ROOT / "docs" / "acceptance.md",
         ROOT / "docs" / "share.md",
         ROOT / "docs" / "romain-ready.md",
         ROOT / "CHANGELOG.md",
@@ -326,6 +327,7 @@ def validate_docs() -> None:
         "30-Second Install",
         "/ollama",
         "/ollama-codex-panel",
+        "docs/acceptance.md",
         "docs/romain-ready.md",
         "The missing visual model switcher for Ollama in the Codex Mac app",
         "Ollama can already work with Codex",
@@ -344,6 +346,17 @@ def validate_docs() -> None:
     ):
         if required not in readme:
             fail(f"README missing Romain-ready marker: {required}")
+    acceptance = (ROOT / "docs" / "acceptance.md").read_text()
+    for required in (
+        "/ollama",
+        "native Codex switching enabled",
+        "Search Codex or Ollama models",
+        "Transport closed",
+        "standalone HTML fixture or localhost page is not enough",
+        "fresh Codex thread renders `/ollama`",
+    ):
+        if required not in acceptance:
+            fail(f"acceptance checklist missing marker: {required}")
     ok("public docs")
 
 

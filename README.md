@@ -69,7 +69,7 @@ You can still use the command layer directly:
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
-See [docs/demo.md](docs/demo.md) for a fuller dry-run demo and [docs/share.md](docs/share.md) for a short public post.
+See [docs/demo.md](docs/demo.md) for a fuller dry-run demo, [docs/acceptance.md](docs/acceptance.md) for the fresh-thread Codex App GUI proof checklist, and [docs/share.md](docs/share.md) for a short public post.
 
 ## GUI Experience
 
@@ -310,6 +310,8 @@ ollama serve
 ```
 
 If you reinstall or update the plugin while a Codex thread is already open, start a fresh Codex thread before testing the panel again. Active threads can keep MCP tool handles from the previous cache-busted plugin path until the thread is recreated.
+
+For final visual acceptance, use [docs/acceptance.md](docs/acceptance.md). A source probe or standalone widget fixture is useful regression coverage, but the live GUI proof is `/ollama` rendering inside a fresh Codex Mac app thread.
 
 ## Validate
 

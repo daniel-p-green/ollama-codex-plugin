@@ -12,6 +12,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - GitHub Actions validation.
 - One-command local validation through `bash scripts/validate.sh`.
 - One-command demo through `bash scripts/demo.sh`.
+- Fresh-thread visual acceptance checklist in `docs/acceptance.md`.
 - Codex plugin metadata includes an "Open the Ollama model switcher" starter prompt.
 - `/ollama` renders a real MCP-powered visual control panel inside the Codex Mac app chat. `/ollama-codex-panel` remains available as the explicit long-form command.
 - Fresh panel renders show the installed plugin version and the phrase `native Codex switching enabled`, which distinguishes the current package from stale already-loaded MCP processes.
@@ -52,4 +53,4 @@ Latest local checks performed during the Romain-ready pass:
 
 ## Remaining Manual Check
 
-The remaining manual proof is a short screen recording of the panel opened from a fresh Codex thread, showing the installed plugin version, `native Codex switching enabled`, dry-run App/CLI actions, and one confirmed non-restarting action such as model listing.
+The remaining manual proof is a short screen recording of the panel opened from a fresh Codex thread, following `docs/acceptance.md`, showing the installed plugin version, `native Codex switching enabled`, dry-run App/CLI actions, and one confirmed non-restarting action such as model listing.
