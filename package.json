@@ -1,0 +1,14 @@
+{
+  "name": "ollama-codex-plugin",
+  "version": "0.7.1",
+  "private": true,
+  "description": "Validation dependencies for the Ollama for Codex plugin.",
+  "type": "module",
+  "scripts": {
+    "validate": "bash scripts/validate.sh"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.2"
+  }
+}
