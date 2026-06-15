@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.7
+
+- Reframed the in-Codex picker as a two-lane model switcher that shows Codex/OpenAI and Ollama options at the same time.
+- Added previous native Codex profile detection from Ollama's Codex App backups so the restore lane can show the profile it will return to when available.
+
 ## 0.5.6
 
 - Deduplicated recommended/local model rows, added visible section counts, and badge recommended models that are already installed locally.

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -20,6 +20,7 @@ const userHome = process.env.HOME || homedir();
 const codexHome = process.env.CODEX_HOME || join(userHome, ".codex");
 const codexConfigPath = join(codexHome, "config.toml");
 const ollamaConfigPath = join(userHome, ".ollama", "config.json");
+const codexAppBackupDir = join(userHome, ".ollama", "backup", "codex-app");
 const ollamaRecommendationsPath = join(userHome, ".ollama", "cache", "model-recommendations.json");
 const WIDGET_URI = "ui://widget/ollama-codex-control-panel.html";
 const RESOURCE_MIME_TYPE = "text/html;profile=mcp-app";
@@ -179,6 +180,7 @@ async function statusPayload() {
   const text = `${result.stdout}\n${result.stderr}`.trim();
   const appIntegration = ollamaIntegrationPayload("codex-app");
   const codexConfig = codexConfigPayload();
+  const previousCodexConfig = latestCodexAppBackupPayload();
   return {
     ok: result.exitCode === 0,
     output: text,
@@ -196,6 +198,9 @@ async function statusPayload() {
     currentCodexModel: codexConfig.model,
     currentCodexProvider: codexConfig.modelProvider,
     currentUsesOllama: codexConfig.modelProvider === "ollama-launch-codex-app",
+    previousCodexModel: previousCodexConfig.model,
+    previousCodexProvider: previousCodexConfig.modelProvider,
+    previousCodexProfilePath: previousCodexConfig.path,
   };
 }
 
@@ -253,6 +258,32 @@ function ollamaIntegrationPayload(name) {
 
 function codexConfigPayload() {
   const text = readTextFile(codexConfigPath);
+  return parseCodexConfigText(text);
+}
+
+function latestCodexAppBackupPayload() {
+  try {
+    const candidates = readdirSync(codexAppBackupDir)
+      .filter((name) => name.startsWith("config.toml."))
+      .map((name) => {
+        const path = join(codexAppBackupDir, name);
+        return { path, mtimeMs: statSync(path).mtimeMs };
+      })
+      .sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+    let fallback = { path: null, model: null, modelProvider: null };
+    for (const candidate of candidates) {
+      const parsed = { path: candidate.path, ...parseCodexConfigText(readTextFile(candidate.path)) };
+      if (!fallback.path) fallback = parsed;
+      if (parsed.modelProvider !== "ollama-launch-codex-app") return parsed;
+    }
+    return fallback;
+  } catch {
+    return { path: null, model: null, modelProvider: null };
+  }
+}
+
+function parseCodexConfigText(text) {
   return {
     model: topLevelTomlString(text, "model") || null,
     modelProvider: topLevelTomlString(text, "model_provider") || "openai",
@@ -356,6 +387,8 @@ function summarizeWidget(data) {
     appModel: data.status.appModel,
     currentCodexModel: data.status.currentCodexModel,
     currentCodexProvider: data.status.currentCodexProvider,
+    previousCodexModel: data.status.previousCodexModel,
+    previousCodexProvider: data.status.previousCodexProvider,
     ollamaVersion: data.status.ollamaVersion,
     serverReachable: data.status.serverReachable,
     codexVersion: data.status.codexVersion,

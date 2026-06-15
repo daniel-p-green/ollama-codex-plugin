@@ -39,6 +39,9 @@ try {
   if (!("currentCodexModel" in (rendered.structuredContent || {}))) {
     throw new Error("render tool did not include current Codex model summary");
   }
+  if (!("previousCodexModel" in (rendered.structuredContent || {}))) {
+    throw new Error("render tool did not include previous Codex model summary");
+  }
   if (!("recommendationCount" in (rendered.structuredContent || {}))) {
     throw new Error("render tool did not include Ollama recommendation summary");
   }
@@ -61,7 +64,8 @@ try {
     "data-use-model",
     "kimi-k2.6:cloud",
     "Recommended for Codex",
-    "Codex profile",
+    "Codex/OpenAI models",
+    "native OpenAI model selector",
     "currentUsesOllama",
     "modelBadges",
     "Configured",

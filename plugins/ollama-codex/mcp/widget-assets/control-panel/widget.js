@@ -67,7 +67,7 @@
       '<section class="header">',
       '<div class="brand">',
       '<img class="logo" src="__OLLAMA_CODEX_LOGO_DATA_URI__" alt="" />',
-      '<div><p class="eyebrow">Ollama for Codex</p><h1>Model Switcher</h1></div>',
+      '<div><p class="eyebrow">Ollama for Codex</p><h1>Unified Model Switcher</h1></div>',
       '</div>',
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',
       '</section>',
@@ -110,7 +110,7 @@
     const localModels = filteredModels(state.models.filter((model) => !recommendationNames.has(normalizeModelName(model.name))));
     return [
       '<section class="panel">',
-      '<div class="panel-head"><div><h2>Codex App Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
+      '<div class="panel-head"><div><h2>Codex App Models</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
       renderCodexProfile(),
       '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
       '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Filter models" aria-label="Filter models" />',
@@ -164,24 +164,27 @@
   function modelSummary() {
     const current = state.status.currentCodexModel || "unknown";
     const app = state.status.appModel || "not configured";
-    return "Active Codex: " + current + " / Ollama App: " + app;
+    return "Codex/OpenAI and Ollama options side by side. Active: " + current + " / Ollama App: " + app;
   }
 
   function renderCodexProfile() {
     const activeModel = state.status.currentCodexModel || "Unknown";
     const isOllama = Boolean(state.status.currentUsesOllama);
-    const title = isOllama ? "OpenAI/Codex profile" : activeModel;
-    const detail = isOllama ? "Restore previous Codex profile" : "OpenAI/Codex profile is active";
-    const meta = isOllama ? "available" : "active";
+    const previousModel = state.status.previousCodexModel || "Codex built-in model selector";
+    const title = isOllama ? previousModel : activeModel;
+    const detail = isOllama
+      ? "Restore previous Codex profile to use Codex's native OpenAI model selector."
+      : "OpenAI/Codex profile is active. Use Codex's native selector for other Codex models.";
+    const meta = isOllama ? "native selector" : "active";
     return [
       '<div class="model-group" aria-label="Codex profile">',
-      '<p class="section-label">Codex profile</p>',
+      sectionLabel("Codex/OpenAI models", 1),
       '<article class="model codex-profile' + (!isOllama ? " selected" : "") + '" role="listitem">',
       '<div class="model-main passive">',
-      '<span><span class="model-title"><strong>' + text(title) + '</strong>' + (!isOllama ? badge("Active") : "") + '</span><span class="subtle">' + text(detail) + '</span></span>',
+      '<span><span class="model-title"><strong>' + text(title) + '</strong>' + (!isOllama ? badge("Active") : badge("Restore")) + '</span><span class="subtle">' + text(detail) + '</span></span>',
       '<span class="subtle">' + text(meta) + '</span>',
       '</div>',
-      isOllama ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>Active</button>',
+      isOllama ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>Native</button>',
       '</article>',
       '</div>',
     ].join("");

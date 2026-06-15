@@ -213,6 +213,8 @@ def validate_panel() -> None:
         "recommendationPayload",
         "model-recommendations.json",
         "currentCodexModel",
+        "previousCodexModel",
+        "latestCodexAppBackupPayload",
     ):
         if required not in server_text:
             fail(f"MCP server missing: {required}")
@@ -239,7 +241,8 @@ def validate_panel() -> None:
         "FALLBACK_RECOMMENDATIONS",
         "renderCodexProfile",
         "Recommended for Codex",
-        "Codex profile",
+        "Codex/OpenAI models",
+        "native OpenAI model selector",
         "currentUsesOllama",
         "modelBadges",
         "Configured",
@@ -270,7 +273,7 @@ def validate_panel() -> None:
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     fixture_text = WIDGET_FIXTURE_PROBE.read_text()
-    for required in ("OpenAI/Codex profile is active", "Restore previous Codex profile", "filterText", "Installed", "local-gpt-oss", "widget fixture probe"):
+    for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "Restore previous Codex profile", "filterText", "Installed", "local-gpt-oss", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
     ok("in-Codex visual control panel")
@@ -298,6 +301,7 @@ def validate_docs() -> None:
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
+        "Codex/OpenAI lane and an Ollama lane at the same time",
         "see the active Codex/OpenAI profile and Ollama options side by side",
         "Active and configured badges",
         "Deduplicated model rows",
