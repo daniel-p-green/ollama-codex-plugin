@@ -143,6 +143,11 @@ def validate_commands() -> None:
         fm = frontmatter(path)
         if "description:" not in fm:
             fail(f"command missing description: {path.relative_to(ROOT)}")
+    for command_name in ("ollama.md", "ollama-codex-panel.md"):
+        text = (commands_dir / command_name).read_text()
+        for required in ("Transport closed", "doctor", "Bash(bash:*)"):
+            if required not in text:
+                fail(f"{command_name} missing stale-thread fallback marker: {required}")
     ok(f"commands ({len(found)})")
 
 

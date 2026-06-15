@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.9
+
+- Added Doctor fallback instructions to `/ollama` and `/ollama-codex-panel` so stale-thread MCP failures produce a useful diagnostic instead of stopping at `Transport closed`.
+
 ## 0.6.8
 
 - Added `/ollama-codex-doctor` and a wrapper `doctor` subcommand to diagnose installed plugin wiring, MCP cache mismatch, local readiness, and stale-thread `Transport closed` failures.
