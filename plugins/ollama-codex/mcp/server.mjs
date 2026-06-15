@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
@@ -15,6 +16,11 @@ const require = createRequire(import.meta.url);
 const mcpDir = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = join(mcpDir, "..");
 const wrapper = join(pluginRoot, "scripts", "ollama-codex.sh");
+const userHome = process.env.HOME || homedir();
+const codexHome = process.env.CODEX_HOME || join(userHome, ".codex");
+const codexConfigPath = join(codexHome, "config.toml");
+const ollamaConfigPath = join(userHome, ".ollama", "config.json");
+const ollamaRecommendationsPath = join(userHome, ".ollama", "cache", "model-recommendations.json");
 const WIDGET_URI = "ui://widget/ollama-codex-control-panel.html";
 const RESOURCE_MIME_TYPE = "text/html;profile=mcp-app";
 
@@ -90,14 +96,16 @@ function registerTools() {
     async (input = {}) => {
       const status = await statusPayload();
       const models = await modelPayload();
+      const recommendations = recommendationPayload();
       return widgetResult({
         message: "Rendered Ollama for Codex control panel.",
         data: {
           version: 1,
           widget: "ollama-codex-control-panel",
-          selectedModel: String(input.model || models.models[0]?.name || "gemma4:latest"),
+          selectedModel: String(input.model || status.appModel || recommendations.models[0]?.name || models.models[0]?.name || "gpt-oss:20b"),
           status,
           models,
+          recommendations,
         },
       });
     },
@@ -169,6 +177,8 @@ function registerTools() {
 async function statusPayload() {
   const result = await runWrapper(["status"], { timeout: 30000 });
   const text = `${result.stdout}\n${result.stderr}`.trim();
+  const appIntegration = ollamaIntegrationPayload("codex-app");
+  const codexConfig = codexConfigPayload();
   return {
     ok: result.exitCode === 0,
     output: text,
@@ -179,6 +189,13 @@ async function statusPayload() {
     codexVersion: text.match(/\[info\] codex version: ([^\n]+)/)?.[1] || null,
     cliProfileConfigured: /\[ok\] Codex CLI Ollama profile:/.test(text),
     appBackupsExist: /\[ok\] Codex App Ollama backups:/.test(text),
+    appConfigured: appIntegration.models.length > 0,
+    appOnboarded: appIntegration.onboarded,
+    appModel: appIntegration.models[0] || null,
+    appModels: appIntegration.models,
+    currentCodexModel: codexConfig.model,
+    currentCodexProvider: codexConfig.modelProvider,
+    currentUsesOllama: codexConfig.modelProvider === "ollama-launch-codex-app",
   };
 }
 
@@ -222,6 +239,65 @@ async function runAction(input) {
     stdout: result.stdout,
     stderr: result.stderr,
   };
+}
+
+function ollamaIntegrationPayload(name) {
+  const config = readJson(ollamaConfigPath);
+  const integration = config?.integrations?.[name] || {};
+  const models = Array.isArray(integration.models) ? integration.models.filter((model) => typeof model === "string" && model.trim()) : [];
+  return {
+    models,
+    onboarded: Boolean(integration.onboarded),
+  };
+}
+
+function codexConfigPayload() {
+  const text = readTextFile(codexConfigPath);
+  return {
+    model: topLevelTomlString(text, "model") || null,
+    modelProvider: topLevelTomlString(text, "model_provider") || "openai",
+  };
+}
+
+function recommendationPayload() {
+  const data = readJson(ollamaRecommendationsPath);
+  const recommendations = Array.isArray(data?.recommendations) ? data.recommendations : [];
+  return {
+    source: "ollama model recommendations",
+    models: recommendations
+      .map((entry) => ({
+        name: String(entry.model || "").trim(),
+        description: String(entry.description || "Recommended by Ollama").trim(),
+        contextLength: Number.isFinite(entry.context_length) ? entry.context_length : null,
+        maxOutputTokens: Number.isFinite(entry.max_output_tokens) ? entry.max_output_tokens : null,
+        requiredPlan: typeof entry.required_plan === "string" ? entry.required_plan : null,
+        vramBytes: Number.isFinite(entry.vram_bytes) ? entry.vram_bytes : null,
+      }))
+      .filter((entry) => entry.name),
+  };
+}
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function readTextFile(path) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+function topLevelTomlString(text, key) {
+  const sectionStart = text.search(/^\s*\[/m);
+  const topLevel = sectionStart === -1 ? text : text.slice(0, sectionStart);
+  const match = topLevel.match(new RegExp(`^\\s*${key}\\s*=\\s*"([^"]*)"`, "m"));
+  return match?.[1] || null;
 }
 
 async function runWrapper(args, options = {}) {
@@ -276,6 +352,10 @@ function summarizeWidget(data) {
     widget: data.widget,
     selectedModel: data.selectedModel,
     modelCount: data.models.models.length,
+    recommendationCount: data.recommendations.models.length,
+    appModel: data.status.appModel,
+    currentCodexModel: data.status.currentCodexModel,
+    currentCodexProvider: data.status.currentCodexProvider,
     ollamaVersion: data.status.ollamaVersion,
     serverReachable: data.status.serverReachable,
     codexVersion: data.status.codexVersion,

@@ -4,6 +4,7 @@
 
 - Replaced the localhost browser panel with an MCP app widget that renders directly inside Codex.
 - Added a bundled MCP server with tools for rendering the panel, checking status, listing models, and running confirmed actions through the existing wrapper.
+- Added side-by-side Codex profile and Ollama model state in the widget, using Codex config for the active model and Ollama's integration/recommendation files for App model choices.
 - Treated Codex widget button clicks as explicit local-state actions while keeping direct MCP calls confirmation-gated, and surfaced widget tool errors in the panel output.
 - Updated `/ollama-codex-panel`, docs, and validation to target the in-Codex visual surface.
 

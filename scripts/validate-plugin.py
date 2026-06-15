@@ -204,6 +204,10 @@ def validate_panel() -> None:
         "ext-apps-app-with-deps.js",
         "assets\", \"logo.svg",
         "svgDataUri",
+        "codexConfigPayload",
+        "recommendationPayload",
+        "model-recommendations.json",
+        "currentCodexModel",
     ):
         if required not in server_text:
             fail(f"MCP server missing: {required}")
@@ -227,11 +231,14 @@ def validate_panel() -> None:
         "app-use-model",
         "cli-config",
         "__OLLAMA_CODEX_LOGO_DATA_URI__",
-        "CLOUD_MODELS",
+        "FALLBACK_RECOMMENDATIONS",
+        "renderCodexProfile",
+        "Recommended for Codex",
+        "Codex profile",
+        "currentUsesOllama",
         "data-use-model",
         "kimi-k2.6:cloud",
-        "gpt-oss:120b-cloud",
-        "Use in App",
+        "Switch",
         "confirmedOverride",
         "confirmed: Boolean(confirmedOverride)",
         'runAction("pull-model", false, undefined, true)',
@@ -270,11 +277,12 @@ def validate_docs() -> None:
         "30-Second Install",
         "/ollama-codex-panel",
         "docs/romain-ready.md",
-        "The missing visual control panel for Ollama in the Codex Mac app",
+        "The missing visual model switcher for Ollama in the Codex Mac app",
         "Ollama can already work with Codex",
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
+        "see the active Codex/OpenAI profile and Ollama options side by side",
         "Direct non-dry-run MCP calls still require a confirmation flag",
     ):
         if required not in readme:

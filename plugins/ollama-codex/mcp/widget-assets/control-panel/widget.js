@@ -1,14 +1,17 @@
 (function () {
   "use strict";
 
-  const CLOUD_MODELS = [
+  const FALLBACK_RECOMMENDATIONS = [
     {
       name: "kimi-k2.6:cloud",
-      description: "Ollama Cloud",
+      description: "State-of-the-art coding and long-horizon execution",
+      requiredPlan: "pro",
+      contextLength: 262144,
     },
     {
       name: "gpt-oss:120b-cloud",
-      description: "Ollama Cloud",
+      description: "Open-weight reasoning through Ollama Cloud",
+      requiredPlan: "free",
     },
   ];
 
@@ -16,8 +19,11 @@
   let state = hydrate(readToolOutput());
 
   window.addEventListener("openai:set_globals", () => {
-    state = hydrate(readToolOutput());
-    render();
+    const output = readToolOutput();
+    if (isWidgetPayload(output)) {
+      state = hydrate(output);
+      render();
+    }
   });
 
   function readToolOutput() {
@@ -38,14 +44,21 @@
   function hydrate(output) {
     const status = output.status || {};
     const models = output.models || {};
+    const recommendations = output.recommendations || {};
+    const recommendationModels = Array.isArray(recommendations.models) && recommendations.models.length ? recommendations.models : FALLBACK_RECOMMENDATIONS;
     return {
-      selectedModel: String(output.selectedModel || models.models?.[0]?.name || "gemma4:latest"),
+      selectedModel: String(output.selectedModel || status.appModel || recommendationModels[0]?.name || models.models?.[0]?.name || "gpt-oss:20b"),
       status,
       models: Array.isArray(models.models) ? models.models : [],
+      recommendations: recommendationModels,
       output: "Ready.",
       lastCommand: "",
       busy: false,
     };
+  }
+
+  function isWidgetPayload(output) {
+    return Boolean(output && typeof output === "object" && (output.widget === "ollama-codex-control-panel" || (output.status && output.models)));
   }
 
   function render() {
@@ -53,7 +66,7 @@
       '<section class="header">',
       '<div class="brand">',
       '<img class="logo" src="__OLLAMA_CODEX_LOGO_DATA_URI__" alt="" />',
-      '<div><p class="eyebrow">Ollama for Codex</p><h1>Control Panel</h1></div>',
+      '<div><p class="eyebrow">Ollama for Codex</p><h1>Model Switcher</h1></div>',
       '</div>',
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',
       '</section>',
@@ -74,6 +87,8 @@
       '<section class="status" aria-label="Readiness">',
       statusCard("Ollama", state.status.ollamaVersion || "Not found", state.status.ollamaInstalled),
       statusCard("Server", state.status.serverReachable ? "Reachable" : "Offline", state.status.serverReachable),
+      statusCard("Codex Model", state.status.currentCodexModel || "Unknown", Boolean(state.status.currentCodexModel)),
+      statusCard("Ollama App", state.status.appModel || "Not configured", state.status.appConfigured),
       statusCard("Codex CLI", state.status.codexVersion || "Not found", state.status.codexInstalled),
       statusCard("CLI Profile", state.status.cliProfileConfigured ? "Configured" : "Not configured", state.status.cliProfileConfigured),
       '</section>',
@@ -87,11 +102,12 @@
   function renderModels() {
     return [
       '<section class="panel">',
-      '<div class="panel-head"><div><h2>Switch Codex App Model</h2><p class="subtle">Choose a local model, pick a cloud preset, or type any Ollama tag.</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
-      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Use in App</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
-      '<div class="model-group" aria-label="Ollama Cloud presets">',
-      '<p class="section-label">Cloud presets</p>',
-      CLOUD_MODELS.map(renderCloudPreset).join(""),
+      '<div class="panel-head"><div><h2>Codex App Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
+      renderCodexProfile(),
+      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
+      '<div class="model-group" aria-label="Recommended Ollama models">',
+      '<p class="section-label">Recommended for Codex</p>',
+      state.recommendations.map(renderRecommendation).join(""),
       '</div>',
       '<div class="model-group" aria-label="Local Ollama models">',
       '<p class="section-label">Local models</p>',
@@ -103,11 +119,34 @@
     ].join("");
   }
 
-  function renderCloudPreset(model) {
+  function modelSummary() {
+    const current = state.status.currentCodexModel || "unknown";
+    const app = state.status.appModel || "not configured";
+    return "Active Codex: " + current + " / Ollama App: " + app;
+  }
+
+  function renderCodexProfile() {
+    const activeModel = state.status.currentCodexModel || "Unknown";
+    const isOllama = Boolean(state.status.currentUsesOllama);
+    return [
+      '<div class="model-group" aria-label="Codex profile">',
+      '<p class="section-label">Codex profile</p>',
+      '<article class="model codex-profile' + (!isOllama ? " selected" : "") + '" role="listitem">',
+      '<div class="model-main passive">',
+      '<span><strong>' + text(activeModel) + '</strong><span class="subtle">' + text(isOllama ? "Ollama profile is active" : "OpenAI/Codex profile is active") + '</span></span>',
+      '<span class="subtle">' + text(state.status.currentCodexProvider || "openai") + '</span>',
+      '</div>',
+      isOllama ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>Active</button>',
+      '</article>',
+      '</div>',
+    ].join("");
+  }
+
+  function renderRecommendation(model) {
     return modelRow({
       name: model.name,
-      description: model.description,
-      meta: "cloud",
+      description: model.description || "Recommended by Ollama",
+      meta: recommendationMeta(model),
     });
   }
 
@@ -127,9 +166,26 @@
       '<span><strong>' + text(model.name) + '</strong><span class="subtle">' + text(model.description) + '</span></span>',
       '<span class="subtle">' + text(model.meta) + '</span>',
       '</button>',
-      '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '">Use</button>',
+      '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '">Switch</button>',
       '</article>',
     ].join("");
+  }
+
+  function recommendationMeta(model) {
+    if (model.requiredPlan) return String(model.requiredPlan) + " cloud";
+    if (model.contextLength) return formatContext(model.contextLength);
+    if (model.vramBytes) return formatVram(model.vramBytes);
+    return model.name.endsWith(":cloud") || model.name.endsWith("-cloud") ? "cloud" : "local";
+  }
+
+  function formatContext(value) {
+    if (!Number.isFinite(value)) return "";
+    return Math.round(value / 1024) + "k ctx";
+  }
+
+  function formatVram(value) {
+    if (!Number.isFinite(value)) return "";
+    return Math.round(value / 1000000000) + "GB VRAM";
   }
 
   function renderActions() {
@@ -235,6 +291,18 @@
       }));
       state.lastCommand = result.command || action;
       state.output = [result.stdout, result.stderr, result.error].filter(Boolean).join("\\n\\n") || JSON.stringify(result, null, 2);
+      if (result.ok && action === "app-use-model") {
+        state.status.appConfigured = true;
+        state.status.appModel = state.selectedModel;
+        state.status.currentCodexModel = state.selectedModel;
+        state.status.currentCodexProvider = "ollama-launch-codex-app";
+        state.status.currentUsesOllama = true;
+      }
+      if (result.ok && action === "app-restore") {
+        state.status.currentUsesOllama = false;
+        await refresh();
+        return;
+      }
     } catch (error) {
       state.lastCommand = action + " failed";
       state.output = errorMessage(error);

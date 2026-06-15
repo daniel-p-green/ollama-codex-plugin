@@ -92,7 +92,7 @@ h2 {
 
 .status {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
   gap: 8px;
 }
 
@@ -183,6 +183,11 @@ button.danger {
   background: var(--bad);
 }
 
+button:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
 .actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -242,8 +247,17 @@ button.danger {
   text-align: left;
 }
 
+.model-main.passive {
+  align-content: center;
+}
+
 .model strong {
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model .subtle {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -256,14 +270,6 @@ button.danger {
   border-color: var(--line);
   border-radius: 0;
   padding: 0 10px;
-}
-
-.confirm {
-  align-items: flex-start;
-  margin: 12px 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.35;
 }
 
 pre {

@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
-const pluginCwd = "./plugins/ollama-codex";
+const pluginCwd = process.env.PLUGIN_CWD || "./plugins/ollama-codex";
 const transport = new StdioClientTransport(mcpTransportConfig());
 
 const client = new Client({ name: "ollama-codex-probe", version: "1.0.0" });
@@ -36,6 +36,12 @@ try {
   if (rendered.structuredContent?.widget !== "ollama-codex-control-panel") {
     throw new Error("render tool did not return control panel structured content");
   }
+  if (!("currentCodexModel" in (rendered.structuredContent || {}))) {
+    throw new Error("render tool did not include current Codex model summary");
+  }
+  if (!("recommendationCount" in (rendered.structuredContent || {}))) {
+    throw new Error("render tool did not include Ollama recommendation summary");
+  }
 
   const resources = await client.listResources();
   const resource = resources.resources.find((entry) => entry.uri === "ui://widget/ollama-codex-control-panel.html");
@@ -54,8 +60,10 @@ try {
   for (const required of [
     "data-use-model",
     "kimi-k2.6:cloud",
-    "gpt-oss:120b-cloud",
-    "Use in App",
+    "Recommended for Codex",
+    "Codex profile",
+    "currentUsesOllama",
+    "Switch",
     "confirmed: Boolean(confirmedOverride)",
     "errorMessage(error)",
   ]) {
