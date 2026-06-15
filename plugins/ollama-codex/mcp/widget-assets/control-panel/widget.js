@@ -101,8 +101,13 @@
   }
 
   function renderModels() {
-    const recommendations = filteredModels(state.recommendations);
-    const localModels = filteredModels(state.models);
+    const localNames = new Set(state.models.map((model) => normalizeModelName(model.name)));
+    const recommendationNames = new Set(state.recommendations.map((model) => normalizeModelName(model.name)));
+    const recommendations = filteredModels(state.recommendations).map((model) => ({
+      ...model,
+      installed: localNames.has(normalizeModelName(model.name)),
+    }));
+    const localModels = filteredModels(state.models.filter((model) => !recommendationNames.has(normalizeModelName(model.name))));
     return [
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Codex App Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
@@ -110,17 +115,21 @@
       '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
       '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Filter models" aria-label="Filter models" />',
       '<div class="model-group" aria-label="Recommended Ollama models">',
-      '<p class="section-label">Recommended for Codex</p>',
+      sectionLabel("Recommended for Codex", recommendations.length),
       recommendations.length ? recommendations.map(renderRecommendation).join("") : renderEmptyModels(),
       '</div>',
       '<div class="model-group" aria-label="Local Ollama models">',
-      '<p class="section-label">Local models</p>',
+      sectionLabel("Local models", localModels.length),
       '<div class="models" role="list">',
       localModels.length ? localModels.map(renderModel).join("") : renderEmptyModels(),
       '</div>',
       '</div>',
       '</section>',
     ].join("");
+  }
+
+  function sectionLabel(label, count) {
+    return '<p class="section-label"><span>' + text(label) + '</span><span class="count">' + text(count) + '</span></p>';
   }
 
   function filteredModels(models) {
@@ -146,6 +155,10 @@
 
   function renderEmptyModels() {
     return '<p class="subtle">No matching models.</p>';
+  }
+
+  function normalizeModelName(name) {
+    return String(name || "").trim().toLowerCase();
   }
 
   function modelSummary() {
@@ -179,6 +192,7 @@
       name: model.name,
       description: model.description || "Recommended by Ollama",
       meta: recommendationMeta(model),
+      installed: model.installed,
     });
   }
 
@@ -197,7 +211,7 @@
     return [
       '<article class="model' + (selected ? " selected" : "") + (current ? " active" : "") + '" role="listitem">',
       '<button class="model-main" type="button" data-select-model="' + attr(model.name) + '">',
-      '<span><span class="model-title"><strong>' + text(model.name) + '</strong>' + modelBadges({ current, configured }) + '</span><span class="subtle">' + text(model.description) + '</span></span>',
+      '<span><span class="model-title"><strong>' + text(model.name) + '</strong>' + modelBadges({ current, configured, installed: model.installed }) + '</span><span class="subtle">' + text(model.description) + '</span></span>',
       '<span class="subtle">' + text(model.meta) + '</span>',
       '</button>',
       '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '"' + (current ? " disabled" : "") + '>' + text(current ? "Active" : "Switch") + '</button>',
@@ -209,10 +223,11 @@
     return Boolean(state.status.currentUsesOllama && state.status.currentCodexModel === name);
   }
 
-  function modelBadges({ current, configured }) {
+  function modelBadges({ current, configured, installed }) {
     const labels = [];
     if (current) labels.push("Active");
     else if (configured) labels.push("Configured");
+    if (installed && !current) labels.push("Installed");
     return labels.map(badge).join("");
   }
 

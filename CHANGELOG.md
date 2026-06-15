@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.6
+
+- Deduplicated recommended/local model rows, added visible section counts, and badge recommended models that are already installed locally.
+
 ## 0.5.5
 
 - Let model filtering match recommendation metadata such as plan and cloud/local tags, not only model names.

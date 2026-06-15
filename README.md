@@ -79,6 +79,7 @@ The panel shows:
 - Ollama's recommended Codex models, including local and cloud options when available.
 - Local Ollama models from `ollama ls`.
 - Fast filtering across recommended and local model rows.
+- Deduplicated model rows with section counts and installed badges.
 - Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.
 - Direct `Switch` controls on model rows, so the panel behaves like a model switcher rather than a command list.
 - Direct action buttons for setup, restore, pull, and CLI profile changes.

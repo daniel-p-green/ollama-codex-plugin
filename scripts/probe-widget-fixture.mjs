@@ -54,6 +54,9 @@ assertIncludes(openAiProfileHtml, "Recommended for Codex");
 assertIncludes(openAiProfileHtml, "Local models");
 assertIncludes(openAiProfileHtml, "Filter models");
 assertIncludes(openAiProfileHtml, 'data-use-model="gpt-oss:20b"');
+assertIncludes(openAiProfileHtml, "Installed");
+assertIncludes(openAiProfileHtml, '<span class="count">1</span>');
+assertNotIncludes(openAiProfileHtml, "local-gpt-oss");
 
 const ollamaProfileHtml = renderFixture({
   status: {
@@ -114,6 +117,10 @@ const filteredHtml = renderFixture({
         name: "kimi-k2.6:cloud",
         description: "Cloud coding model",
       },
+      {
+        name: "gpt-oss:20b",
+        description: "Open-weight local coding model",
+      },
     ],
   },
   models: {
@@ -136,6 +143,7 @@ const filteredHtml = renderFixture({
 
 assertIncludes(filteredHtml, 'value="gemma"');
 assertIncludes(filteredHtml, "gemma4:latest");
+assertIncludes(filteredHtml, '<span class="count">0</span>');
 assertNotIncludes(filteredHtml, "local-gpt-oss");
 
 console.log("[ok] widget fixture probe");

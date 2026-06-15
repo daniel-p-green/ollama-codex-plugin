@@ -67,6 +67,8 @@ try {
     "Configured",
     "Filter models",
     "filteredModels",
+    "sectionLabel",
+    "Installed",
     "Switch",
     "confirmed: Boolean(confirmedOverride)",
     "errorMessage(error)",
