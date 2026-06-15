@@ -23,6 +23,7 @@ Expected evidence:
 - Validation passes.
 - The installed plugin version is current.
 - The installed `/ollama` command exists in the plugin cache.
+- The installed `/ollama-codex-doctor` command exists in the plugin cache.
 - `codex mcp get ollama_codex` points at the current installed plugin cache, not an older cache path.
 - The installed-cache MCP and widget fixture probes pass.
 
@@ -58,6 +59,14 @@ Expected action evidence:
 - The result is based on the current installed plugin version.
 - No stale `Transport closed` error appears.
 - No path from an older deleted plugin cache appears.
+
+If `Transport closed` appears in an already-open thread, run:
+
+```text
+/ollama-codex-doctor
+```
+
+If the doctor reports that the installed plugin root and `codex mcp get ollama_codex` are current, the issue is stale thread-local MCP handles. Open a fresh Codex thread and rerun `/ollama`.
 
 ## What Does Not Count
 

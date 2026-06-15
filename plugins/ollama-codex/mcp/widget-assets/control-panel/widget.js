@@ -346,6 +346,10 @@
       '<button type="button" data-action="cli-config">Configure CLI</button>',
       '<button class="danger" type="button" data-action="cli-restore">Restore CLI</button>',
       '</div>',
+      '<div class="panel-head" style="margin-top:18px"><div><h2>Diagnostics</h2><p class="subtle">Check install wiring and stale thread state.</p></div></div>',
+      '<div class="actions two">',
+      '<button class="secondary" type="button" data-action="doctor">Run Doctor</button>',
+      '</div>',
       '</section>',
     ].join("");
   }
@@ -367,7 +371,7 @@
     app.querySelector('[data-action="pull-model"]').addEventListener("click", () => runAction("pull-model", false, undefined, true));
     app.querySelectorAll("[data-action]").forEach((button) => {
       const action = button.getAttribute("data-action");
-      if (["app-setup", "app-restore", "cli-config", "cli-restore"].includes(action)) {
+      if (["app-setup", "app-restore", "cli-config", "cli-restore", "doctor"].includes(action)) {
         button.addEventListener("click", () => runAction(action, false, undefined, true));
       }
       if (action === "app-use-model") {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.8
+
+- Added `/ollama-codex-doctor` and a wrapper `doctor` subcommand to diagnose installed plugin wiring, MCP cache mismatch, local readiness, and stale-thread `Transport closed` failures.
+
 ## 0.6.7
 
 - Added keyboard-first model picker behavior: focus search on first render, Enter switches the first filtered actionable row, Escape clears search, and Enter in the custom Ollama tag field switches that tag.

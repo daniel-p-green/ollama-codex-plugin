@@ -18,7 +18,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - Fresh panel renders show the installed plugin version and the phrase `native Codex switching enabled`, which distinguishes the current package from stale already-loaded MCP processes.
 - The panel shows readiness, one search-first model picker, the visible Codex/OpenAI model catalog, the active Codex model, the Ollama App model, recommended Ollama Codex models, deduplicated local models, counts, active/configured/installed badges, direct model `Switch` controls, custom Ollama tags, App actions, CLI actions, restore actions, and lazy command results after actions run.
 - Model row `Switch` controls switch Codex App to the chosen Ollama model or back to a native Codex/OpenAI model; native model switching writes a timestamped Codex config backup first.
-- Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
+- Slash commands cover the visual panel, installed-plugin diagnosis, Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
 - CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
 - Interactive CLI launch commands are guarded in non-interactive Codex shells and provide terminal handoff commands.
@@ -39,6 +39,7 @@ Latest local checks performed during the Romain-ready pass:
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore` removed the generated CLI profile/catalog.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-run-model gpt-oss:20b` refused to launch from the non-interactive plugin shell, while `--dry-run` printed the exact terminal command.
 - `codex plugin add ollama-codex@ollama-codex-local` installed the current plugin version into the local Codex plugin cache.
+- `/ollama-codex-doctor` is backed by the wrapper's `doctor` command for MCP cache mismatch and stale-thread triage.
 - Fresh-clone validation from GitHub passed.
 
 ## Product Boundary

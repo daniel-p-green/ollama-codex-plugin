@@ -24,6 +24,7 @@ WIDGET_PROOF_RENDERER = ROOT / "scripts" / "render-widget-proof.mjs"
 
 EXPECTED_COMMANDS = {
     "ollama.md",
+    "ollama-codex-doctor.md",
     "ollama-codex-status.md",
     "ollama-codex-panel.md",
     "ollama-codex-list-models.md",
@@ -187,6 +188,7 @@ def validate_wrapper() -> None:
         "app-use-model",
         "app-use-codex-model",
         "app-restore",
+        "doctor",
         "cli-setup",
         "cli-config",
         "cli-run-model",
@@ -283,6 +285,7 @@ def validate_panel() -> None:
         "firstSwitchTarget",
         "focusSearchOnce",
         "autofocus",
+        "Run Doctor",
         "renderProviderSummary",
         "Active provider",
         "Saved Ollama App model",

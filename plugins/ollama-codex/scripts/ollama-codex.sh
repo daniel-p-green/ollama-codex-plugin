@@ -8,6 +8,7 @@ DRY_RUN=false
 usage() {
   cat <<'USAGE'
 Usage:
+  ollama-codex.sh [--dry-run] doctor
   ollama-codex.sh [--dry-run] status
 
   # Codex App
@@ -102,6 +103,18 @@ print_file_status() {
   else
     info "$label: not found at $path"
   fi
+}
+
+plugin_root() {
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  cd "$script_dir/.." && pwd
+}
+
+plugin_version() {
+  local root
+  root="$(plugin_root)"
+  sed -nE 's/^[[:space:]]*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$root/.codex-plugin/plugin.json" 2>/dev/null | head -n 1
 }
 
 codex_home() {
@@ -471,6 +484,48 @@ print_status() {
   info "Codex CLI works best with models configured for at least a 64k context window."
 }
 
+print_doctor() {
+  local root
+  local version
+  root="$(plugin_root)"
+  version="$(plugin_version)"
+
+  printf 'Ollama for Codex doctor\n'
+  printf '\n'
+  ok "plugin root: $root"
+  if [[ -n "$version" ]]; then
+    ok "plugin version: $version"
+  else
+    warn "plugin version: unable to read .codex-plugin/plugin.json"
+  fi
+
+  print_file_status "short /ollama command" "$root/commands/ollama.md"
+  print_file_status "visual panel command" "$root/commands/ollama-codex-panel.md"
+  print_file_status "MCP server config" "$root/.mcp.json"
+  print_file_status "MCP server implementation" "$root/mcp/server.mjs"
+
+  if command -v codex >/dev/null 2>&1; then
+    local mcp_output
+    mcp_output="$(codex mcp get ollama_codex 2>&1 || true)"
+    if printf '%s\n' "$mcp_output" | grep -Fq "$root"; then
+      ok "Codex MCP config points at this installed plugin root"
+    elif [[ -n "$version" ]] && printf '%s\n' "$mcp_output" | grep -Fq "/ollama-codex/$version"; then
+      ok "Codex MCP config points at the installed cache for this plugin version"
+    else
+      warn "Codex MCP config may not point at this plugin root"
+      printf '%s\n' "$mcp_output" | sed -n '1,12p'
+    fi
+  else
+    warn "codex executable: not found in PATH; skipped MCP config check"
+  fi
+
+  printf '\n'
+  print_status
+  printf '\n'
+  info "If /ollama or MCP tool calls fail with 'Transport closed' in an already-open Codex thread, open a fresh Codex thread after installing or updating the plugin."
+  info "Codex currently reloads plugin MCP handles per thread; reinstalling the plugin does not hot-swap stale handles inside an existing thread."
+}
+
 require_ollama() {
   local ollama_bin
   ollama_bin="$(ollama_path)"
@@ -570,6 +625,10 @@ if [[ $# -gt 0 ]]; then
 fi
 
 case "$command_name" in
+  doctor)
+    require_no_args "$command_name" "$#"
+    print_doctor
+    ;;
   status)
     require_no_args "$command_name" "$#"
     print_status

@@ -80,9 +80,11 @@ fi
 printf '[ok] MCP cache path: %s\n' "$cache_path"
 
 require_file "$cache_path/commands/ollama.md"
+require_file "$cache_path/commands/ollama-codex-doctor.md"
 require_file "$cache_path/.codex-plugin/plugin.json"
 require_file "$cache_path/mcp/server.mjs"
 printf '[ok] installed short command: /ollama\n'
+printf '[ok] installed doctor command: /ollama-codex-doctor\n'
 
 echo
 echo "== installed-cache probes =="

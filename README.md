@@ -62,6 +62,7 @@ Fresh-thread check: the panel header should show the installed plugin version an
 You can still use the command layer directly:
 
 ```text
+/ollama-codex-doctor
 /ollama-codex-status
 /ollama-codex-app-use-codex-model gpt-5.4
 /ollama-codex-app-use-model gemma4:31b
@@ -96,6 +97,7 @@ The panel shows:
 - Codex CLI install status.
 - Whether the generated Codex CLI Ollama profile/catalog exists.
 - Buttons for App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
+- A doctor command for installed-plugin wiring, MCP cache mismatch, and stale-thread diagnosis.
 
 Actions that may restart Codex or restore profile state are explicit button clicks in the panel. Direct non-dry-run MCP calls still require a confirmation flag, so accidental background tool calls are blocked.
 
@@ -178,6 +180,7 @@ Status and model helpers:
 ```text
 /ollama
 /ollama-codex-panel
+/ollama-codex-doctor
 /ollama-codex-status
 /ollama-codex-list-models
 /ollama-codex-pull-model gemma4:31b
@@ -219,6 +222,7 @@ All commands route through one script:
 
 ```bash
 bash plugins/ollama-codex/scripts/ollama-codex.sh status
+bash plugins/ollama-codex/scripts/ollama-codex.sh doctor
 ```
 
 Codex App:
@@ -310,6 +314,18 @@ ollama serve
 ```
 
 If you reinstall or update the plugin while a Codex thread is already open, start a fresh Codex thread before testing the panel again. Active threads can keep MCP tool handles from the previous cache-busted plugin path until the thread is recreated.
+
+If `/ollama` fails with `Transport closed`, run the doctor command from the same thread or a shell:
+
+```text
+/ollama-codex-doctor
+```
+
+```bash
+bash plugins/ollama-codex/scripts/ollama-codex.sh doctor
+```
+
+If the doctor shows the installed plugin and MCP config are current, the remaining fix is to open a fresh Codex thread so Codex reloads the plugin MCP server.
 
 For final visual acceptance, use [docs/acceptance.md](docs/acceptance.md). A source probe or standalone widget fixture is useful regression coverage, but the live GUI proof is `/ollama` rendering inside a fresh Codex Mac app thread.
 

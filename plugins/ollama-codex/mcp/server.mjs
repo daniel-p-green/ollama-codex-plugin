@@ -163,6 +163,7 @@ function registerTools() {
           "cli-restore",
           "pull-model",
           "list-models",
+          "doctor",
           "status",
         ]),
         model: z.string().trim().optional(),

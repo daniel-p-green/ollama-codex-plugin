@@ -16,6 +16,7 @@ Open a new Codex thread and try:
 ```text
 /ollama
 /ollama-codex-panel
+/ollama-codex-doctor
 /ollama-codex-status
 /ollama-codex-app-use-codex-model gpt-5.4
 /ollama-codex-app-use-model gemma4:31b

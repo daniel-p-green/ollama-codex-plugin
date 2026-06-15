@@ -86,6 +86,7 @@ assertIncludes(openAiProfileHtml, "gpt-oss:20b");
 assertIncludes(openAiProfileHtml, "Configured");
 assertIncludes(openAiProfileHtml, "Recommended for Codex");
 assertIncludes(openAiProfileHtml, "Local models");
+assertIncludes(openAiProfileHtml, "Run Doctor");
 assertIncludes(openAiProfileHtml, 'placeholder="Search Codex or Ollama models"');
 assertIncludes(openAiProfileHtml, "autofocus");
 assertIncludes(openAiProfileHtml, 'data-use-model="gpt-oss:20b"');

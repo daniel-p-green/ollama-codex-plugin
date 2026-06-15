@@ -33,6 +33,7 @@ try {
     "app-restore",
     "cli-config",
     "pull-model",
+    "doctor",
   ]) {
     if (!actionEnum.includes(requiredAction)) {
       throw new Error(`MCP action schema missing: ${requiredAction}`);
@@ -106,6 +107,7 @@ try {
     "handleFilterKeydown",
     "firstSwitchTarget",
     "autofocus",
+    "Run Doctor",
     "Use any Ollama tag",
     "filteredModels",
     "sectionLabel",

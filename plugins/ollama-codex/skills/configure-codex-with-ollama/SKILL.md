@@ -30,7 +30,13 @@ The panel is the preferred user-facing surface. It renders inside Codex, shows t
 
 Do not describe the plugin card, starter prompts, or localhost browser panel as the full GUI. The GUI is the MCP app widget served by `mcp/server.mjs`.
 
-If the `render_ollama_codex_panel` tool is not available in the current Codex thread, say so plainly and ask the user to reinstall/restart or start a new thread. Do not fall back to calling a localhost panel the plugin GUI.
+If the `render_ollama_codex_panel` tool is not available in the current Codex thread, or if the MCP call fails with `Transport closed`, say so plainly and run the plugin doctor if the command layer is available:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh doctor
+```
+
+Then ask the user to open a fresh Codex thread after installing or updating the plugin. Do not fall back to calling a localhost panel the plugin GUI.
 
 ## Status And Discovery
 
