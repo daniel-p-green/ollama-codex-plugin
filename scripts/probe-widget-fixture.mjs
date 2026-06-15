@@ -208,6 +208,23 @@ assertIncludes(filteredHtml, "gemma4:latest");
 assertIncludes(filteredHtml, '<span class="count">0</span>');
 assertNotIncludes(filteredHtml, "local-gpt-oss");
 
+const staleRuntimeHtml = renderFixture({
+  status: {
+    runtimeStale: true,
+    runtimeMessage: "Open a fresh Codex thread after reinstalling or updating the plugin.",
+    currentCodexModel: "gpt-5.5",
+    currentCodexProvider: "openai",
+    currentUsesOllama: false,
+  },
+  codexModels: { models: [] },
+  recommendations: { models: [] },
+  models: { models: [] },
+  supportsNativeCodexSwitch: true,
+});
+
+assertIncludes(staleRuntimeHtml, "Plugin runtime is stale.");
+assertIncludes(staleRuntimeHtml, "Open a fresh Codex thread after reinstalling or updating Ollama for Codex.");
+
 console.log("[ok] widget fixture probe");
 
 function renderFixture(widgetData) {

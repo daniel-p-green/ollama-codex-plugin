@@ -67,6 +67,9 @@ try {
   if (rendered.structuredContent?.supportsNativeCodexSwitch !== true) {
     throw new Error("render tool did not report native Codex switching support");
   }
+  if (!("runtimeStale" in (rendered.structuredContent || {}))) {
+    throw new Error("render tool did not include runtime stale diagnostics");
+  }
 
   const resources = await client.listResources();
   const resource = resources.resources.find((entry) => entry.uri === "ui://widget/ollama-codex-control-panel.html");
@@ -105,6 +108,8 @@ try {
     "Switch",
     "confirmed: Boolean(confirmedOverride)",
     "errorMessage(error)",
+    "Plugin runtime is stale",
+    "Open a fresh Codex thread",
   ]) {
     if (!widgetHtml.includes(required)) {
       throw new Error(`widget resource missing model switcher marker: ${required}`);

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -183,12 +183,14 @@ function registerTools() {
 async function statusPayload() {
   const result = await runWrapper(["status"], { timeout: 30000 });
   const text = `${result.stdout}\n${result.stderr}`.trim();
+  const runtime = runtimeDiagnostic();
   const appIntegration = ollamaIntegrationPayload("codex-app");
   const codexConfig = codexConfigPayload();
   const previousCodexConfig = latestCodexAppBackupPayload();
   return {
     ok: result.exitCode === 0,
     output: text,
+    ...runtime,
     ollamaInstalled: /\[ok\] ollama executable:/.test(text),
     ollamaVersion: text.match(/\[ok\] ollama version: ([0-9.]+)/)?.[1] || null,
     serverReachable: /\[ok\] ollama HTTP API: reachable/.test(text),
@@ -217,6 +219,8 @@ async function modelPayload() {
     source: "ollama ls",
     models,
     output: `${result.stdout}\n${result.stderr}`.trim(),
+    runtimeStale: Boolean(result.runtimeStale),
+    runtimeMessage: result.runtimeMessage || null,
   };
 }
 
@@ -248,6 +252,8 @@ async function runAction(input) {
     exitCode: result.exitCode,
     stdout: result.stdout,
     stderr: result.stderr,
+    runtimeStale: Boolean(result.runtimeStale),
+    runtimeMessage: result.runtimeMessage || null,
   };
 }
 
@@ -362,6 +368,21 @@ function topLevelTomlString(text, key) {
 }
 
 async function runWrapper(args, options = {}) {
+  const runtime = runtimeDiagnostic();
+  if (runtime.runtimeStale) {
+    const stderr = [
+      "[error] Ollama for Codex MCP runtime is stale.",
+      "[info] Open a fresh Codex thread after reinstalling or updating the plugin.",
+      `[info] stale plugin root: ${runtime.pluginRoot}`,
+      `[info] expected wrapper: ${runtime.wrapperPath}`,
+    ].join("\n");
+    return {
+      exitCode: 1,
+      stdout: "",
+      stderr,
+      ...runtime,
+    };
+  }
   try {
     const result = await execFileAsync("bash", [wrapper, ...args], {
       timeout: options.timeout || 30000,
@@ -374,8 +395,25 @@ async function runWrapper(args, options = {}) {
       exitCode: typeof error.code === "number" ? error.code : 1,
       stdout: error.stdout || "",
       stderr: error.stderr || error.message || "",
+      ...runtime,
     };
   }
+}
+
+function runtimeDiagnostic() {
+  const pluginRootExists = existsSync(pluginRoot);
+  const wrapperExists = existsSync(wrapper);
+  const runtimeStale = !pluginRootExists || !wrapperExists;
+  return {
+    pluginRoot,
+    wrapperPath: wrapper,
+    pluginRootExists,
+    wrapperExists,
+    runtimeStale,
+    runtimeMessage: runtimeStale
+      ? "Open a fresh Codex thread after reinstalling or updating the plugin."
+      : null,
+  };
 }
 
 function parseOllamaList(text) {
@@ -425,6 +463,8 @@ function summarizeWidget(data) {
     ollamaVersion: data.status.ollamaVersion,
     serverReachable: data.status.serverReachable,
     codexVersion: data.status.codexVersion,
+    runtimeStale: Boolean(data.status.runtimeStale),
+    runtimeMessage: data.status.runtimeMessage || null,
   };
 }
 

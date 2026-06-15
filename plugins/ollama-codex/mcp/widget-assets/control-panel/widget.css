@@ -110,7 +110,8 @@ h2 {
 }
 
 .card,
-.panel {
+.panel,
+.alert {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -118,6 +119,23 @@ h2 {
 
 .card {
   padding: 11px;
+}
+
+.alert {
+  border-color: var(--warn);
+  padding: 12px;
+  background: #fff8eb;
+}
+
+.alert strong,
+.alert p {
+  margin: 0;
+}
+
+.alert p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .card strong {

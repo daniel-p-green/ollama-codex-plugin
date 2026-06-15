@@ -75,6 +75,7 @@
       '</div>',
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',
       '</section>',
+      renderRuntimeWarning(),
       renderStatus(),
       '<section class="grid">',
       renderModels(),
@@ -96,6 +97,16 @@
       statusCard("Ollama App", state.status.appModel || "Not configured", state.status.appConfigured),
       statusCard("Codex CLI", state.status.codexVersion || "Not found", state.status.codexInstalled),
       statusCard("CLI Profile", state.status.cliProfileConfigured ? "Configured" : "Not configured", state.status.cliProfileConfigured),
+      '</section>',
+    ].join("");
+  }
+
+  function renderRuntimeWarning() {
+    if (!state.status.runtimeStale) return "";
+    return [
+      '<section class="alert" role="status">',
+      '<strong>Plugin runtime is stale.</strong>',
+      '<p>Open a fresh Codex thread after reinstalling or updating Ollama for Codex.</p>',
       '</section>',
     ].join("");
   }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.5
+
+- Added explicit stale-runtime diagnostics when an already-open Codex thread is still attached to an old plugin cache path after reinstall.
+- The widget now shows a fresh-thread warning instead of making a stale MCP runtime look like missing Ollama/Codex setup.
+
 ## 0.6.4
 
 - Added `/ollama` as the short, primary entry point for opening the in-Codex model picker. `/ollama-codex-panel` remains available as the explicit long-form command.
