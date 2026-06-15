@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 const pluginCwd = process.env.PLUGIN_CWD || "plugins/ollama-codex";
-const outputPath = process.env.OUTPUT || "/private/tmp/ollama-codex-widget-proof.html";
+const outputPath = process.env.OUTPUT || join(tmpdir(), "ollama-codex-widget-proof.html");
 
 const manifest = readJson(join(pluginCwd, ".codex-plugin", "plugin.json"));
 const html = readFileSync(join(pluginCwd, "mcp", "widget-assets", "control-panel", "widget.html"), "utf8");
