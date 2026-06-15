@@ -18,6 +18,7 @@ WRAPPER = PLUGIN / "scripts" / "ollama-codex.sh"
 MCP_CONFIG = PLUGIN / ".mcp.json"
 MCP_SERVER = PLUGIN / "mcp" / "server.mjs"
 DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
+ACCEPTANCE_PREFLIGHT = ROOT / "scripts" / "acceptance-preflight.sh"
 WIDGET_FIXTURE_PROBE = ROOT / "scripts" / "probe-widget-fixture.mjs"
 WIDGET_PROOF_RENDERER = ROOT / "scripts" / "render-widget-proof.mjs"
 
@@ -162,6 +163,7 @@ def validate_skill() -> None:
 def validate_wrapper() -> None:
     require_file(WRAPPER)
     require_file(DEMO_SCRIPT)
+    require_file(ACCEPTANCE_PREFLIGHT)
     require_file(WIDGET_FIXTURE_PROBE)
     require_file(WIDGET_PROOF_RENDERER)
     mode = WRAPPER.stat().st_mode
@@ -170,6 +172,9 @@ def validate_wrapper() -> None:
     demo_mode = DEMO_SCRIPT.stat().st_mode
     if not (demo_mode & stat.S_IXUSR):
         fail("demo script must be executable")
+    acceptance_mode = ACCEPTANCE_PREFLIGHT.stat().st_mode
+    if not (acceptance_mode & stat.S_IXUSR):
+        fail("acceptance preflight script must be executable")
     fixture_mode = WIDGET_FIXTURE_PROBE.stat().st_mode
     if not (fixture_mode & stat.S_IXUSR):
         fail("widget fixture probe must be executable")
@@ -327,6 +332,7 @@ def validate_docs() -> None:
         ROOT / "docs" / "romain-ready.md",
         ROOT / "CHANGELOG.md",
         ROOT / "LICENSE",
+        ACCEPTANCE_PREFLIGHT,
     ):
         require_file(path)
     readme = (ROOT / "README.md").read_text()
@@ -337,6 +343,7 @@ def validate_docs() -> None:
         "/ollama",
         "/ollama-codex-panel",
         "docs/acceptance.md",
+        "acceptance-preflight.sh",
         "docs/romain-ready.md",
         "The missing visual model switcher for Ollama in the Codex Mac app",
         "Ollama can already work with Codex",
@@ -358,6 +365,7 @@ def validate_docs() -> None:
     acceptance = (ROOT / "docs" / "acceptance.md").read_text()
     for required in (
         "/ollama",
+        "./scripts/acceptance-preflight.sh",
         "native Codex switching enabled",
         "Search Codex or Ollama models",
         "Transport closed",

@@ -313,6 +313,12 @@ If you reinstall or update the plugin while a Codex thread is already open, star
 
 For final visual acceptance, use [docs/acceptance.md](docs/acceptance.md). A source probe or standalone widget fixture is useful regression coverage, but the live GUI proof is `/ollama` rendering inside a fresh Codex Mac app thread.
 
+Run the local preflight before that fresh-thread check:
+
+```bash
+./scripts/acceptance-preflight.sh
+```
+
 ## Validate
 
 Run the repo validation script:

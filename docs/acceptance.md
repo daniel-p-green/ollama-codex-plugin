@@ -7,6 +7,12 @@ Use this checklist when proving that Ollama for Codex works as a visual plugin i
 Run these from the repo:
 
 ```bash
+./scripts/acceptance-preflight.sh
+```
+
+Or run the checks manually:
+
+```bash
 bash scripts/validate.sh
 codex plugin add ollama-codex@ollama-codex-local
 codex mcp get ollama_codex
@@ -16,7 +22,9 @@ Expected evidence:
 
 - Validation passes.
 - The installed plugin version is current.
+- The installed `/ollama` command exists in the plugin cache.
 - `codex mcp get ollama_codex` points at the current installed plugin cache, not an older cache path.
+- The installed-cache MCP and widget fixture probes pass.
 
 ## Live Codex App Check
 
