@@ -17,6 +17,7 @@
 
   const app = document.getElementById("app");
   let state = hydrate(readToolOutput());
+  let searchFocused = false;
 
   window.addEventListener("openai:set_globals", () => {
     const output = readToolOutput();
@@ -141,7 +142,7 @@
     return [
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Choose Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
-      '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Search Codex or Ollama models" aria-label="Search Codex or Ollama models" />',
+      '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Search Codex or Ollama models" aria-label="Search Codex or Ollama models" autofocus />',
       renderCodexModels(codexModels),
       '<div class="model-group" aria-label="Recommended Ollama models">',
       sectionLabel("Recommended for Codex", recommendations.length),
@@ -388,10 +389,70 @@
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
     });
+    app.querySelector("#modelInput").addEventListener("keydown", handleModelInputKeydown);
     app.querySelector("#modelFilter").addEventListener("input", (event) => {
       state.filterText = event.target.value;
       render();
     });
+    app.querySelector("#modelFilter").addEventListener("keydown", handleFilterKeydown);
+    focusSearchOnce();
+  }
+
+  function focusSearchOnce() {
+    if (searchFocused) return;
+    const filter = app.querySelector("#modelFilter");
+    if (!filter || typeof filter.focus !== "function") return;
+    searchFocused = true;
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(() => filter.focus({ preventScroll: true }));
+    } else {
+      filter.focus();
+    }
+  }
+
+  function handleFilterKeydown(event) {
+    if (event.key === "Escape" && state.filterText) {
+      event.preventDefault();
+      state.filterText = "";
+      render();
+      return;
+    }
+    if (event.key !== "Enter") return;
+    state.filterText = String(event.target.value || state.filterText || "");
+    const target = firstSwitchTarget();
+    if (!target) return;
+    event.preventDefault();
+    runAction(target.action, false, target.model, true);
+  }
+
+  function handleModelInputKeydown(event) {
+    if (event.key !== "Enter") return;
+    const model = String(event.target.value || "").trim();
+    if (!model) return;
+    event.preventDefault();
+    state.selectedModel = model;
+    runAction("app-use-model", false, model, true);
+  }
+
+  function firstSwitchTarget() {
+    if (!state.filterText.trim()) return null;
+    const codexTarget = visibleCodexModels().find((model) => !isCurrentCodexModel(model.name));
+    if (codexTarget) return { action: "app-use-codex-model", model: codexTarget.name };
+    const ollamaTarget = visibleOllamaModels().find((model) => !isCurrentOllamaModel(model.name));
+    if (ollamaTarget) return { action: "app-use-model", model: ollamaTarget.name };
+    return null;
+  }
+
+  function visibleOllamaModels() {
+    const recommendationNames = new Set(state.recommendations.map((model) => normalizeModelName(model.name)));
+    return [
+      ...filteredModels(state.recommendations),
+      ...filteredModels(state.models.filter((model) => !recommendationNames.has(normalizeModelName(model.name)))),
+    ];
+  }
+
+  function isCurrentCodexModel(name) {
+    return Boolean(!state.status.currentUsesOllama && name === state.status.currentCodexModel);
   }
 
   async function refresh() {

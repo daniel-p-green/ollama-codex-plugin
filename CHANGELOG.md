@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.7
+
+- Added keyboard-first model picker behavior: focus search on first render, Enter switches the first filtered actionable row, Escape clears search, and Enter in the custom Ollama tag field switches that tag.
+
 ## 0.6.6
 
 - Added an active-provider strip to the widget so users can see the current provider, active model, and saved Ollama App model before switching.
