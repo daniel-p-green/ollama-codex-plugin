@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.6
+
+- Added an active-provider strip to the widget so users can see the current provider, active model, and saved Ollama App model before switching.
+
 ## 0.6.5
 
 - Added explicit stale-runtime diagnostics when an already-open Codex thread is still attached to an old plugin cache path after reinstall.

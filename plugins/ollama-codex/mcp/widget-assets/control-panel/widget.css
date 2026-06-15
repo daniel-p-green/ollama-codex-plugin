@@ -109,6 +109,40 @@ h2 {
   gap: 8px;
 }
 
+.provider-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  overflow: hidden;
+}
+
+.provider-strip div {
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.provider-strip div + div {
+  border-left: 1px solid var(--line);
+}
+
+.provider-strip p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.provider-strip strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card,
 .panel,
 .alert {
@@ -359,10 +393,16 @@ pre {
 
 @media (max-width: 760px) {
   .status,
+  .provider-strip,
   .grid,
   .actions,
   .actions.two {
     grid-template-columns: 1fr;
+  }
+
+  .provider-strip div + div {
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .header,

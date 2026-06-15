@@ -76,6 +76,7 @@
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',
       '</section>',
       renderRuntimeWarning(),
+      renderProviderSummary(),
       renderStatus(),
       '<section class="grid">',
       renderModels(),
@@ -107,6 +108,19 @@
       '<section class="alert" role="status">',
       '<strong>Plugin runtime is stale.</strong>',
       '<p>Open a fresh Codex thread after reinstalling or updating Ollama for Codex.</p>',
+      '</section>',
+    ].join("");
+  }
+
+  function renderProviderSummary() {
+    const provider = state.status.currentUsesOllama ? "Ollama" : "Codex/OpenAI";
+    const activeModel = state.status.currentCodexModel || "Unknown";
+    const ollamaModel = state.status.appModel || "Not configured";
+    return [
+      '<section class="provider-strip" aria-label="Active provider">',
+      '<div><p>Active provider</p><strong>' + text(provider) + '</strong></div>',
+      '<div><p>Active model</p><strong>' + text(activeModel) + '</strong></div>',
+      '<div><p>Saved Ollama App model</p><strong>' + text(ollamaModel) + '</strong></div>',
       '</section>',
     ].join("");
   }

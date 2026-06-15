@@ -273,6 +273,9 @@ def validate_panel() -> None:
         "Configured",
         "badge(",
         "Search Codex or Ollama models",
+        "renderProviderSummary",
+        "Active provider",
+        "Saved Ollama App model",
         "Use any Ollama tag",
         "custom-model",
         "filteredModels",
@@ -301,7 +304,7 @@ def validate_panel() -> None:
     for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
         if stale_color in css:
             fail(f"widget CSS contains stale beige palette color: {stale_color}")
-    for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active", ".count", ".alert", 'input[type="search"]'):
+    for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active", ".count", ".alert", ".provider-strip", 'input[type="search"]'):
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     fixture_text = WIDGET_FIXTURE_PROBE.read_text()
@@ -309,7 +312,7 @@ def validate_panel() -> None:
     for required in ("packageVersion", "supportsNativeCodexSwitch", "GPT-5.5", "gpt-oss:20b", "kimi-k2.6:cloud"):
         if required not in proof_text:
             fail(f"widget proof renderer missing: {required}")
-    for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "GPT-5.4", "Switches back to Codex/OpenAI", "data-use-codex-model", "filterText", "Installed", "local-gpt-oss", "Plugin runtime is stale", "widget fixture probe"):
+    for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "Active provider", "Saved Ollama App model", "GPT-5.4", "Switches back to Codex/OpenAI", "data-use-codex-model", "filterText", "Installed", "local-gpt-oss", "Plugin runtime is stale", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
     ok("in-Codex visual control panel")

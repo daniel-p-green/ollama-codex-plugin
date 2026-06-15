@@ -65,6 +65,10 @@ const openAiProfileHtml = renderFixture({
 
 assertIncludes(openAiProfileHtml, "Model Switcher");
 assertIncludes(openAiProfileHtml, "Ollama for Codex · 0.6.3");
+assertIncludes(openAiProfileHtml, "Active provider");
+assertIncludes(openAiProfileHtml, "Codex/OpenAI");
+assertIncludes(openAiProfileHtml, "Active model");
+assertIncludes(openAiProfileHtml, "Saved Ollama App model");
 assertIncludes(openAiProfileHtml, "Choose Model");
 assertIncludes(openAiProfileHtml, "Search Codex or Ollama models");
 assertIncludes(openAiProfileHtml, "Use any Ollama tag");
@@ -143,6 +147,8 @@ const ollamaProfileHtml = renderFixture({
 });
 
 assertIncludes(ollamaProfileHtml, "Codex/OpenAI models");
+assertIncludes(ollamaProfileHtml, "Active provider");
+assertIncludes(ollamaProfileHtml, "<strong>Ollama</strong>");
 assertIncludes(ollamaProfileHtml, "GPT-5.5");
 assertIncludes(ollamaProfileHtml, "GPT-5.4");
 assertIncludes(ollamaProfileHtml, "Switches back to Codex/OpenAI and sets this native model.");

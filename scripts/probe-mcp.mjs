@@ -93,6 +93,8 @@ try {
     "kimi-k2.6:cloud",
     "Recommended for Codex",
     "Codex/OpenAI models",
+    "Active provider",
+    "Saved Ollama App model",
     "Codex/OpenAI and Ollama models are visible together",
     "One active provider profile at a time",
     "Switches back to Codex/OpenAI",
