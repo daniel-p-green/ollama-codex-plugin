@@ -55,7 +55,7 @@ Open a new Codex thread, then start with the visual panel:
 
 `/ollama-codex-panel` is also available as the explicit long-form command.
 
-The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
+The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, see the queued selection in the selected-model bar, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
 
 Fresh-thread check: the panel header should show the installed plugin version and the model summary should include `native Codex switching enabled`. If an already-open Codex thread does not show those markers after an upgrade, open a new thread so Codex reloads the plugin MCP server.
 
@@ -88,6 +88,7 @@ The panel shows:
 - Ollama's recommended Codex models, including local and cloud options when available.
 - Local Ollama models from `ollama ls`.
 - Fast search across Codex/OpenAI, recommended Ollama, and local Ollama model rows.
+- A selected-model bar that shows the queued model and provides one compact `Switch` control after search or row selection.
 - A custom Ollama tag row for models not already listed.
 - Deduplicated model rows with section counts and installed badges.
 - Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.

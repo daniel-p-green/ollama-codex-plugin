@@ -104,6 +104,8 @@ try {
     "modelBadges",
     "Configured",
     "Search Codex or Ollama models",
+    "Selected model",
+    "selectedModelDetail",
     "handleFilterKeydown",
     "firstSwitchTarget",
     "autofocus",

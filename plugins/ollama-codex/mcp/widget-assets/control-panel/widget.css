@@ -278,6 +278,31 @@ button:disabled {
   width: 100%;
 }
 
+.selected-model {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--soft);
+}
+
+.selected-model div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.selected-model strong,
+.selected-model span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .models {
   display: grid;
   gap: 7px;
@@ -395,9 +420,14 @@ pre {
   .status,
   .provider-strip,
   .grid,
+  .selected-model,
   .actions,
   .actions.two {
     grid-template-columns: 1fr;
+  }
+
+  .selected-model button {
+    width: 100%;
   }
 
   .provider-strip div + div {

@@ -71,6 +71,8 @@ assertIncludes(openAiProfileHtml, "Active model");
 assertIncludes(openAiProfileHtml, "Saved Ollama App model");
 assertIncludes(openAiProfileHtml, "Choose Model");
 assertIncludes(openAiProfileHtml, "Search Codex or Ollama models");
+assertIncludes(openAiProfileHtml, 'aria-label="Selected model"');
+assertIncludes(openAiProfileHtml, "Switches Codex App to this Ollama model.");
 assertIncludes(openAiProfileHtml, "Use any Ollama tag");
 assertIncludes(openAiProfileHtml, "native Codex switching enabled");
 assertIncludes(openAiProfileHtml, "Codex/OpenAI and Ollama models are visible together");
@@ -82,6 +84,7 @@ assertIncludes(openAiProfileHtml, "Everyday Codex model");
 assertIncludes(openAiProfileHtml, "reasoning medium");
 assertIncludes(openAiProfileHtml, "gpt-5.5");
 assertIncludes(openAiProfileHtml, 'data-use-codex-model="gpt-5.4"');
+assertIncludes(openAiProfileHtml, 'data-select-model="gpt-5.4"');
 assertIncludes(openAiProfileHtml, "gpt-oss:20b");
 assertIncludes(openAiProfileHtml, "Configured");
 assertIncludes(openAiProfileHtml, "Recommended for Codex");
@@ -215,6 +218,44 @@ assertIncludes(filteredHtml, 'value="gemma"');
 assertIncludes(filteredHtml, "gemma4:latest");
 assertIncludes(filteredHtml, '<span class="count">0</span>');
 assertNotIncludes(filteredHtml, "local-gpt-oss");
+
+const selectedCodexHtml = renderFixture({
+  status: {
+    currentCodexModel: "gpt-5.5",
+    currentCodexProvider: "openai",
+    currentUsesOllama: false,
+    appConfigured: true,
+    appModel: "gpt-oss:20b",
+    ollamaVersion: "0.30.8",
+    serverReachable: true,
+    codexVersion: "codex-cli 0.137.0",
+    codexInstalled: true,
+    cliProfileConfigured: false,
+  },
+  codexModels: {
+    models: [
+      {
+        name: "gpt-5.5",
+        displayName: "GPT-5.5",
+        description: "Frontier Codex model",
+      },
+      {
+        name: "gpt-5.4",
+        displayName: "GPT-5.4",
+        description: "Everyday Codex model",
+      },
+    ],
+  },
+  recommendations: { models: [] },
+  models: { models: [] },
+  selectedModel: "gpt-5.4",
+  supportsNativeCodexSwitch: true,
+});
+
+assertIncludes(selectedCodexHtml, 'aria-label="Selected model"');
+assertIncludes(selectedCodexHtml, "Switches Codex App to the Codex/OpenAI profile.");
+assertIncludes(selectedCodexHtml, 'data-action="app-use-codex-model"');
+assertIncludes(selectedCodexHtml, "model codex-profile selected");
 
 const staleRuntimeHtml = renderFixture({
   status: {

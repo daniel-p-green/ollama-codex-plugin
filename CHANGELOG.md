@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- Added a selected-model bar to the in-Codex picker so users can see the queued model and switch from one compact control after searching or selecting a row.
+
 ## 0.6.9
 
 - Added Doctor fallback instructions to `/ollama` and `/ollama-codex-panel` so stale-thread MCP failures produce a useful diagnostic instead of stopping at `Transport closed`.

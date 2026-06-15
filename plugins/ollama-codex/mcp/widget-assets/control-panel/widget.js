@@ -143,6 +143,7 @@
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Choose Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
       '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Search Codex or Ollama models" aria-label="Search Codex or Ollama models" autofocus />',
+      renderSelectedModelBar(),
       renderCodexModels(codexModels),
       '<div class="model-group" aria-label="Recommended Ollama models">',
       sectionLabel("Recommended for Codex", recommendations.length),
@@ -160,6 +161,39 @@
       '</div>',
       '</section>',
     ].join("");
+  }
+
+  function renderSelectedModelBar() {
+    const selected = selectedModelDetail();
+    return [
+      '<div class="selected-model" aria-label="Selected model">',
+      '<div><p class="subtle">Selected</p><strong>' + text(selected.name) + '</strong><span class="subtle">' + text(selected.description) + '</span></div>',
+      '<button type="button" data-action="' + attr(selected.action) + '"' + (selected.disabled ? " disabled" : "") + '>' + text(selected.buttonLabel) + '</button>',
+      '</div>',
+    ].join("");
+  }
+
+  function selectedModelDetail() {
+    const selectedName = String(state.selectedModel || "").trim();
+    const codex = codexModelRows().find((model) => model.name === selectedName);
+    if (codex) {
+      const current = isCurrentCodexModel(codex.name);
+      return {
+        name: codex.displayName || codex.name,
+        description: current ? "Already active in Codex/OpenAI." : "Switches Codex App to the Codex/OpenAI profile.",
+        action: "app-use-codex-model",
+        buttonLabel: current ? "Active" : "Switch",
+        disabled: current,
+      };
+    }
+    const current = isCurrentOllamaModel(selectedName);
+    return {
+      name: selectedName || "Choose a model",
+      description: current ? "Already active through Ollama." : "Switches Codex App to this Ollama model.",
+      action: "app-use-model",
+      buttonLabel: current ? "Active" : "Switch",
+      disabled: !selectedName || current,
+    };
   }
 
   function sectionLabel(label, count) {
@@ -208,7 +242,7 @@
     return " · " + state.packageVersion.split("+")[0];
   }
 
-  function visibleCodexModels() {
+  function codexModelRows() {
     const activeModel = state.status.currentCodexModel || "Unknown";
     const isOllama = Boolean(state.status.currentUsesOllama);
     const previousModel = state.status.previousCodexModel || "Codex built-in model selector";
@@ -223,12 +257,16 @@
         defaultReasoningLevel: null,
       });
     }
-    return filteredModels(rows.map((model) => ({
+    return rows.map((model) => ({
       name: model.name,
       displayName: model.displayName || model.name,
       description: model.description || "Codex model",
       meta: codexModelMeta(model),
-    })));
+    }));
+  }
+
+  function visibleCodexModels() {
+    return filteredModels(codexModelRows());
   }
 
   function renderCodexModels(codexModels) {
@@ -242,16 +280,17 @@
 
   function renderCodexModel(model) {
     const active = !state.status.currentUsesOllama && model.name === state.status.currentCodexModel;
+    const selected = model.name === state.selectedModel;
     const badges = [];
     if (active) badges.push("Active");
     else if (state.status.currentUsesOllama) badges.push("Restores");
     else badges.push("Codex");
     return [
-      '<article class="model codex-profile' + (active ? " selected active" : "") + '" role="listitem">',
-      '<div class="model-main passive">',
+      '<article class="model codex-profile' + (selected || active ? " selected" : "") + (active ? " active" : "") + '" role="listitem">',
+      '<button class="model-main passive" type="button" data-select-model="' + attr(model.name) + '">',
       '<span><span class="model-title"><strong>' + text(model.displayName || model.name) + '</strong>' + badges.map(badge).join("") + '</span><span class="subtle">' + text(codexModelDescription(model, active)) + '</span></span>',
       '<span class="subtle">' + text(model.meta || "Codex") + '</span>',
-      '</div>',
+      '</button>',
       active ? '<button class="model-use" type="button" disabled>Active</button>' : '<button class="model-use" type="button" data-use-codex-model="' + attr(model.name) + '">Switch</button>',
       '</article>',
     ].join("");
@@ -376,6 +415,9 @@
       }
       if (action === "app-use-model") {
         button.addEventListener("click", () => runAction("app-use-model", false, undefined, true));
+      }
+      if (action === "app-use-codex-model") {
+        button.addEventListener("click", () => runAction("app-use-codex-model", false, state.selectedModel, true));
       }
     });
     app.querySelectorAll("[data-select-model]").forEach((button) => {
