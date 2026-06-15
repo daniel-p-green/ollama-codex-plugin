@@ -1,10 +1,10 @@
 :root {
   color-scheme: light;
-  --bg: #fffdfa;
-  --ink: #171717;
-  --muted: #615c55;
-  --line: #ded6ca;
-  --soft: #f4efe7;
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #5f6368;
+  --line: #e5e5e5;
+  --soft: #f7f7f7;
   --black: #111111;
   --ok: #287d3c;
   --warn: #9a5b00;
@@ -55,7 +55,11 @@ input {
 .logo {
   width: 42px;
   height: 42px;
+  border: 1px solid var(--line);
   border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+  padding: 5px;
 }
 
 .eyebrow,
@@ -91,7 +95,7 @@ h2 {
 .panel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--bg);
+  background: #fff;
 }
 
 .card {
@@ -149,6 +153,8 @@ input[type="text"] {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 9px 10px;
+  background: #fff;
+  color: var(--ink);
 }
 
 button {
@@ -228,7 +234,7 @@ pre {
   border-radius: 8px;
   padding: 10px;
   background: #111;
-  color: #f8f4ea;
+  color: #f7f7f7;
   white-space: pre-wrap;
   font-size: 12px;
   line-height: 1.4;

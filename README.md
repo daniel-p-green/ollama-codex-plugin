@@ -8,15 +8,15 @@
 [![Release](https://img.shields.io/github/v/release/daniel-p-green/ollama-codex-plugin)](https://github.com/daniel-p-green/ollama-codex-plugin/releases)
 [![License](https://img.shields.io/github/license/daniel-p-green/ollama-codex-plugin)](LICENSE)
 
-The missing visual control panel for Ollama in Codex.
+The missing visual control panel for Ollama in the Codex Mac app.
 
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
-This plugin solves that by giving Ollama a visual, reversible home inside Codex. Install it from the Codex plugin GUI, open the in-chat control panel, pick a local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
+This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat control panel, pick a local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
 
 It is intentionally thin. The plugin does not hand-edit Codex config files. It delegates to Ollama's official commands, keeps Codex App and Codex CLI state separate, and makes restore explicit.
 
-Use it when you want a Codex plugin with an actual in-Codex visual panel for:
+Use it when you want a Codex plugin with an actual Codex Mac app visual panel for:
 
 - Opening an Ollama control panel directly inside Codex.
 - Setting up Codex App with local or Ollama Cloud models.
@@ -26,7 +26,7 @@ Use it when you want a Codex plugin with an actual in-Codex visual panel for:
 - Listing or pulling Ollama models from inside Codex.
 - Restoring Codex App or Codex CLI profiles safely and separately.
 
-In short: the easiest visual way to enable, use, and safely switch back from Ollama options in Codex.
+In short: the easiest visual way to enable, use, and safely switch back from Ollama options in Codex, within the plugin surface Codex exposes today.
 
 Official Ollama docs:
 
@@ -65,7 +65,9 @@ See [docs/demo.md](docs/demo.md) for a fuller dry-run demo and [docs/share.md](d
 
 ## GUI Experience
 
-After install, `/ollama-codex-panel` renders an MCP-powered control panel inside Codex. It is the primary GUI for the plugin.
+After install, `/ollama-codex-panel` renders an MCP-powered control panel inside the Codex Mac app chat. It is the primary GUI for the plugin.
+
+This does not replace Codex's built-in OpenAI model selector. Current Codex plugin metadata supports plugin cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets; this plugin uses that native in-chat widget surface for Ollama model actions.
 
 The panel shows:
 
@@ -281,6 +283,8 @@ If the status command reports the Ollama HTTP API is not reachable, start Ollama
 ollama serve
 ```
 
+If you reinstall or update the plugin while a Codex thread is already open, start a fresh Codex thread before testing the panel again. Active threads can keep MCP tool handles from the previous cache-busted plugin path until the thread is recreated.
+
 ## Validate
 
 Run the repo validation script:
@@ -295,7 +299,7 @@ Then reinstall from the local marketplace:
 codex plugin add ollama-codex@ollama-codex-local
 ```
 
-Open a new Codex thread to pick up updated skills and commands.
+Open a new Codex thread to pick up updated skills, commands, and MCP widget tools.
 
 ## Proof
 

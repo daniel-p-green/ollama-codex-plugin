@@ -23,7 +23,7 @@ let cachedMcpAppsGlobalScript = "";
 
 const server = new McpServer(
   {
-    name: "ollama-codex",
+    name: "ollama_codex",
     version: manifest.version,
   },
   {
@@ -314,9 +314,10 @@ function widgetMetadata({ description }) {
 }
 
 function inlineWidget({ html, css, js }) {
+  const logo = svgDataUri(readText("assets", "logo.svg"));
   const merged = html
     .replace("/* __OLLAMA_CODEX_WIDGET_CSS__ */", css)
-    .replace("/* __OLLAMA_CODEX_WIDGET_JS__ */", js);
+    .replace("/* __OLLAMA_CODEX_WIDGET_JS__ */", js.replace("__OLLAMA_CODEX_LOGO_DATA_URI__", logo));
   const bridge = [
     '<script id="ollamaCodexMcpAppsBundle">',
     escapeInlineScript(mcpAppsGlobalScript()),
@@ -330,6 +331,10 @@ function inlineWidget({ html, css, js }) {
 
 function readText(...parts) {
   return readFileSync(join(pluginRoot, ...parts), "utf8");
+}
+
+function svgDataUri(source) {
+  return `data:image/svg+xml;base64,${Buffer.from(source).toString("base64")}`;
 }
 
 function mcpAppsGlobalScript() {

@@ -42,7 +42,7 @@
     app.innerHTML = [
       '<section class="header">',
       '<div class="brand">',
-      '<img class="logo" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%23111%22/%3E%3Cpath d=%22M20 43V25c0-7 5-12 12-12s12 5 12 12v18h-6V25c0-4-2-6-6-6s-6 2-6 6v18h-6Z%22 fill=%22%23fff%22/%3E%3Cpath d=%22M18 43h28v6H18z%22 fill=%22%23fff%22/%3E%3C/svg%3E" alt="" />',
+      '<img class="logo" src="__OLLAMA_CODEX_LOGO_DATA_URI__" alt="" />',
       '<div><p class="eyebrow">Ollama for Codex</p><h1>Control Panel</h1></div>',
       '</div>',
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',

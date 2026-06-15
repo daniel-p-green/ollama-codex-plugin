@@ -112,13 +112,15 @@ def validate_manifest() -> None:
         if not interface.get(key):
             fail(f"plugin interface missing {key}")
     prompts = interface.get("defaultPrompt")
-    if not isinstance(prompts, list) or len(prompts) < 5:
-        fail("plugin interface must include production starter prompts")
+    if not isinstance(prompts, list) or len(prompts) != 3:
+        fail("plugin interface must include exactly three starter prompts")
     for asset_key in ("composerIcon", "logo"):
         asset = PLUGIN / interface[asset_key]
         require_file(asset)
     if "Codex CLI" not in data.get("description", ""):
         fail("plugin description must cover Codex CLI")
+    if data.get("mcpServers") != "./.mcp.json":
+        fail("plugin manifest must declare mcpServers")
     if "control panel" not in interface.get("longDescription", ""):
         fail("plugin longDescription must describe the visual control panel")
     ok("plugin manifest")
@@ -184,9 +186,9 @@ def validate_panel() -> None:
     require_file(MCP_CONFIG)
     require_file(MCP_SERVER)
     mcp = load_json(MCP_CONFIG)
-    server = mcp.get("mcpServers", {}).get("ollama-codex")
+    server = mcp.get("mcpServers", {}).get("ollama_codex")
     if not isinstance(server, dict):
-        fail(".mcp.json must register ollama-codex server")
+        fail(".mcp.json must register ollama_codex server")
     if server.get("command") != "npx":
         fail("ollama-codex MCP server should start through npx dependency pins")
     args = server.get("args", [])
@@ -200,6 +202,8 @@ def validate_panel() -> None:
         "ui://widget/ollama-codex-control-panel.html",
         "text/html;profile=mcp-app",
         "ext-apps-app-with-deps.js",
+        "assets\", \"logo.svg",
+        "svgDataUri",
     ):
         if required not in server_text:
             fail(f"MCP server missing: {required}")
@@ -212,12 +216,25 @@ def validate_panel() -> None:
         require_file(path)
     html = (PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.html").read_text()
     js = (PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.js").read_text()
+    css = (PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.css").read_text()
     for required in ("Ollama for Codex control panel", "__OLLAMA_CODEX_WIDGET_CSS__", "__OLLAMA_CODEX_WIDGET_JS__"):
         if required not in html:
             fail(f"widget HTML missing: {required}")
-    for required in ("ollama_codex_status", "ollama_codex_models", "ollama_codex_action", "app-use-model", "cli-config"):
+    for required in (
+        "ollama_codex_status",
+        "ollama_codex_models",
+        "ollama_codex_action",
+        "app-use-model",
+        "cli-config",
+        "__OLLAMA_CODEX_LOGO_DATA_URI__",
+    ):
         if required not in js:
             fail(f"widget JS missing: {required}")
+    if "data:image/svg+xml,%3Csvg" in js:
+        fail("widget JS must not embed the old generic logo")
+    for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
+        if stale_color in css:
+            fail(f"widget CSS contains stale beige palette color: {stale_color}")
     ok("in-Codex visual control panel")
 
 
@@ -238,9 +255,11 @@ def validate_docs() -> None:
         "30-Second Install",
         "/ollama-codex-panel",
         "docs/romain-ready.md",
-        "The missing visual control panel for Ollama in Codex",
+        "The missing visual control panel for Ollama in the Codex Mac app",
         "Ollama can already work with Codex",
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
+        "inside the Codex Mac app chat",
+        "does not replace Codex's built-in OpenAI model selector",
     ):
         if required not in readme:
             fail(f"README missing Romain-ready marker: {required}")

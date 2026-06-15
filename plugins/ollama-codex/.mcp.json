@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "ollama-codex": {
+    "ollama_codex": {
       "title": "Ollama for Codex",
       "description": "Render and operate the Ollama for Codex in-app control panel.",
       "icons": [
