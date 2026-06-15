@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.8
+
+- Added Codex/OpenAI catalog rows to the in-Codex model switcher by reading Codex's visible model cache.
+- Kept Codex/OpenAI rows native/restore-oriented while preserving direct switch actions for Ollama models.
+
 ## 0.5.7
 
 - Reframed the in-Codex picker as a two-lane model switcher that shows Codex/OpenAI and Ollama options at the same time.

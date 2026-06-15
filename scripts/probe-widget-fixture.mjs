@@ -19,6 +19,22 @@ const openAiProfileHtml = renderFixture({
     codexInstalled: true,
     cliProfileConfigured: false,
   },
+  codexModels: {
+    models: [
+      {
+        name: "gpt-5.5",
+        displayName: "GPT-5.5",
+        description: "Frontier Codex model",
+        defaultReasoningLevel: "medium",
+      },
+      {
+        name: "gpt-5.4",
+        displayName: "GPT-5.4",
+        description: "Everyday Codex model",
+        defaultReasoningLevel: "medium",
+      },
+    ],
+  },
   recommendations: {
     models: [
       {
@@ -49,6 +65,8 @@ assertIncludes(openAiProfileHtml, "Model Switcher");
 assertIncludes(openAiProfileHtml, "OpenAI/Codex profile is active");
 assertIncludes(openAiProfileHtml, "Codex/OpenAI models");
 assertIncludes(openAiProfileHtml, "Use Codex's native selector for other Codex models.");
+assertIncludes(openAiProfileHtml, "GPT-5.4");
+assertIncludes(openAiProfileHtml, "reasoning medium");
 assertIncludes(openAiProfileHtml, "gpt-5.5");
 assertIncludes(openAiProfileHtml, "gpt-oss:20b");
 assertIncludes(openAiProfileHtml, "Configured");
@@ -75,6 +93,22 @@ const ollamaProfileHtml = renderFixture({
     codexInstalled: true,
     cliProfileConfigured: false,
   },
+  codexModels: {
+    models: [
+      {
+        name: "gpt-5.5",
+        displayName: "GPT-5.5",
+        description: "Frontier Codex model",
+        defaultReasoningLevel: "medium",
+      },
+      {
+        name: "gpt-5.4",
+        displayName: "GPT-5.4",
+        description: "Everyday Codex model",
+        defaultReasoningLevel: "medium",
+      },
+    ],
+  },
   recommendations: {
     models: [
       {
@@ -97,7 +131,8 @@ const ollamaProfileHtml = renderFixture({
 });
 
 assertIncludes(ollamaProfileHtml, "Codex/OpenAI models");
-assertIncludes(ollamaProfileHtml, "gpt-5.5");
+assertIncludes(ollamaProfileHtml, "GPT-5.5");
+assertIncludes(ollamaProfileHtml, "GPT-5.4");
 assertIncludes(ollamaProfileHtml, "Restore previous Codex profile to use Codex's native OpenAI model selector.");
 assertIncludes(ollamaProfileHtml, ">Restore</button>");
 assertIncludes(ollamaProfileHtml, ">Active</button>");
@@ -115,6 +150,16 @@ const filteredHtml = renderFixture({
     codexVersion: "codex-cli 0.137.0",
     codexInstalled: true,
     cliProfileConfigured: false,
+  },
+  codexModels: {
+    models: [
+      {
+        name: "gpt-5.5",
+        displayName: "GPT-5.5",
+        description: "Frontier Codex model",
+        defaultReasoningLevel: "medium",
+      },
+    ],
   },
   recommendations: {
     models: [

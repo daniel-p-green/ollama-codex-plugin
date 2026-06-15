@@ -43,12 +43,14 @@
 
   function hydrate(output) {
     const status = output.status || {};
+    const codexModels = output.codexModels || {};
     const models = output.models || {};
     const recommendations = output.recommendations || {};
     const recommendationModels = Array.isArray(recommendations.models) && recommendations.models.length ? recommendations.models : FALLBACK_RECOMMENDATIONS;
     return {
       selectedModel: String(output.selectedModel || status.appModel || recommendationModels[0]?.name || models.models?.[0]?.name || "gpt-oss:20b"),
       status,
+      codexModels: Array.isArray(codexModels.models) ? codexModels.models : [],
       models: Array.isArray(models.models) ? models.models : [],
       recommendations: recommendationModels,
       filterText: String(output.filterText || ""),
@@ -103,6 +105,7 @@
   function renderModels() {
     const localNames = new Set(state.models.map((model) => normalizeModelName(model.name)));
     const recommendationNames = new Set(state.recommendations.map((model) => normalizeModelName(model.name)));
+    const codexModels = visibleCodexModels();
     const recommendations = filteredModels(state.recommendations).map((model) => ({
       ...model,
       installed: localNames.has(normalizeModelName(model.name)),
@@ -111,7 +114,7 @@
     return [
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Codex App Models</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
-      renderCodexProfile(),
+      renderCodexModels(codexModels),
       '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
       '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Filter models" aria-label="Filter models" />',
       '<div class="model-group" aria-label="Recommended Ollama models">',
@@ -139,6 +142,7 @@
     return models.filter((model) => {
       const haystack = [
         model.name,
+        model.displayName,
         model.description,
         model.meta,
         model.id,
@@ -164,30 +168,67 @@
   function modelSummary() {
     const current = state.status.currentCodexModel || "unknown";
     const app = state.status.appModel || "not configured";
-    return "Codex/OpenAI and Ollama options side by side. Active: " + current + " / Ollama App: " + app;
+    return "Codex/OpenAI catalog and Ollama options side by side. Active: " + current + " / Ollama App: " + app;
   }
 
-  function renderCodexProfile() {
+  function visibleCodexModels() {
     const activeModel = state.status.currentCodexModel || "Unknown";
     const isOllama = Boolean(state.status.currentUsesOllama);
     const previousModel = state.status.previousCodexModel || "Codex built-in model selector";
-    const title = isOllama ? previousModel : activeModel;
-    const detail = isOllama
-      ? "Restore previous Codex profile to use Codex's native OpenAI model selector."
-      : "OpenAI/Codex profile is active. Use Codex's native selector for other Codex models.";
-    const meta = isOllama ? "native selector" : "active";
+    const byName = new Map(state.codexModels.map((model) => [normalizeModelName(model.name), model]));
+    const rows = state.codexModels.length ? state.codexModels.slice() : [];
+    const pinnedName = isOllama ? previousModel : activeModel;
+    if (pinnedName && !byName.has(normalizeModelName(pinnedName))) {
+      rows.unshift({
+        name: pinnedName,
+        displayName: pinnedName,
+        description: isOllama ? "Previous native Codex profile" : "Active native Codex model",
+        defaultReasoningLevel: null,
+      });
+    }
+    return filteredModels(rows.map((model) => ({
+      name: model.name,
+      displayName: model.displayName || model.name,
+      description: model.description || "Codex model",
+      meta: codexModelMeta(model),
+    })));
+  }
+
+  function renderCodexModels(codexModels) {
     return [
       '<div class="model-group" aria-label="Codex profile">',
-      sectionLabel("Codex/OpenAI models", 1),
-      '<article class="model codex-profile' + (!isOllama ? " selected" : "") + '" role="listitem">',
-      '<div class="model-main passive">',
-      '<span><span class="model-title"><strong>' + text(title) + '</strong>' + (!isOllama ? badge("Active") : badge("Restore")) + '</span><span class="subtle">' + text(detail) + '</span></span>',
-      '<span class="subtle">' + text(meta) + '</span>',
-      '</div>',
-      isOllama ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>Native</button>',
-      '</article>',
+      sectionLabel("Codex/OpenAI models", codexModels.length),
+      codexModels.length ? codexModels.map(renderCodexModel).join("") : renderEmptyModels(),
       '</div>',
     ].join("");
+  }
+
+  function renderCodexModel(model) {
+    const active = !state.status.currentUsesOllama && model.name === state.status.currentCodexModel;
+    const restoreTarget = Boolean(state.status.currentUsesOllama && model.name === state.status.previousCodexModel);
+    const badges = [];
+    if (active) badges.push("Active");
+    else if (restoreTarget) badges.push("Restore");
+    else badges.push("Native");
+    return [
+      '<article class="model codex-profile' + (active ? " selected active" : "") + '" role="listitem">',
+      '<div class="model-main passive">',
+      '<span><span class="model-title"><strong>' + text(model.displayName || model.name) + '</strong>' + badges.map(badge).join("") + '</span><span class="subtle">' + text(codexModelDescription(model, active, restoreTarget)) + '</span></span>',
+      '<span class="subtle">' + text(model.meta || "Codex") + '</span>',
+      '</div>',
+      restoreTarget ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>' + text(active ? "Active" : "Native") + '</button>',
+      '</article>',
+    ].join("");
+  }
+
+  function codexModelDescription(model, active, restoreTarget) {
+    if (restoreTarget) return "Restore previous Codex profile to use Codex's native OpenAI model selector.";
+    if (active) return "OpenAI/Codex profile is active. Use Codex's native selector for other Codex models.";
+    return model.description || "Available in Codex's native OpenAI model selector.";
+  }
+
+  function codexModelMeta(model) {
+    return model.defaultReasoningLevel ? "reasoning " + model.defaultReasoningLevel : "Codex";
   }
 
   function renderRecommendation(model) {

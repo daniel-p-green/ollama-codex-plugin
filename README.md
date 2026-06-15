@@ -12,14 +12,14 @@ The missing visual model switcher for Ollama in the Codex Mac app.
 
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
-This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, see a Codex/OpenAI lane and an Ollama lane at the same time, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
+This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, see a Codex/OpenAI lane and an Ollama lane at the same time, scan the actual Codex/OpenAI model catalog beside Ollama options, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
 
 It is intentionally thin. The plugin does not hand-edit Codex config files. It delegates to Ollama's official commands, keeps Codex App and Codex CLI state separate, and makes restore explicit.
 
 Use it when you want a Codex plugin with an actual Codex Mac app visual panel for:
 
 - Opening an Ollama model switcher directly inside Codex.
-- Seeing the current Codex/OpenAI profile and Ollama model choices in the same panel.
+- Seeing the actual Codex/OpenAI model catalog and Ollama model choices in the same panel.
 - Restoring the native Codex/OpenAI profile from the same place you switch into Ollama.
 - Setting up Codex App with local or Ollama Cloud models.
 - Switching Codex App to a specific Ollama model.
@@ -52,7 +52,7 @@ Open a new Codex thread, then start with the visual panel:
 /ollama-codex-panel
 ```
 
-The panel renders in chat and gives you a compact model switcher with a Codex/OpenAI lane and an Ollama lane at the same time. You can see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model.
+The panel renders in chat and gives you a compact model switcher with a Codex/OpenAI lane and an Ollama lane at the same time. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model.
 
 You can still use the command layer directly:
 
@@ -75,7 +75,7 @@ The panel shows:
 
 - Ollama install/version readiness, including the v0.24.0 Codex App minimum.
 - Ollama server reachability.
-- The Codex/OpenAI lane, including the active native model or the previous native profile available through restore.
+- The Codex/OpenAI lane, including the visible Codex model catalog, active native model, and the previous native profile available through restore.
 - The active Codex model from the Codex config.
 - The Ollama Codex App model from Ollama's integration config.
 - Ollama's recommended Codex models, including local and cloud options when available.

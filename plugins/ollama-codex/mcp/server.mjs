@@ -19,6 +19,7 @@ const wrapper = join(pluginRoot, "scripts", "ollama-codex.sh");
 const userHome = process.env.HOME || homedir();
 const codexHome = process.env.CODEX_HOME || join(userHome, ".codex");
 const codexConfigPath = join(codexHome, "config.toml");
+const codexModelsCachePath = join(codexHome, "models_cache.json");
 const ollamaConfigPath = join(userHome, ".ollama", "config.json");
 const codexAppBackupDir = join(userHome, ".ollama", "backup", "codex-app");
 const ollamaRecommendationsPath = join(userHome, ".ollama", "cache", "model-recommendations.json");
@@ -105,6 +106,7 @@ function registerTools() {
           widget: "ollama-codex-control-panel",
           selectedModel: String(input.model || status.appModel || recommendations.models[0]?.name || models.models[0]?.name || "gpt-oss:20b"),
           status,
+          codexModels: codexModelsPayload(),
           models,
           recommendations,
         },
@@ -261,6 +263,31 @@ function codexConfigPayload() {
   return parseCodexConfigText(text);
 }
 
+function codexModelsPayload() {
+  const data = readJson(codexModelsCachePath);
+  const models = Array.isArray(data?.models) ? data.models : [];
+  return {
+    source: "Codex model catalog",
+    fetchedAt: typeof data?.fetched_at === "string" ? data.fetched_at : null,
+    clientVersion: typeof data?.client_version === "string" ? data.client_version : null,
+    models: models
+      .filter((entry) => entry?.visibility === "list")
+      .map((entry) => ({
+        name: String(entry.slug || "").trim(),
+        displayName: String(entry.display_name || entry.slug || "").trim(),
+        description: String(entry.description || "Codex model").trim(),
+        defaultReasoningLevel: typeof entry.default_reasoning_level === "string" ? entry.default_reasoning_level : null,
+        priority: Number.isFinite(entry.priority) ? entry.priority : null,
+      }))
+      .filter((entry) => entry.name)
+      .sort((a, b) => {
+        const aPriority = Number.isFinite(a.priority) ? a.priority : 9999;
+        const bPriority = Number.isFinite(b.priority) ? b.priority : 9999;
+        return aPriority - bPriority || a.name.localeCompare(b.name);
+      }),
+  };
+}
+
 function latestCodexAppBackupPayload() {
   try {
     const candidates = readdirSync(codexAppBackupDir)
@@ -383,6 +410,7 @@ function summarizeWidget(data) {
     widget: data.widget,
     selectedModel: data.selectedModel,
     modelCount: data.models.models.length,
+    codexModelCount: data.codexModels.models.length,
     recommendationCount: data.recommendations.models.length,
     appModel: data.status.appModel,
     currentCodexModel: data.status.currentCodexModel,
