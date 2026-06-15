@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+
+- Hid the terminal-style result panel until an action runs so the default widget reads as a model picker first.
+
 ## 0.6.2
 
 - Made the in-Codex widget more selector-like by moving search to the top, grouping Codex/OpenAI and Ollama rows below it, and moving custom Ollama tags to a dedicated row.

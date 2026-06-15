@@ -281,6 +281,8 @@ def validate_panel() -> None:
         "confirmed: Boolean(confirmedOverride)",
         'runAction("pull-model", false, undefined, true)',
         "errorMessage(error)",
+        "result-panel",
+        "Command result",
     ):
         if required not in js:
             fail(f"widget JS missing: {required}")

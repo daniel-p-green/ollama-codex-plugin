@@ -90,6 +90,7 @@ The panel shows:
 - Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.
 - Direct `Switch` controls on Codex/OpenAI and Ollama rows, so the panel behaves like a model switcher rather than a command list.
 - Direct action buttons for setup, restore, pull, and CLI profile changes.
+- Command results appear only after an action runs, so the default panel stays focused on choosing a model.
 - Codex CLI install status.
 - Whether the generated Codex CLI Ollama profile/catalog exists.
 - Buttons for App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.

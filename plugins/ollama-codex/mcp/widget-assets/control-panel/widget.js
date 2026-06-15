@@ -325,9 +325,10 @@
   }
 
   function renderOutput() {
+    if (!state.busy && !state.lastCommand && state.output === "Ready.") return "";
     return [
-      '<section class="panel" aria-label="Command output">',
-      '<div class="panel-head"><div><h2>Output</h2><p class="subtle">' + text(state.lastCommand || "No command run yet.") + '</p></div></div>',
+      '<section class="panel result-panel" aria-label="Command result">',
+      '<div class="panel-head"><div><h2>Result</h2><p class="subtle">' + text(state.lastCommand || "Working") + '</p></div></div>',
       '<pre>' + text(state.busy ? "Working..." : state.output) + '</pre>',
       '</section>',
     ].join("");
@@ -369,6 +370,7 @@
   }
 
   async function refresh() {
+    state.lastCommand = "status";
     state.busy = true;
     render();
     try {
@@ -387,6 +389,7 @@
 
   async function listModels(shouldRender = true) {
     if (shouldRender) {
+      state.lastCommand = "list-models";
       state.busy = true;
       render();
     }
@@ -406,6 +409,7 @@
   async function runAction(action, dryRun, modelOverride, confirmedOverride) {
     const targetModel = modelOverride || state.selectedModel;
     if (modelOverride && action !== "app-use-codex-model") state.selectedModel = modelOverride;
+    state.lastCommand = dryRun ? action + " preview" : action;
     state.busy = true;
     render();
     try {

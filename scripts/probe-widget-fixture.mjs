@@ -59,12 +59,12 @@ const openAiProfileHtml = renderFixture({
     ],
   },
   selectedModel: "gpt-oss:20b",
-  packageVersion: "0.6.2+fixture",
+  packageVersion: "0.6.3+fixture",
   supportsNativeCodexSwitch: true,
 });
 
 assertIncludes(openAiProfileHtml, "Model Switcher");
-assertIncludes(openAiProfileHtml, "Ollama for Codex · 0.6.2");
+assertIncludes(openAiProfileHtml, "Ollama for Codex · 0.6.3");
 assertIncludes(openAiProfileHtml, "Choose Model");
 assertIncludes(openAiProfileHtml, "Search Codex or Ollama models");
 assertIncludes(openAiProfileHtml, "Use any Ollama tag");
@@ -86,6 +86,8 @@ assertIncludes(openAiProfileHtml, 'placeholder="Search Codex or Ollama models"')
 assertIncludes(openAiProfileHtml, 'data-use-model="gpt-oss:20b"');
 assertIncludes(openAiProfileHtml, "Installed");
 assertIncludes(openAiProfileHtml, '<span class="count">1</span>');
+assertNotIncludes(openAiProfileHtml, "Command result");
+assertNotIncludes(openAiProfileHtml, "No command run yet");
 assertNotIncludes(openAiProfileHtml, "local-gpt-oss");
 
 const ollamaProfileHtml = renderFixture({
