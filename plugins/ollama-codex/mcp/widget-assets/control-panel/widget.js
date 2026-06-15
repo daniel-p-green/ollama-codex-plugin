@@ -45,7 +45,6 @@
       output: "Ready.",
       lastCommand: "",
       busy: false,
-      confirmed: false,
     };
   }
 
@@ -142,7 +141,6 @@
       '<button class="secondary" type="button" data-action="preview">Preview Switch</button>',
       '<button class="danger" type="button" data-action="app-restore">Restore App</button>',
       '</div>',
-      renderConfirmation(),
       '<div class="panel-head" style="margin-top:18px"><div><h2>Codex CLI</h2><p class="subtle">Configure or restore the Ollama CLI profile.</p></div></div>',
       '<div class="actions two">',
       '<button type="button" data-action="cli-config">Configure CLI</button>',
@@ -150,10 +148,6 @@
       '</div>',
       '</section>',
     ].join("");
-  }
-
-  function renderConfirmation() {
-    return '<label class="confirm"><input id="confirmInput" type="checkbox" ' + (state.confirmed ? "checked" : "") + ' /> <span>Allow setup, restore, CLI restore, or pull actions that change local state. Model Use buttons are explicit switch actions.</span></label>';
   }
 
   function renderOutput() {
@@ -169,11 +163,11 @@
     app.querySelector('[data-action="refresh"]').addEventListener("click", refresh);
     app.querySelector('[data-action="list-models"]').addEventListener("click", listModels);
     app.querySelector('[data-action="preview"]').addEventListener("click", () => runAction("app-use-model", true));
-    app.querySelector('[data-action="pull-model"]').addEventListener("click", () => runAction("pull-model", false));
+    app.querySelector('[data-action="pull-model"]').addEventListener("click", () => runAction("pull-model", false, undefined, true));
     app.querySelectorAll("[data-action]").forEach((button) => {
       const action = button.getAttribute("data-action");
       if (["app-setup", "app-restore", "cli-config", "cli-restore"].includes(action)) {
-        button.addEventListener("click", () => runAction(action, false));
+        button.addEventListener("click", () => runAction(action, false, undefined, true));
       }
       if (action === "app-use-model") {
         button.addEventListener("click", () => runAction("app-use-model", false, undefined, true));
@@ -191,19 +185,21 @@
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
     });
-    app.querySelector("#confirmInput").addEventListener("change", (event) => {
-      state.confirmed = event.target.checked;
-    });
   }
 
   async function refresh() {
     state.busy = true;
     render();
-    const status = await callTool("ollama_codex_status", {});
-    state.status = unwrap(status);
-    await listModels(false);
-    state.output = state.status.output || "Status refreshed.";
-    state.lastCommand = "status";
+    try {
+      const status = await callTool("ollama_codex_status", {});
+      state.status = unwrap(status);
+      await listModels(false);
+      state.output = state.status.output || "Status refreshed.";
+      state.lastCommand = "status";
+    } catch (error) {
+      state.output = errorMessage(error);
+      state.lastCommand = "status failed";
+    }
     state.busy = false;
     render();
   }
@@ -213,10 +209,15 @@
       state.busy = true;
       render();
     }
-    const models = unwrap(await callTool("ollama_codex_models", {}));
-    state.models = models.models || [];
-    state.output = models.output || "Models refreshed.";
-    state.lastCommand = "list-models";
+    try {
+      const models = unwrap(await callTool("ollama_codex_models", {}));
+      state.models = models.models || [];
+      state.output = models.output || "Models refreshed.";
+      state.lastCommand = "list-models";
+    } catch (error) {
+      state.output = errorMessage(error);
+      state.lastCommand = "list-models failed";
+    }
     state.busy = false;
     render();
   }
@@ -225,14 +226,19 @@
     if (modelOverride) state.selectedModel = modelOverride;
     state.busy = true;
     render();
-    const result = unwrap(await callTool("ollama_codex_action", {
-      action,
-      model: state.selectedModel,
-      dryRun,
-      confirmed: Boolean(confirmedOverride || state.confirmed),
-    }));
-    state.lastCommand = result.command || action;
-    state.output = [result.stdout, result.stderr, result.error].filter(Boolean).join("\\n\\n") || JSON.stringify(result, null, 2);
+    try {
+      const result = unwrap(await callTool("ollama_codex_action", {
+        action,
+        model: state.selectedModel,
+        dryRun,
+        confirmed: Boolean(confirmedOverride),
+      }));
+      state.lastCommand = result.command || action;
+      state.output = [result.stdout, result.stderr, result.error].filter(Boolean).join("\\n\\n") || JSON.stringify(result, null, 2);
+    } catch (error) {
+      state.lastCommand = action + " failed";
+      state.output = errorMessage(error);
+    }
     state.busy = false;
     render();
   }
@@ -253,6 +259,11 @@
     if (window.ollamaCodexMcp && typeof window.ollamaCodexMcp.notifyResize === "function") {
       window.ollamaCodexMcp.notifyResize();
     }
+  }
+
+  function errorMessage(error) {
+    if (error instanceof Error && error.message) return error.message;
+    return String(error || "Unable to complete the Ollama Codex action.");
   }
 
   function attr(value) {

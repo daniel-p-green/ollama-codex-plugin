@@ -233,10 +233,15 @@ def validate_panel() -> None:
         "gpt-oss:120b-cloud",
         "Use in App",
         "confirmedOverride",
-        "Model Use buttons are explicit switch actions",
+        "confirmed: Boolean(confirmedOverride)",
+        'runAction("pull-model", false, undefined, true)',
+        "errorMessage(error)",
     ):
         if required not in js:
             fail(f"widget JS missing: {required}")
+    for removed in ("confirmInput", "confirmed: false"):
+        if removed in js:
+            fail(f"widget JS contains stale confirmation UI: {removed}")
     if "data:image/svg+xml,%3Csvg" in js:
         fail("widget JS must not embed the old generic logo")
     for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
@@ -270,6 +275,7 @@ def validate_docs() -> None:
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
+        "Direct non-dry-run MCP calls still require a confirmation flag",
     ):
         if required not in readme:
             fail(f"README missing Romain-ready marker: {required}")

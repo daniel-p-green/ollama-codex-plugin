@@ -56,7 +56,8 @@ try {
     "kimi-k2.6:cloud",
     "gpt-oss:120b-cloud",
     "Use in App",
-    "Model Use buttons are explicit switch actions",
+    "confirmed: Boolean(confirmedOverride)",
+    "errorMessage(error)",
   ]) {
     if (!widgetHtml.includes(required)) {
       throw new Error(`widget resource missing model switcher marker: ${required}`);

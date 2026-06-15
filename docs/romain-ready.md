@@ -15,7 +15,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - Codex plugin metadata includes an "Open the Ollama control panel" starter prompt.
 - `/ollama-codex-panel` renders a real MCP-powered visual control panel inside the Codex Mac app chat.
 - The panel shows readiness, local models, Ollama Cloud presets, direct model `Use` controls, App actions, CLI actions, and restore actions.
-- Model row `Use` controls are explicit App switch actions; setup, restore, pull, and CLI restore keep a separate local-state confirmation.
+- Model row `Use` controls switch Codex App to the chosen Ollama model; setup, restore, pull, and CLI restore are explicit panel actions.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
 - CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
