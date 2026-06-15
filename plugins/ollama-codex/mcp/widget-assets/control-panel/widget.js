@@ -90,7 +90,6 @@
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Switch Codex App Model</h2><p class="subtle">Choose a local model, pick a cloud preset, or type any Ollama tag.</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
       '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Use in App</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
-      renderConfirmation(),
       '<div class="model-group" aria-label="Ollama Cloud presets">',
       '<p class="section-label">Cloud presets</p>',
       CLOUD_MODELS.map(renderCloudPreset).join(""),
@@ -143,6 +142,7 @@
       '<button class="secondary" type="button" data-action="preview">Preview Switch</button>',
       '<button class="danger" type="button" data-action="app-restore">Restore App</button>',
       '</div>',
+      renderConfirmation(),
       '<div class="panel-head" style="margin-top:18px"><div><h2>Codex CLI</h2><p class="subtle">Configure or restore the Ollama CLI profile.</p></div></div>',
       '<div class="actions two">',
       '<button type="button" data-action="cli-config">Configure CLI</button>',
@@ -153,7 +153,7 @@
   }
 
   function renderConfirmation() {
-    return '<label class="confirm"><input id="confirmInput" type="checkbox" ' + (state.confirmed ? "checked" : "") + ' /> <span>Allow App switch actions that may update profile state or restart Codex.</span></label>';
+    return '<label class="confirm"><input id="confirmInput" type="checkbox" ' + (state.confirmed ? "checked" : "") + ' /> <span>Allow setup, restore, CLI restore, or pull actions that change local state. Model Use buttons are explicit switch actions.</span></label>';
   }
 
   function renderOutput() {
@@ -172,8 +172,11 @@
     app.querySelector('[data-action="pull-model"]').addEventListener("click", () => runAction("pull-model", false));
     app.querySelectorAll("[data-action]").forEach((button) => {
       const action = button.getAttribute("data-action");
-      if (["app-setup", "app-use-model", "app-restore", "cli-config", "cli-restore"].includes(action)) {
+      if (["app-setup", "app-restore", "cli-config", "cli-restore"].includes(action)) {
         button.addEventListener("click", () => runAction(action, false));
+      }
+      if (action === "app-use-model") {
+        button.addEventListener("click", () => runAction("app-use-model", false, undefined, true));
       }
     });
     app.querySelectorAll("[data-select-model]").forEach((button) => {
@@ -183,7 +186,7 @@
       });
     });
     app.querySelectorAll("[data-use-model]").forEach((button) => {
-      button.addEventListener("click", () => runAction("app-use-model", false, button.getAttribute("data-use-model")));
+      button.addEventListener("click", () => runAction("app-use-model", false, button.getAttribute("data-use-model"), true));
     });
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
@@ -218,7 +221,7 @@
     render();
   }
 
-  async function runAction(action, dryRun, modelOverride) {
+  async function runAction(action, dryRun, modelOverride, confirmedOverride) {
     if (modelOverride) state.selectedModel = modelOverride;
     state.busy = true;
     render();
@@ -226,7 +229,7 @@
       action,
       model: state.selectedModel,
       dryRun,
-      confirmed: state.confirmed,
+      confirmed: Boolean(confirmedOverride || state.confirmed),
     }));
     state.lastCommand = result.command || action;
     state.output = [result.stdout, result.stderr, result.error].filter(Boolean).join("\\n\\n") || JSON.stringify(result, null, 2);

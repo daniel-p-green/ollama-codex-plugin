@@ -232,6 +232,8 @@ def validate_panel() -> None:
         "kimi-k2.6:cloud",
         "gpt-oss:120b-cloud",
         "Use in App",
+        "confirmedOverride",
+        "Model Use buttons are explicit switch actions",
     ):
         if required not in js:
             fail(f"widget JS missing: {required}")
