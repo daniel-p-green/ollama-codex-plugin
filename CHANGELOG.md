@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.2
+
+- Added the primary `_meta.ui.resourceUri` app-widget contract to render results so Codex has the same UI mount signal on the tool response as on the tool descriptor.
+- Tightened the MCP probe so a render result that only returns JSON/output-template compatibility metadata is no longer accepted.
+
 ## 0.7.1
 
 - Improved narrow-pane model row readability so Codex/OpenAI model names, badges, metadata, and descriptions remain legible in the Codex side panel.

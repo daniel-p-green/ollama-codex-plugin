@@ -10,6 +10,8 @@
 
 The missing visual model switcher for Ollama in the Codex Mac app.
 
+> Current verification status: the plugin installs, validates, exposes `/ollama`, and serves an MCP app-widget resource from the installed Codex plugin cache. The visible in-chat GUI still requires live Codex host acceptance: open a fresh Codex thread and run `/ollama`. If Codex shows JSON/tool output instead of a widget card, the package is wired correctly but the current Codex host surface is not mounting repo-local MCP app widgets in that path yet.
+
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
 This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, search Codex/OpenAI and Ollama models from one picker, switch back to native Codex/OpenAI models, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
@@ -58,6 +60,8 @@ Open a new Codex thread, then start with the visual panel:
 The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, see the queued selection in the selected-model bar, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
 
 Fresh-thread check: the panel header should show the installed plugin version and the model summary should include `native Codex switching enabled`. If an already-open Codex thread does not show those markers after an upgrade, open a new thread so Codex reloads the plugin MCP server.
+
+If a fresh thread still shows JSON or a plain tool result instead of the panel, do not treat the visual GUI as accepted. The command layer and MCP tools can still work, but the Codex Mac app host has not mounted the widget surface for this plugin in that session/build.
 
 You can still use the command layer directly:
 

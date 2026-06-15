@@ -51,6 +51,8 @@ Expected visual evidence:
 - App setup, App restore, CLI config, CLI restore, model listing, and model pull actions are visible.
 - Command results stay hidden until an action runs.
 
+If Codex shows JSON, structured tool output, or a plain text result instead of a widget card, the visual GUI has not passed acceptance in that Codex build/session. That is true even if the MCP tool call succeeds. Treat the package as installed but the host visual surface as unproven or unavailable.
+
 Then run one non-restarting action from the panel, such as model listing or refresh.
 
 Expected action evidence:

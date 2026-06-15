@@ -44,6 +44,9 @@ try {
     name: "render_ollama_codex_panel",
     arguments: { model: "gemma4:latest" },
   });
+  if (rendered._meta?.ui?.resourceUri !== "ui://widget/ollama-codex-control-panel.html") {
+    throw new Error("render tool did not return the primary ui.resourceUri widget contract");
+  }
   if (rendered._meta?.["openai/outputTemplate"] !== "ui://widget/ollama-codex-control-panel.html") {
     throw new Error("render tool did not return the control panel widget template");
   }

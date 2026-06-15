@@ -440,6 +440,10 @@ function widgetResult({ message, data }) {
     content: [{ type: "text", text: message }],
     structuredContent: summarizeWidget(data),
     _meta: {
+      ui: {
+        resourceUri: WIDGET_URI,
+        visibility: ["model", "app"],
+      },
       "openai/outputTemplate": WIDGET_URI,
       widgetData: data,
     },
