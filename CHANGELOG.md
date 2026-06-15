@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+- Added `/ollama` as the short, primary entry point for opening the in-Codex model picker. `/ollama-codex-panel` remains available as the explicit long-form command.
+
 ## 0.6.3
 
 - Hid the terminal-style result panel until an action runs so the default widget reads as a model picker first.

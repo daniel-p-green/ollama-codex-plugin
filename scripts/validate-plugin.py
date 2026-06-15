@@ -22,6 +22,7 @@ WIDGET_FIXTURE_PROBE = ROOT / "scripts" / "probe-widget-fixture.mjs"
 WIDGET_PROOF_RENDERER = ROOT / "scripts" / "render-widget-proof.mjs"
 
 EXPECTED_COMMANDS = {
+    "ollama.md",
     "ollama-codex-status.md",
     "ollama-codex-panel.md",
     "ollama-codex-list-models.md",
@@ -323,6 +324,7 @@ def validate_docs() -> None:
         "plugins/ollama-codex/assets/logo.svg",
         "actions/workflows/validate.yml/badge.svg",
         "30-Second Install",
+        "/ollama",
         "/ollama-codex-panel",
         "docs/romain-ready.md",
         "The missing visual model switcher for Ollama in the Codex Mac app",

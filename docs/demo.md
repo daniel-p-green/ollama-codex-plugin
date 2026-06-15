@@ -14,6 +14,7 @@ codex plugin add ollama-codex@ollama-codex-local
 Open a new Codex thread and try:
 
 ```text
+/ollama
 /ollama-codex-panel
 /ollama-codex-status
 /ollama-codex-app-use-codex-model gpt-5.4

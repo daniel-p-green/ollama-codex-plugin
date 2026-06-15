@@ -50,8 +50,10 @@ codex plugin add ollama-codex@ollama-codex-local
 Open a new Codex thread, then start with the visual panel:
 
 ```text
-/ollama-codex-panel
+/ollama
 ```
+
+`/ollama-codex-panel` is also available as the explicit long-form command.
 
 The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
 
@@ -71,7 +73,7 @@ See [docs/demo.md](docs/demo.md) for a fuller dry-run demo and [docs/share.md](d
 
 ## GUI Experience
 
-After install, `/ollama-codex-panel` renders an MCP-powered model switcher inside the Codex Mac app chat. It is the primary GUI for the plugin.
+After install, `/ollama` renders an MCP-powered model switcher inside the Codex Mac app chat. It is the primary GUI for the plugin. `/ollama-codex-panel` remains available as the explicit long-form command.
 
 This does not replace Codex's built-in OpenAI model selector. Current Codex plugin metadata supports plugin cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets; this plugin uses that native in-chat widget surface for model actions. Codex still has one active provider profile at a time. The panel makes both catalogs visible together, then makes the profile switch visual: Ollama rows call `ollama launch codex-app`, while Codex/OpenAI rows restore away from an active Ollama profile when needed and set Codex's native `model` config key.
 
@@ -174,6 +176,7 @@ Open a new Codex thread so the plugin skill and slash commands are available.
 Status and model helpers:
 
 ```text
+/ollama
 /ollama-codex-panel
 /ollama-codex-status
 /ollama-codex-list-models
