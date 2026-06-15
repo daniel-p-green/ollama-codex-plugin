@@ -51,6 +51,11 @@ try {
   if (widgetHtml.includes("__OLLAMA_CODEX_LOGO_DATA_URI__")) {
     throw new Error("widget resource still contains the logo placeholder");
   }
+  for (const required of ["data-use-model", "kimi-k2.6:cloud", "gpt-oss:120b-cloud", "Use in App"]) {
+    if (!widgetHtml.includes(required)) {
+      throw new Error(`widget resource missing model switcher marker: ${required}`);
+    }
+  }
 
   const action = await client.callTool({
     name: "ollama_codex_action",

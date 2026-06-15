@@ -14,7 +14,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - One-command demo through `bash scripts/demo.sh`.
 - Codex plugin metadata includes an "Open the Ollama control panel" starter prompt.
 - `/ollama-codex-panel` renders a real MCP-powered visual control panel inside the Codex Mac app chat.
-- The panel shows readiness, local models, App actions, CLI actions, and restore actions.
+- The panel shows readiness, local models, Ollama Cloud presets, direct model `Use` controls, App actions, CLI actions, and restore actions.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
 - CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
@@ -42,6 +42,7 @@ Latest local checks performed during the Romain-ready pass:
 
 - The GUI is an MCP app widget rendered inside the Codex Mac app, not a separate browser page.
 - The plugin does not replace Codex's built-in OpenAI model selector; current plugin metadata exposes cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets.
+- The closest supported model-selector experience is the in-chat widget's direct model rows and cloud presets.
 - Configuration still runs through Ollama's official commands and the plugin's deterministic wrapper.
 - No silent restore on plugin disablement. Restore remains explicit.
 - No CI mutation of Codex App or Codex CLI profiles. CI uses validation and dry runs.

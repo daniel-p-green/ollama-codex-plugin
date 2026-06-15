@@ -64,10 +64,16 @@ input {
 
 .eyebrow,
 .subtle,
-.card p {
+.card p,
+.section-label {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.section-label {
+  font-weight: 600;
+  color: var(--ink);
 }
 
 h1,
@@ -195,9 +201,15 @@ button.danger {
 .models {
   display: grid;
   gap: 7px;
-  max-height: 220px;
+  max-height: 260px;
   margin-top: 10px;
   overflow: auto;
+}
+
+.model-group {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
 }
 
 .model {
@@ -205,9 +217,29 @@ button.danger {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   width: 100%;
-  border-color: var(--line);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   background: #fff;
   color: var(--ink);
+  text-align: left;
+}
+
+.model.selected {
+  border-color: var(--black);
+  box-shadow: inset 0 0 0 1px var(--black);
+}
+
+.model-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 9px 10px;
   text-align: left;
 }
 
@@ -215,6 +247,16 @@ button.danger {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.model-use {
+  align-self: stretch;
+  min-width: 58px;
+  border-width: 0 0 0 1px;
+  border-style: solid;
+  border-color: var(--line);
+  border-radius: 0;
+  padding: 0 10px;
 }
 
 .confirm {

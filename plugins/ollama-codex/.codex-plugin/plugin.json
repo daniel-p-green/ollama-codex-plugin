@@ -1,6 +1,6 @@
 {
   "name": "ollama-codex",
-  "version": "0.5.0+codex.20260615192134",
+  "version": "0.5.0+codex.20260615193324",
   "description": "An in-Codex visual control panel and command layer for configuring Codex App and Codex CLI with Ollama.",
   "author": {
     "name": "Daniel Green"
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Ollama for Codex",
     "shortDescription": "Use a Codex Mac app GUI to manage Ollama options for Codex.",
-    "longDescription": "Ollama can already work with Codex, but discovery is low and the command surface is tedious to remember. Ollama for Codex gives Ollama a visual, reversible home inside the Codex Mac app: an MCP-powered control panel, starter prompts, slash commands, status checks, dry runs, model helpers, and explicit restore flows. Open `/ollama-codex-panel` to render the panel in chat, inspect Ollama readiness, pick or pull a model, configure Codex App, configure Codex CLI, and restore either profile. For Codex App, the backend uses `ollama launch codex-app --yes`, switches to a local or Ollama Cloud model with `ollama launch codex-app --model <model> --yes`, and restores the previous App profile with `ollama launch codex-app --restore --yes`. For Codex CLI, it can create a non-launching `ollama-launch` profile for a chosen model, restore via `ollama launch codex --restore`, prepare terminal commands for `codex --oss`, use a specific local or cloud model with `codex --oss -m <model>`, or use the generated `ollama-launch` profile with `codex --profile ollama-launch`. The plugin preserves App/CLI profile separation, delegates Codex App configuration to Ollama, and requires explicit confirmation before actions that may restart Codex or restore profile state.",
+    "longDescription": "Ollama can already work with Codex, but discovery is low and the command surface is tedious to remember. Ollama for Codex gives Ollama a visual, reversible home inside the Codex Mac app: an MCP-powered model switcher and control panel, starter prompts, slash commands, status checks, dry runs, model helpers, and explicit restore flows. Open `/ollama-codex-panel` to render the panel in chat, inspect Ollama readiness, choose from local models or Ollama Cloud presets with direct Use controls, pull a model, configure Codex App, configure Codex CLI, and restore either profile. For Codex App, the backend uses `ollama launch codex-app --yes`, switches to a local or Ollama Cloud model with `ollama launch codex-app --model <model> --yes`, and restores the previous App profile with `ollama launch codex-app --restore --yes`. For Codex CLI, it can create a non-launching `ollama-launch` profile for a chosen model, restore via `ollama launch codex --restore`, prepare terminal commands for `codex --oss`, use a specific local or cloud model with `codex --oss -m <model>`, or use the generated `ollama-launch` profile with `codex --profile ollama-launch`. The plugin preserves App/CLI profile separation, delegates Codex App configuration to Ollama, and requires explicit confirmation before actions that may restart Codex or restore profile state.",
     "developerName": "Daniel Green",
     "category": "Developer Tools",
     "capabilities": [

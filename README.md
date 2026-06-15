@@ -50,7 +50,7 @@ Open a new Codex thread, then start with the visual panel:
 /ollama-codex-panel
 ```
 
-The panel renders in chat and gives you buttons for readiness checks, model selection, App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
+The panel renders in chat and gives you a compact model switcher with local models, Ollama Cloud presets, direct `Use` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls.
 
 You can still use the command layer directly:
 
@@ -74,6 +74,8 @@ The panel shows:
 - Ollama install/version readiness, including the v0.24.0 Codex App minimum.
 - Ollama server reachability.
 - Local Ollama models from `ollama ls`.
+- Ollama Cloud presets for fast App switching.
+- Direct `Use` controls on model rows, so the panel behaves like a model switcher rather than a command list.
 - Codex CLI install status.
 - Whether the generated Codex CLI Ollama profile/catalog exists.
 - Buttons for App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.

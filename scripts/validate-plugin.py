@@ -227,6 +227,11 @@ def validate_panel() -> None:
         "app-use-model",
         "cli-config",
         "__OLLAMA_CODEX_LOGO_DATA_URI__",
+        "CLOUD_MODELS",
+        "data-use-model",
+        "kimi-k2.6:cloud",
+        "gpt-oss:120b-cloud",
+        "Use in App",
     ):
         if required not in js:
             fail(f"widget JS missing: {required}")
@@ -235,6 +240,9 @@ def validate_panel() -> None:
     for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
         if stale_color in css:
             fail(f"widget CSS contains stale beige palette color: {stale_color}")
+    for required in (".model-use", ".model.selected", ".model-group"):
+        if required not in css:
+            fail(f"widget CSS missing model switcher style: {required}")
     ok("in-Codex visual control panel")
 
 

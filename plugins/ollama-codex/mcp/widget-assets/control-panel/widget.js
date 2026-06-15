@@ -1,6 +1,17 @@
 (function () {
   "use strict";
 
+  const CLOUD_MODELS = [
+    {
+      name: "kimi-k2.6:cloud",
+      description: "Ollama Cloud",
+    },
+    {
+      name: "gpt-oss:120b-cloud",
+      description: "Ollama Cloud",
+    },
+  ];
+
   const app = document.getElementById("app");
   let state = hydrate(readToolOutput());
 
@@ -77,31 +88,59 @@
   function renderModels() {
     return [
       '<section class="panel">',
-      '<div class="panel-head"><div><h2>Model</h2><p class="subtle">Pick a local model or type an Ollama Cloud tag.</p></div><button class="secondary" type="button" data-action="list-models">List</button></div>',
-      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="pull-model">Pull</button></div>',
+      '<div class="panel-head"><div><h2>Switch Codex App Model</h2><p class="subtle">Choose a local model, pick a cloud preset, or type any Ollama tag.</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
+      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Use in App</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
+      renderConfirmation(),
+      '<div class="model-group" aria-label="Ollama Cloud presets">',
+      '<p class="section-label">Cloud presets</p>',
+      CLOUD_MODELS.map(renderCloudPreset).join(""),
+      '</div>',
+      '<div class="model-group" aria-label="Local Ollama models">',
+      '<p class="section-label">Local models</p>',
       '<div class="models" role="list">',
       state.models.length ? state.models.map(renderModel).join("") : '<p class="subtle">No local models found. Type a cloud model tag or pull a model.</p>',
+      '</div>',
       '</div>',
       '</section>',
     ].join("");
   }
 
+  function renderCloudPreset(model) {
+    return modelRow({
+      name: model.name,
+      description: model.description,
+      meta: "cloud",
+    });
+  }
+
   function renderModel(model) {
+    return modelRow({
+      name: model.name,
+      description: model.id || "local model",
+      meta: model.size || "local",
+    });
+  }
+
+  function modelRow(model) {
+    const selected = model.name === state.selectedModel;
     return [
-      '<button class="model" type="button" data-model="' + attr(model.name) + '">',
-      '<span><strong>' + text(model.name) + '</strong><span class="subtle">' + text(model.id || "local model") + '</span></span>',
-      '<span class="subtle">' + text(model.size || "") + '</span>',
+      '<article class="model' + (selected ? " selected" : "") + '" role="listitem">',
+      '<button class="model-main" type="button" data-select-model="' + attr(model.name) + '">',
+      '<span><strong>' + text(model.name) + '</strong><span class="subtle">' + text(model.description) + '</span></span>',
+      '<span class="subtle">' + text(model.meta) + '</span>',
       '</button>',
+      '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '">Use</button>',
+      '</article>',
     ].join("");
   }
 
   function renderActions() {
     return [
       '<section class="panel">',
-      '<div class="panel-head"><div><h2>Codex App</h2><p class="subtle">Official Ollama launch commands. App actions may restart Codex.</p></div></div>',
+      '<div class="panel-head"><div><h2>Codex App</h2><p class="subtle">Official Ollama launch commands for setup and restore.</p></div></div>',
       '<div class="actions">',
       '<button type="button" data-action="app-setup">Set Up App</button>',
-      '<button type="button" data-action="app-use-model">Use Model</button>',
+      '<button class="secondary" type="button" data-action="preview">Preview Switch</button>',
       '<button class="danger" type="button" data-action="app-restore">Restore App</button>',
       '</div>',
       '<div class="panel-head" style="margin-top:18px"><div><h2>Codex CLI</h2><p class="subtle">Configure or restore the Ollama CLI profile.</p></div></div>',
@@ -109,10 +148,12 @@
       '<button type="button" data-action="cli-config">Configure CLI</button>',
       '<button class="danger" type="button" data-action="cli-restore">Restore CLI</button>',
       '</div>',
-      '<label class="confirm"><input id="confirmInput" type="checkbox" ' + (state.confirmed ? "checked" : "") + ' /> <span>I understand selected actions may change Codex profile state or restart Codex.</span></label>',
-      '<button class="secondary" type="button" data-action="preview">Preview Selected Action</button>',
       '</section>',
     ].join("");
+  }
+
+  function renderConfirmation() {
+    return '<label class="confirm"><input id="confirmInput" type="checkbox" ' + (state.confirmed ? "checked" : "") + ' /> <span>Allow App switch actions that may update profile state or restart Codex.</span></label>';
   }
 
   function renderOutput() {
@@ -135,11 +176,14 @@
         button.addEventListener("click", () => runAction(action, false));
       }
     });
-    app.querySelectorAll("[data-model]").forEach((button) => {
+    app.querySelectorAll("[data-select-model]").forEach((button) => {
       button.addEventListener("click", () => {
-        state.selectedModel = button.getAttribute("data-model");
+        state.selectedModel = button.getAttribute("data-select-model");
         render();
       });
+    });
+    app.querySelectorAll("[data-use-model]").forEach((button) => {
+      button.addEventListener("click", () => runAction("app-use-model", false, button.getAttribute("data-use-model")));
     });
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
@@ -174,7 +218,8 @@
     render();
   }
 
-  async function runAction(action, dryRun) {
+  async function runAction(action, dryRun, modelOverride) {
+    if (modelOverride) state.selectedModel = modelOverride;
     state.busy = true;
     render();
     const result = unwrap(await callTool("ollama_codex_action", {
