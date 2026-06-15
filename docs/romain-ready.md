@@ -5,7 +5,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 ## Ready Signals
 
 - The README first screen clearly frames the problem: Ollama already works with Codex, but most people do not know that and using it is tedious.
-- The README states the product answer: the easiest visual way to see the actual Codex/OpenAI model catalog, enable Ollama, use Ollama models, and safely switch back inside the Codex Mac app, within the plugin surface Codex exposes today.
+- The README states the product answer: the easiest visual way to see Codex/OpenAI and Ollama model options available together, enable Ollama, use Ollama models, and safely switch back inside the Codex Mac app, within the plugin surface Codex exposes today.
 - Public GitHub repo with a clear README and install path.
 - Release tag and changelog.
 - MIT license.
@@ -45,7 +45,7 @@ Latest local checks performed during the Romain-ready pass:
 - The GUI is an MCP app widget rendered inside the Codex Mac app, not a separate browser page.
 - The plugin does not replace Codex's built-in OpenAI model selector; current plugin metadata exposes cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets.
 - The closest supported model-selector experience is the in-chat widget's side-by-side Codex/OpenAI catalog rows plus recommended/local Ollama model rows.
-- Codex has one active provider profile at a time; the plugin makes switching providers visual rather than claiming Codex supports per-model providers in one native picker.
+- Codex has one active provider profile at a time; the plugin makes both catalogs visible together and switching providers visual rather than claiming Codex supports per-model providers in one native picker.
 - Ollama configuration still runs through Ollama's official commands. Native Codex/OpenAI row switching uses Codex's documented `model` config key with a backup.
 - No silent restore on plugin disablement. Restore remains explicit.
 - No CI mutation of Codex App or Codex CLI profiles. CI uses validation and dry runs.

@@ -171,7 +171,7 @@
     const current = state.status.currentCodexModel || "unknown";
     const app = state.status.appModel || "not configured";
     const nativeSwitch = state.supportsNativeCodexSwitch ? "native Codex switching enabled" : "native Codex switching unavailable";
-    return "Codex/OpenAI catalog and Ollama choices in one panel. " + nativeSwitch + ". Active: " + current + " / Ollama App: " + app;
+    return "Codex/OpenAI and Ollama models are visible together. " + nativeSwitch + ". One active provider profile at a time. Active: " + current + " / Ollama App: " + app;
   }
 
   function versionLabel() {

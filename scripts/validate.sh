@@ -10,8 +10,10 @@ python3 scripts/validate-plugin.py
 bash -n "$WRAPPER"
 node --check plugins/ollama-codex/mcp/server.mjs
 node --check plugins/ollama-codex/mcp/widget-assets/control-panel/widget.js
+node --check scripts/render-widget-proof.mjs
 node scripts/probe-mcp.mjs
 node scripts/probe-widget-fixture.mjs
+node scripts/render-widget-proof.mjs >/dev/null
 
 dry_run() {
   bash "$WRAPPER" --dry-run "$@" >/dev/null

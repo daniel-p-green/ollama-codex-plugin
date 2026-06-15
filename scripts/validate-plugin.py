@@ -19,6 +19,7 @@ MCP_CONFIG = PLUGIN / ".mcp.json"
 MCP_SERVER = PLUGIN / "mcp" / "server.mjs"
 DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
 WIDGET_FIXTURE_PROBE = ROOT / "scripts" / "probe-widget-fixture.mjs"
+WIDGET_PROOF_RENDERER = ROOT / "scripts" / "render-widget-proof.mjs"
 
 EXPECTED_COMMANDS = {
     "ollama-codex-status.md",
@@ -161,6 +162,7 @@ def validate_wrapper() -> None:
     require_file(WRAPPER)
     require_file(DEMO_SCRIPT)
     require_file(WIDGET_FIXTURE_PROBE)
+    require_file(WIDGET_PROOF_RENDERER)
     mode = WRAPPER.stat().st_mode
     if not (mode & stat.S_IXUSR):
         fail("wrapper script must be executable")
@@ -170,6 +172,9 @@ def validate_wrapper() -> None:
     fixture_mode = WIDGET_FIXTURE_PROBE.stat().st_mode
     if not (fixture_mode & stat.S_IXUSR):
         fail("widget fixture probe must be executable")
+    proof_mode = WIDGET_PROOF_RENDERER.stat().st_mode
+    if not (proof_mode & stat.S_IXUSR):
+        fail("widget proof renderer must be executable")
     text = WRAPPER.read_text()
     for command in (
         "app-setup",
@@ -250,7 +255,8 @@ def validate_panel() -> None:
         "renderCodexModels",
         "Recommended for Codex",
         "Codex/OpenAI models",
-        "Codex/OpenAI catalog",
+        "Codex/OpenAI and Ollama models are visible together",
+        "One active provider profile at a time",
         "data-use-codex-model",
         "versionLabel",
         "native Codex switching enabled",
@@ -288,6 +294,10 @@ def validate_panel() -> None:
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     fixture_text = WIDGET_FIXTURE_PROBE.read_text()
+    proof_text = WIDGET_PROOF_RENDERER.read_text()
+    for required in ("packageVersion", "supportsNativeCodexSwitch", "GPT-5.5", "gpt-oss:20b", "kimi-k2.6:cloud"):
+        if required not in proof_text:
+            fail(f"widget proof renderer missing: {required}")
     for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "GPT-5.4", "Switches back to Codex/OpenAI", "data-use-codex-model", "filterText", "Installed", "local-gpt-oss", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
@@ -313,13 +323,13 @@ def validate_docs() -> None:
         "docs/romain-ready.md",
         "The missing visual model switcher for Ollama in the Codex Mac app",
         "Ollama can already work with Codex",
-        "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
+        "the easiest visual way to make Codex/OpenAI and Ollama model options available together in Codex",
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
         "one active provider profile at a time",
         "app-use-codex-model",
         "timestamped backup",
-        "Codex/OpenAI lane and an Ollama lane at the same time",
+        "Codex/OpenAI models and Ollama models visible at the same time",
         "actual Codex/OpenAI model catalog",
         "see the active Codex/OpenAI profile and Ollama options side by side",
         "Active and configured badges",

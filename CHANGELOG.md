@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1
+
+- Made the model switcher copy explicit that Codex/OpenAI and Ollama models are visible together while Codex still has one active provider profile at a time.
+- Added a reusable widget proof renderer for visual validation of the in-Codex model switcher fixture.
+
 ## 0.6.0
 
 - Added native Codex/OpenAI row switching from the in-Codex panel with `app-use-codex-model <model>`.

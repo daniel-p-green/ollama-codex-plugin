@@ -1,8 +1,10 @@
 .DS_Store
 .codex/
 .claude/
+.playwright-mcp/
 node_modules/
 *.log
 tmp/
 dist/
 coverage/
+ollama-codex-widget-proof*.png

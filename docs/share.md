@@ -17,4 +17,4 @@ https://github.com/daniel-p-green/ollama-codex-plugin
 
 ## One-Liner
 
-Ollama for Codex: the easiest visual way to enable, use, and safely switch back from Ollama options in Codex.
+Ollama for Codex: the easiest visual way to see Codex/OpenAI and Ollama model options together in Codex, then switch explicitly and reversibly.
