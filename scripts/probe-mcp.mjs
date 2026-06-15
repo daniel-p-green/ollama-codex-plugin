@@ -25,6 +25,19 @@ try {
       throw new Error(`missing MCP tool: ${required}`);
     }
   }
+  const actionTool = tools.tools.find((tool) => tool.name === "ollama_codex_action");
+  const actionEnum = actionTool?.inputSchema?.properties?.action?.enum || [];
+  for (const requiredAction of [
+    "app-use-model",
+    "app-use-codex-model",
+    "app-restore",
+    "cli-config",
+    "pull-model",
+  ]) {
+    if (!actionEnum.includes(requiredAction)) {
+      throw new Error(`MCP action schema missing: ${requiredAction}`);
+    }
+  }
 
   const rendered = await client.callTool({
     name: "render_ollama_codex_panel",
