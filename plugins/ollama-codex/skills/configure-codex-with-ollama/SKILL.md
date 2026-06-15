@@ -1,7 +1,7 @@
 ---
 name: configure-codex-with-ollama
-description: This skill should be used when the user asks to "set up Codex App with Ollama", "configure Codex CLI with Ollama", "use Ollama with Codex", "switch Codex App to an Ollama model", "run Codex with a local model", "run Codex with an Ollama Cloud model", "restore Codex after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`, `ollama launch codex`, `codex --oss`, or `codex --profile ollama-launch`.
-version: 0.2.0
+description: This skill should be used when the user asks to "open the Ollama control panel", "set up Codex App with Ollama", "configure Codex CLI with Ollama", "use Ollama with Codex", "switch Codex App to an Ollama model", "run Codex with a local model", "run Codex with an Ollama Cloud model", "restore Codex after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`, `ollama launch codex`, `codex --oss`, or `codex --profile ollama-launch`.
+version: 0.3.0
 ---
 
 # Configure Codex With Ollama
@@ -19,6 +19,18 @@ Use the bundled wrapper for deterministic checks, dry-run support, and consisten
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
 ```
+
+## Visual Control Panel
+
+When the user asks for the GUI, visual panel, control panel, or easiest way to manage Ollama in Codex, launch the local panel:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh panel --port 17841 --open
+```
+
+The panel is the preferred user-facing surface. It runs on `127.0.0.1`, lists local models through the Ollama API, accepts typed cloud model tags, and uses the same wrapper for setup, model switching, restore, CLI config, and model pulls.
+
+Do not describe the plugin card or starter prompts as the full GUI. The GUI is the control panel served by `scripts/ollama-codex-panel.mjs`.
 
 ## Status And Discovery
 
@@ -70,7 +82,7 @@ Use `app-setup` for "Set up Codex App with Ollama".
 Use `app-use-model <model>` for "Switch Codex App to an Ollama model".
 Use `app-restore` for "Restore Codex App's previous profile".
 
-If Codex App is already open and Ollama prompts to restart it, surface that prompt and outcome. Do not claim the switch or restore completed unless the command completed.
+The wrapper passes Ollama's `--yes` flag for Codex App setup, model switching, and restore so the command can complete the restart/profile flow. Report that Codex may restart. Do not claim the switch or restore completed unless the command completed.
 
 ## Codex CLI Workflows
 

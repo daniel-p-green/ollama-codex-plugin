@@ -27,6 +27,7 @@ Supported quick setup:
 
 ```bash
 ollama launch codex-app
+ollama launch codex-app --yes
 ```
 
 Supported model selection:
@@ -34,12 +35,14 @@ Supported model selection:
 ```bash
 ollama launch codex-app --model kimi-k2.6:cloud
 ollama launch codex-app --model gemma4:31b
+ollama launch codex-app --model gemma4:31b --yes
 ```
 
 Supported restore:
 
 ```bash
 ollama launch codex-app --restore
+ollama launch codex-app --restore --yes
 ```
 
 Important App behavior:
@@ -51,6 +54,7 @@ Important App behavior:
 - Running with a model persists that model selection for the next Codex App launch.
 - Restore switches Codex App back to the profile used before `ollama launch codex-app`.
 - If Codex App is open during restore or model switching, Ollama may ask before restarting it.
+- The plugin wrapper uses `--yes` for App setup, model switching, and restore so a GUI command does not fail after partially changing profile state.
 - Before overwriting Codex App config files, Ollama saves backups under `~/.ollama/backup/codex-app/`.
 - On Windows, `~` resolves to the user's profile directory.
 

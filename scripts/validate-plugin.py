@@ -15,10 +15,12 @@ PLUGIN = ROOT / "plugins" / "ollama-codex"
 MANIFEST = PLUGIN / ".codex-plugin" / "plugin.json"
 MARKETPLACE = ROOT / ".agents" / "plugins" / "marketplace.json"
 WRAPPER = PLUGIN / "scripts" / "ollama-codex.sh"
+PANEL_SERVER = PLUGIN / "scripts" / "ollama-codex-panel.mjs"
 DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
 
 EXPECTED_COMMANDS = {
     "ollama-codex-status.md",
+    "ollama-codex-panel.md",
     "ollama-codex-list-models.md",
     "ollama-codex-pull-model.md",
     "ollama-codex-app-setup.md",
@@ -116,6 +118,8 @@ def validate_manifest() -> None:
         require_file(asset)
     if "Codex CLI" not in data.get("description", ""):
         fail("plugin description must cover Codex CLI")
+    if "control panel" not in interface.get("longDescription", ""):
+        fail("plugin longDescription must describe the visual control panel")
     ok("plugin manifest")
 
 
@@ -142,7 +146,7 @@ def validate_skill() -> None:
     if "This skill should be used when" not in fm:
         fail("skill description must use third-person trigger phrasing")
     text = skill.read_text()
-    for required in ("app-setup", "cli-config", "cli-run-model", "cli-restore"):
+    for required in ("panel", "app-setup", "cli-config", "cli-run-model", "cli-restore"):
         if required not in text:
             fail(f"skill missing workflow: {required}")
     ok("skill metadata and routing")
@@ -150,6 +154,7 @@ def validate_skill() -> None:
 
 def validate_wrapper() -> None:
     require_file(WRAPPER)
+    require_file(PANEL_SERVER)
     require_file(DEMO_SCRIPT)
     mode = WRAPPER.stat().st_mode
     if not (mode & stat.S_IXUSR):
@@ -157,6 +162,9 @@ def validate_wrapper() -> None:
     demo_mode = DEMO_SCRIPT.stat().st_mode
     if not (demo_mode & stat.S_IXUSR):
         fail("demo script must be executable")
+    panel_mode = PANEL_SERVER.stat().st_mode
+    if not (panel_mode & stat.S_IXUSR):
+        fail("panel server must be executable")
     text = WRAPPER.read_text()
     for command in (
         "app-setup",
@@ -169,10 +177,33 @@ def validate_wrapper() -> None:
         "cli-restore",
         "list-models",
         "pull-model",
+        "panel",
     ):
         if command not in text:
             fail(f"wrapper missing command: {command}")
+    panel_text = PANEL_SERVER.read_text()
+    for required in ("createServer", "/api/status", "/api/models", "/api/action", "127.0.0.1"):
+        if required not in panel_text:
+            fail(f"panel server missing: {required}")
     ok("wrapper command surface")
+
+
+def validate_panel() -> None:
+    for path in (
+        PLUGIN / "panel" / "index.html",
+        PLUGIN / "panel" / "styles.css",
+        PLUGIN / "panel" / "app.js",
+    ):
+        require_file(path)
+    html = (PLUGIN / "panel" / "index.html").read_text()
+    js = (PLUGIN / "panel" / "app.js").read_text()
+    for required in ("Control Panel", "Codex App", "Codex CLI", "model-input"):
+        if required not in html:
+            fail(f"panel HTML missing: {required}")
+    for required in ("/api/status", "/api/models", "/api/action", "app-use-model", "cli-config"):
+        if required not in js:
+            fail(f"panel JS missing: {required}")
+    ok("visual control panel")
 
 
 def validate_docs() -> None:
@@ -190,8 +221,9 @@ def validate_docs() -> None:
         "plugins/ollama-codex/assets/logo.svg",
         "actions/workflows/validate.yml/badge.svg",
         "30-Second Install",
+        "/ollama-codex-panel",
         "docs/romain-ready.md",
-        "The missing Codex plugin GUI for Ollama",
+        "The missing visual control panel for Ollama in Codex",
         "Ollama can already work with Codex",
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
     ):
@@ -240,6 +272,7 @@ def main() -> None:
     validate_commands()
     validate_skill()
     validate_wrapper()
+    validate_panel()
     validate_docs()
     validate_references()
     validate_repo_hygiene()

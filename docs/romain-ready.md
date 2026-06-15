@@ -12,7 +12,9 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - GitHub Actions validation.
 - One-command local validation through `bash scripts/validate.sh`.
 - One-command demo through `bash scripts/demo.sh`.
-- Codex plugin metadata includes GUI starter prompts.
+- Codex plugin metadata includes an "Open the Ollama control panel" starter prompt.
+- `/ollama-codex-panel` opens a real localhost visual control panel in Codex's browser.
+- The panel shows readiness, local models, App actions, CLI actions, and restore actions.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
 - CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
@@ -26,6 +28,8 @@ Latest local checks performed during the Romain-ready pass:
 
 - `bash scripts/validate.sh` passed.
 - `bash scripts/demo.sh` passed.
+- `node --check plugins/ollama-codex/scripts/ollama-codex-panel.mjs` passed.
+- `bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run panel --port 17841` printed the panel server command.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh status` detected Ollama, Codex CLI, local models, and Codex App backup state.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b` wrote `~/.codex/ollama-launch.config.toml` and `~/.codex/model.json` without launching Codex.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore` removed the generated CLI profile/catalog.
@@ -33,12 +37,13 @@ Latest local checks performed during the Romain-ready pass:
 - `codex plugin add ollama-codex@ollama-codex-local` installed the current plugin version into the local Codex plugin cache.
 - Fresh-clone validation from GitHub passed.
 
-## Non-Goals
+## Product Boundary
 
-- No custom native settings panel. Configuration runs through Codex plugin prompts, slash commands, and Ollama's official commands.
+- The GUI is a localhost control panel opened from the Codex plugin, not a native Codex settings pane.
+- Configuration still runs through Ollama's official commands and the plugin's deterministic wrapper.
 - No silent restore on plugin disablement. Restore remains explicit.
 - No CI mutation of Codex App or Codex CLI profiles. CI uses validation and dry runs.
 
 ## Remaining Manual Check
 
-The only remaining manual proof is a real Codex plugin GUI screenshot or short screen recording after opening the plugin card. The package itself is installed and validated, but app-level visual inspection is intentionally separate from repository validation.
+The remaining manual proof is a short screen recording of the panel opened from a fresh Codex install, with dry-run App/CLI actions and one confirmed non-restarting action such as model listing.

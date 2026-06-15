@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+- Added a real localhost visual control panel for Ollama in Codex, served by the plugin and opened with `/ollama-codex-panel`.
+- Added model listing, model pull, readiness checks, App setup/model/restore actions, and CLI config/restore actions to the panel.
+- Updated the README and plugin card so “GUI” means the control panel, not only starter prompts and slash commands.
+
+## 0.3.3
+
+- Fixed Codex App setup, model switching, and restore so plugin commands pass Ollama's `--yes` confirmation flag and complete the intended restart/profile flow.
+- Updated docs, dry-run output, and skill guidance to show the confirmed App commands.
+
 ## 0.3.2
 
 - Hardened Codex CLI behavior after live testing showed `ollama launch codex --config --model <model>` can still launch an interactive Codex TUI after writing config.

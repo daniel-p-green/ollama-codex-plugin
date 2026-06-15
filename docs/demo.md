@@ -14,10 +14,17 @@ codex plugin add ollama-codex@ollama-codex-local
 Open a new Codex thread and try:
 
 ```text
+/ollama-codex-panel
 /ollama-codex-status
 /ollama-codex-app-use-model gemma4:31b
 /ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run-model gpt-oss:120b
+```
+
+The panel opens at:
+
+```text
+http://127.0.0.1:17841
 ```
 
 ## One-Command Local Proof
@@ -30,6 +37,7 @@ The demo runs:
 
 - Package validation.
 - Local readiness checks.
+- Panel server dry run.
 - Codex App dry runs.
 - Codex CLI dry runs.
 - Model helper dry runs.
@@ -37,10 +45,11 @@ The demo runs:
 ## Expected Dry-Run Shape
 
 ```text
-+ ollama launch codex-app
-+ ollama launch codex-app --model gemma4:31b
-+ ollama launch codex-app --model kimi-k2.6:cloud
-+ ollama launch codex-app --restore
++ node plugins/ollama-codex/scripts/ollama-codex-panel.mjs --port 17841
++ ollama launch codex-app --yes
++ ollama launch codex-app --model gemma4:31b --yes
++ ollama launch codex-app --model kimi-k2.6:cloud --yes
++ ollama launch codex-app --restore --yes
 + ollama launch codex
 [info] would write Codex CLI profile: ~/.codex/ollama-launch.config.toml
 [info] would write Codex CLI model catalog: ~/.codex/model.json
@@ -59,6 +68,7 @@ The demo runs:
 The demo intentionally avoids real setup and restore commands. Real commands change Codex App or Codex CLI profile state, so they remain explicit user actions:
 
 ```bash
+bash plugins/ollama-codex/scripts/ollama-codex.sh panel --port 17841 --open
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-setup
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-restore

@@ -14,6 +14,10 @@ echo "== local readiness =="
 bash "$WRAPPER" status
 
 echo
+echo "== visual panel dry run =="
+bash "$WRAPPER" --dry-run panel --port 17841
+
+echo
 echo "== safe App dry runs =="
 bash "$WRAPPER" --dry-run app-setup
 bash "$WRAPPER" --dry-run app-use-model gemma4:31b
