@@ -21,11 +21,7 @@ Open a new Codex thread and try:
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
-The panel opens at:
-
-```text
-http://127.0.0.1:17841
-```
+The panel renders directly in the Codex conversation.
 
 ## One-Command Local Proof
 
@@ -37,7 +33,7 @@ The demo runs:
 
 - Package validation.
 - Local readiness checks.
-- Panel server dry run.
+- In-Codex panel command routing.
 - Codex App dry runs.
 - Codex CLI dry runs.
 - Model helper dry runs.
@@ -45,7 +41,6 @@ The demo runs:
 ## Expected Dry-Run Shape
 
 ```text
-+ node plugins/ollama-codex/scripts/ollama-codex-panel.mjs --port 17841
 + ollama launch codex-app --yes
 + ollama launch codex-app --model gemma4:31b --yes
 + ollama launch codex-app --model kimi-k2.6:cloud --yes
@@ -68,7 +63,6 @@ The demo runs:
 The demo intentionally avoids real setup and restore commands. Real commands change Codex App or Codex CLI profile state, so they remain explicit user actions:
 
 ```bash
-bash plugins/ollama-codex/scripts/ollama-codex.sh panel --port 17841 --open
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-setup
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-restore

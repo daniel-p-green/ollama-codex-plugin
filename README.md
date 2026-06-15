@@ -12,13 +12,13 @@ The missing visual control panel for Ollama in Codex.
 
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
-This plugin solves that by giving Ollama a visual, reversible home in Codex. Install it from the Codex plugin GUI, open the local control panel in Codex's browser, pick a local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
+This plugin solves that by giving Ollama a visual, reversible home inside Codex. Install it from the Codex plugin GUI, open the in-chat control panel, pick a local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
 
 It is intentionally thin. The plugin does not hand-edit Codex config files. It delegates to Ollama's official commands, keeps Codex App and Codex CLI state separate, and makes restore explicit.
 
-Use it when you want a Codex plugin with an actual visual panel for:
+Use it when you want a Codex plugin with an actual in-Codex visual panel for:
 
-- Opening a localhost Ollama control panel from Codex.
+- Opening an Ollama control panel directly inside Codex.
 - Setting up Codex App with local or Ollama Cloud models.
 - Switching Codex App to a specific Ollama model.
 - Configuring a Codex CLI Ollama profile without launching a nested Codex session.
@@ -50,7 +50,7 @@ Open a new Codex thread, then start with the visual panel:
 /ollama-codex-panel
 ```
 
-The panel opens at `http://127.0.0.1:17841` and gives you buttons for readiness checks, model selection, App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
+The panel renders in chat and gives you buttons for readiness checks, model selection, App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
 
 You can still use the command layer directly:
 
@@ -65,13 +65,13 @@ See [docs/demo.md](docs/demo.md) for a fuller dry-run demo and [docs/share.md](d
 
 ## GUI Experience
 
-After install, `/ollama-codex-panel` starts a local control panel that runs on `127.0.0.1` and opens in Codex's browser. It is the primary GUI for the plugin.
+After install, `/ollama-codex-panel` renders an MCP-powered control panel inside Codex. It is the primary GUI for the plugin.
 
 The panel shows:
 
 - Ollama install/version readiness, including the v0.24.0 Codex App minimum.
 - Ollama server reachability.
-- Local Ollama models from the Ollama API.
+- Local Ollama models from `ollama ls`.
 - Codex CLI install status.
 - Whether the generated Codex CLI Ollama profile/catalog exists.
 - Buttons for App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
@@ -193,12 +193,6 @@ All commands route through one script:
 
 ```bash
 bash plugins/ollama-codex/scripts/ollama-codex.sh status
-```
-
-Visual panel:
-
-```bash
-bash plugins/ollama-codex/scripts/ollama-codex.sh panel --port 17841 --open
 ```
 
 Codex App:

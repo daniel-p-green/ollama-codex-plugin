@@ -4,8 +4,6 @@ set -uo pipefail
 MIN_OLLAMA_VERSION="0.24.0"
 OLLAMA_HOST_URL="${OLLAMA_HOST:-http://127.0.0.1:11434}"
 DRY_RUN=false
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-PLUGIN_ROOT="$(cd -- "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
 
 usage() {
   cat <<'USAGE'
@@ -28,9 +26,6 @@ Usage:
   # Ollama model helpers
   ollama-codex.sh [--dry-run] list-models
   ollama-codex.sh [--dry-run] pull-model <model>
-
-  # Visual control panel
-  ollama-codex.sh [--dry-run] panel [--port 17841] [--open]
 
 Backward-compatible aliases:
   setup              Alias for app-setup
@@ -484,13 +479,6 @@ case "$command_name" in
     require_exact_args "$command_name" 1 "$#"
     ensure_ollama || exit 1
     run_or_print ollama pull "$1"
-    ;;
-  panel)
-    if [[ "$DRY_RUN" == "true" ]]; then
-      run_or_print node "$PLUGIN_ROOT/scripts/ollama-codex-panel.mjs" "$@"
-    else
-      node "$PLUGIN_ROOT/scripts/ollama-codex-panel.mjs" "$@"
-    fi
     ;;
   *)
     error "unknown command: $command_name"

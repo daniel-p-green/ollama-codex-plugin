@@ -15,7 +15,8 @@ PLUGIN = ROOT / "plugins" / "ollama-codex"
 MANIFEST = PLUGIN / ".codex-plugin" / "plugin.json"
 MARKETPLACE = ROOT / ".agents" / "plugins" / "marketplace.json"
 WRAPPER = PLUGIN / "scripts" / "ollama-codex.sh"
-PANEL_SERVER = PLUGIN / "scripts" / "ollama-codex-panel.mjs"
+MCP_CONFIG = PLUGIN / ".mcp.json"
+MCP_SERVER = PLUGIN / "mcp" / "server.mjs"
 DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
 
 EXPECTED_COMMANDS = {
@@ -154,7 +155,6 @@ def validate_skill() -> None:
 
 def validate_wrapper() -> None:
     require_file(WRAPPER)
-    require_file(PANEL_SERVER)
     require_file(DEMO_SCRIPT)
     mode = WRAPPER.stat().st_mode
     if not (mode & stat.S_IXUSR):
@@ -162,9 +162,6 @@ def validate_wrapper() -> None:
     demo_mode = DEMO_SCRIPT.stat().st_mode
     if not (demo_mode & stat.S_IXUSR):
         fail("demo script must be executable")
-    panel_mode = PANEL_SERVER.stat().st_mode
-    if not (panel_mode & stat.S_IXUSR):
-        fail("panel server must be executable")
     text = WRAPPER.read_text()
     for command in (
         "app-setup",
@@ -177,33 +174,51 @@ def validate_wrapper() -> None:
         "cli-restore",
         "list-models",
         "pull-model",
-        "panel",
     ):
         if command not in text:
             fail(f"wrapper missing command: {command}")
-    panel_text = PANEL_SERVER.read_text()
-    for required in ("createServer", "/api/status", "/api/models", "/api/action", "127.0.0.1"):
-        if required not in panel_text:
-            fail(f"panel server missing: {required}")
     ok("wrapper command surface")
 
 
 def validate_panel() -> None:
+    require_file(MCP_CONFIG)
+    require_file(MCP_SERVER)
+    mcp = load_json(MCP_CONFIG)
+    server = mcp.get("mcpServers", {}).get("ollama-codex")
+    if not isinstance(server, dict):
+        fail(".mcp.json must register ollama-codex server")
+    if server.get("command") != "npx":
+        fail("ollama-codex MCP server should start through npx dependency pins")
+    args = server.get("args", [])
+    for required in ("@modelcontextprotocol/sdk@1.29.0", "zod@4.4.2", "./mcp/server.mjs"):
+        if required not in args:
+            fail(f".mcp.json missing MCP dependency/entrypoint: {required}")
+    server_text = MCP_SERVER.read_text()
+    for required in (
+        "render_ollama_codex_panel",
+        "ollama_codex_action",
+        "ui://widget/ollama-codex-control-panel.html",
+        "text/html;profile=mcp-app",
+        "ext-apps-app-with-deps.js",
+    ):
+        if required not in server_text:
+            fail(f"MCP server missing: {required}")
     for path in (
-        PLUGIN / "panel" / "index.html",
-        PLUGIN / "panel" / "styles.css",
-        PLUGIN / "panel" / "app.js",
+        PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.html",
+        PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.css",
+        PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.js",
+        PLUGIN / "mcp" / "vendor" / "ext-apps-app-with-deps.js",
     ):
         require_file(path)
-    html = (PLUGIN / "panel" / "index.html").read_text()
-    js = (PLUGIN / "panel" / "app.js").read_text()
-    for required in ("Control Panel", "Codex App", "Codex CLI", "model-input"):
+    html = (PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.html").read_text()
+    js = (PLUGIN / "mcp" / "widget-assets" / "control-panel" / "widget.js").read_text()
+    for required in ("Ollama for Codex control panel", "__OLLAMA_CODEX_WIDGET_CSS__", "__OLLAMA_CODEX_WIDGET_JS__"):
         if required not in html:
-            fail(f"panel HTML missing: {required}")
-    for required in ("/api/status", "/api/models", "/api/action", "app-use-model", "cli-config"):
+            fail(f"widget HTML missing: {required}")
+    for required in ("ollama_codex_status", "ollama_codex_models", "ollama_codex_action", "app-use-model", "cli-config"):
         if required not in js:
-            fail(f"panel JS missing: {required}")
-    ok("visual control panel")
+            fail(f"widget JS missing: {required}")
+    ok("in-Codex visual control panel")
 
 
 def validate_docs() -> None:

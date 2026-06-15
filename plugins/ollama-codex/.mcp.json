@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "ollama-codex": {
+      "title": "Ollama for Codex",
+      "description": "Render and operate the Ollama for Codex in-app control panel.",
+      "icons": [
+        {
+          "src": "./assets/icon.svg",
+          "mimeType": "image/svg+xml",
+          "sizes": [
+            "24x24"
+          ]
+        },
+        {
+          "src": "./assets/logo.svg",
+          "mimeType": "image/svg+xml",
+          "sizes": [
+            "256x256"
+          ]
+        }
+      ],
+      "cwd": ".",
+      "command": "npx",
+      "args": [
+        "-y",
+        "-p",
+        "@modelcontextprotocol/sdk@1.29.0",
+        "-p",
+        "zod@4.4.2",
+        "node",
+        "./mcp/server.mjs"
+      ]
+    }
+  }
+}

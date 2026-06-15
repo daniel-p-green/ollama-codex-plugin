@@ -22,15 +22,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
 
 ## Visual Control Panel
 
-When the user asks for the GUI, visual panel, control panel, or easiest way to manage Ollama in Codex, launch the local panel:
+When the user asks for the GUI, visual panel, control panel, or easiest way to manage Ollama in Codex, render the in-Codex MCP widget:
 
-```bash
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh panel --port 17841 --open
-```
+Use `mcp__plugin_ollama-codex_ollama-codex__render_ollama_codex_panel`.
 
-The panel is the preferred user-facing surface. It runs on `127.0.0.1`, lists local models through the Ollama API, accepts typed cloud model tags, and uses the same wrapper for setup, model switching, restore, CLI config, and model pulls.
+The panel is the preferred user-facing surface. It renders inside Codex, lists local models, accepts typed cloud model tags, and uses MCP tools backed by the same wrapper for setup, model switching, restore, CLI config, and model pulls.
 
-Do not describe the plugin card or starter prompts as the full GUI. The GUI is the control panel served by `scripts/ollama-codex-panel.mjs`.
+Do not describe the plugin card, starter prompts, or localhost browser panel as the full GUI. The GUI is the MCP app widget served by `mcp/server.mjs`.
 
 ## Status And Discovery
 

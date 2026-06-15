@@ -1,8 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+- Replaced the localhost browser panel with an MCP app widget that renders directly inside Codex.
+- Added a bundled MCP server with tools for rendering the panel, checking status, listing models, and running confirmed actions through the existing wrapper.
+- Updated `/ollama-codex-panel`, docs, and validation to target the in-Codex visual surface.
+
 ## 0.4.0
 
-- Added a real localhost visual control panel for Ollama in Codex, served by the plugin and opened with `/ollama-codex-panel`.
+- Added a localhost browser control panel spike for Ollama in Codex, served by the plugin and opened with `/ollama-codex-panel`. Superseded by the in-Codex MCP widget in 0.5.0.
 - Added model listing, model pull, readiness checks, App setup/model/restore actions, and CLI config/restore actions to the panel.
 - Updated the README and plugin card so “GUI” means the control panel, not only starter prompts and slash commands.
 

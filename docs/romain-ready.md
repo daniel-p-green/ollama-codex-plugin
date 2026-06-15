@@ -13,7 +13,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - One-command local validation through `bash scripts/validate.sh`.
 - One-command demo through `bash scripts/demo.sh`.
 - Codex plugin metadata includes an "Open the Ollama control panel" starter prompt.
-- `/ollama-codex-panel` opens a real localhost visual control panel in Codex's browser.
+- `/ollama-codex-panel` renders a real MCP-powered visual control panel inside Codex.
 - The panel shows readiness, local models, App actions, CLI actions, and restore actions.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
@@ -28,8 +28,9 @@ Latest local checks performed during the Romain-ready pass:
 
 - `bash scripts/validate.sh` passed.
 - `bash scripts/demo.sh` passed.
-- `node --check plugins/ollama-codex/scripts/ollama-codex-panel.mjs` passed.
-- `bash plugins/ollama-codex/scripts/ollama-codex.sh --dry-run panel --port 17841` printed the panel server command.
+- `node --check plugins/ollama-codex/mcp/server.mjs` passed.
+- MCP probe listed `render_ollama_codex_panel`, `ollama_codex_status`, `ollama_codex_models`, and `ollama_codex_action`.
+- MCP probe rendered the widget template `ui://widget/ollama-codex-control-panel.html`.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh status` detected Ollama, Codex CLI, local models, and Codex App backup state.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b` wrote `~/.codex/ollama-launch.config.toml` and `~/.codex/model.json` without launching Codex.
 - `bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore` removed the generated CLI profile/catalog.
@@ -39,7 +40,7 @@ Latest local checks performed during the Romain-ready pass:
 
 ## Product Boundary
 
-- The GUI is a localhost control panel opened from the Codex plugin, not a native Codex settings pane.
+- The GUI is an MCP app widget rendered inside Codex, not a separate browser page.
 - Configuration still runs through Ollama's official commands and the plugin's deterministic wrapper.
 - No silent restore on plugin disablement. Restore remains explicit.
 - No CI mutation of Codex App or Codex CLI profiles. CI uses validation and dry runs.
