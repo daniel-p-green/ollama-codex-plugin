@@ -48,6 +48,8 @@
     const recommendations = output.recommendations || {};
     const recommendationModels = Array.isArray(recommendations.models) && recommendations.models.length ? recommendations.models : FALLBACK_RECOMMENDATIONS;
     return {
+      packageVersion: String(output.packageVersion || ""),
+      supportsNativeCodexSwitch: Boolean(output.supportsNativeCodexSwitch),
       selectedModel: String(output.selectedModel || status.appModel || recommendationModels[0]?.name || models.models?.[0]?.name || "gpt-oss:20b"),
       status,
       codexModels: Array.isArray(codexModels.models) ? codexModels.models : [],
@@ -69,7 +71,7 @@
       '<section class="header">',
       '<div class="brand">',
       '<img class="logo" src="__OLLAMA_CODEX_LOGO_DATA_URI__" alt="" />',
-      '<div><p class="eyebrow">Ollama for Codex</p><h1>Unified Model Switcher</h1></div>',
+      '<div><p class="eyebrow">Ollama for Codex' + text(versionLabel()) + '</p><h1>Unified Model Switcher</h1></div>',
       '</div>',
       '<button class="secondary" type="button" data-action="refresh">Refresh</button>',
       '</section>',
@@ -168,7 +170,13 @@
   function modelSummary() {
     const current = state.status.currentCodexModel || "unknown";
     const app = state.status.appModel || "not configured";
-    return "Codex/OpenAI catalog and Ollama choices in one panel. Active: " + current + " / Ollama App: " + app;
+    const nativeSwitch = state.supportsNativeCodexSwitch ? "native Codex switching enabled" : "native Codex switching unavailable";
+    return "Codex/OpenAI catalog and Ollama choices in one panel. " + nativeSwitch + ". Active: " + current + " / Ollama App: " + app;
+  }
+
+  function versionLabel() {
+    if (!state.packageVersion) return "";
+    return " · " + state.packageVersion.split("+")[0];
   }
 
   function visibleCodexModels() {

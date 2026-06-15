@@ -220,6 +220,8 @@ def validate_panel() -> None:
         "codexModelsPayload",
         "models_cache.json",
         "codexModelCount",
+        "packageVersion",
+        "supportsNativeCodexSwitch",
     ):
         if required not in server_text:
             fail(f"MCP server missing: {required}")
@@ -250,6 +252,9 @@ def validate_panel() -> None:
         "Codex/OpenAI models",
         "Codex/OpenAI catalog",
         "data-use-codex-model",
+        "versionLabel",
+        "native Codex switching enabled",
+        "supportsNativeCodexSwitch",
         "Switches back to Codex/OpenAI",
         "visibleCodexModels",
         "codexModelDescription",

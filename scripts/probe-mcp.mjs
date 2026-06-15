@@ -48,6 +48,12 @@ try {
   if (!("recommendationCount" in (rendered.structuredContent || {}))) {
     throw new Error("render tool did not include Ollama recommendation summary");
   }
+  if (!rendered.structuredContent?.packageVersion) {
+    throw new Error("render tool did not include plugin package version");
+  }
+  if (rendered.structuredContent?.supportsNativeCodexSwitch !== true) {
+    throw new Error("render tool did not report native Codex switching support");
+  }
 
   const resources = await client.listResources();
   const resource = resources.resources.find((entry) => entry.uri === "ui://widget/ollama-codex-control-panel.html");
@@ -66,6 +72,8 @@ try {
   for (const required of [
     "data-use-model",
     "data-use-codex-model",
+    "supportsNativeCodexSwitch",
+    "native Codex switching enabled",
     "kimi-k2.6:cloud",
     "Recommended for Codex",
     "Codex/OpenAI models",

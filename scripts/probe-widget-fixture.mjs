@@ -59,9 +59,13 @@ const openAiProfileHtml = renderFixture({
     ],
   },
   selectedModel: "gpt-oss:20b",
+  packageVersion: "0.6.0+fixture",
+  supportsNativeCodexSwitch: true,
 });
 
 assertIncludes(openAiProfileHtml, "Model Switcher");
+assertIncludes(openAiProfileHtml, "Ollama for Codex · 0.6.0");
+assertIncludes(openAiProfileHtml, "native Codex switching enabled");
 assertIncludes(openAiProfileHtml, "OpenAI/Codex profile is active");
 assertIncludes(openAiProfileHtml, "Codex/OpenAI models");
 assertIncludes(openAiProfileHtml, "GPT-5.4");

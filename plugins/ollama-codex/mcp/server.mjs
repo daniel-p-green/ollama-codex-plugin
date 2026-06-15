@@ -103,6 +103,8 @@ function registerTools() {
         message: "Rendered Ollama for Codex control panel.",
         data: {
           version: 1,
+          packageVersion: manifest.version,
+          supportsNativeCodexSwitch: true,
           widget: "ollama-codex-control-panel",
           selectedModel: String(input.model || status.appModel || recommendations.models[0]?.name || models.models[0]?.name || "gpt-oss:20b"),
           status,
@@ -408,6 +410,8 @@ function widgetResult({ message, data }) {
 function summarizeWidget(data) {
   return {
     version: data.version,
+    packageVersion: data.packageVersion,
+    supportsNativeCodexSwitch: data.supportsNativeCodexSwitch,
     widget: data.widget,
     selectedModel: data.selectedModel,
     modelCount: data.models.models.length,
