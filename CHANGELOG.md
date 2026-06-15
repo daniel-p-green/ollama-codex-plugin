@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- Tightened the model switcher UX with active/configured badges, disabled current-model switch buttons, and clearer OpenAI/Codex restore state.
+- Refreshed App setup state after successful setup actions so the panel reflects the latest profile when Codex remains open.
+
 ## 0.5.0
 
 - Replaced the localhost browser panel with an MCP app widget that renders directly inside Codex.

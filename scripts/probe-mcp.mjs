@@ -63,6 +63,8 @@ try {
     "Recommended for Codex",
     "Codex profile",
     "currentUsesOllama",
+    "modelBadges",
+    "Configured",
     "Switch",
     "confirmed: Boolean(confirmedOverride)",
     "errorMessage(error)",
@@ -85,6 +87,17 @@ try {
   }
   if (!String(action.structuredContent.stdout || "").includes("ollama launch codex-app --model gemma4:latest --yes")) {
     throw new Error("dry-run action did not route to the expected Ollama command");
+  }
+
+  const blockedAction = await client.callTool({
+    name: "ollama_codex_action",
+    arguments: {
+      action: "app-use-model",
+      model: "gemma4:latest",
+    },
+  });
+  if (!blockedAction.structuredContent?.requiresConfirmation) {
+    throw new Error("non-dry-run App switch was not confirmation-gated");
   }
 
   console.log("[ok] MCP widget server probe");

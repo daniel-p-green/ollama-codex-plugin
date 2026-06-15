@@ -236,6 +236,8 @@ def validate_panel() -> None:
         "Recommended for Codex",
         "Codex profile",
         "currentUsesOllama",
+        "modelBadges",
+        "Configured",
         "data-use-model",
         "kimi-k2.6:cloud",
         "Switch",
@@ -254,7 +256,7 @@ def validate_panel() -> None:
     for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
         if stale_color in css:
             fail(f"widget CSS contains stale beige palette color: {stale_color}")
-    for required in (".model-use", ".model.selected", ".model-group"):
+    for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active"):
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     ok("in-Codex visual control panel")
@@ -283,6 +285,7 @@ def validate_docs() -> None:
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
         "see the active Codex/OpenAI profile and Ollama options side by side",
+        "Active and configured badges",
         "Direct non-dry-run MCP calls still require a confirmation flag",
     ):
         if required not in readme:

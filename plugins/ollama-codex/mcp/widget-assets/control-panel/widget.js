@@ -128,13 +128,16 @@
   function renderCodexProfile() {
     const activeModel = state.status.currentCodexModel || "Unknown";
     const isOllama = Boolean(state.status.currentUsesOllama);
+    const title = isOllama ? "OpenAI/Codex profile" : activeModel;
+    const detail = isOllama ? "Restore previous Codex profile" : "OpenAI/Codex profile is active";
+    const meta = isOllama ? "available" : "active";
     return [
       '<div class="model-group" aria-label="Codex profile">',
       '<p class="section-label">Codex profile</p>',
       '<article class="model codex-profile' + (!isOllama ? " selected" : "") + '" role="listitem">',
       '<div class="model-main passive">',
-      '<span><strong>' + text(activeModel) + '</strong><span class="subtle">' + text(isOllama ? "Ollama profile is active" : "OpenAI/Codex profile is active") + '</span></span>',
-      '<span class="subtle">' + text(state.status.currentCodexProvider || "openai") + '</span>',
+      '<span><span class="model-title"><strong>' + text(title) + '</strong>' + (!isOllama ? badge("Active") : "") + '</span><span class="subtle">' + text(detail) + '</span></span>',
+      '<span class="subtle">' + text(meta) + '</span>',
       '</div>',
       isOllama ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>Active</button>',
       '</article>',
@@ -160,15 +163,32 @@
 
   function modelRow(model) {
     const selected = model.name === state.selectedModel;
+    const current = isCurrentOllamaModel(model.name);
+    const configured = model.name === state.status.appModel;
     return [
-      '<article class="model' + (selected ? " selected" : "") + '" role="listitem">',
+      '<article class="model' + (selected ? " selected" : "") + (current ? " active" : "") + '" role="listitem">',
       '<button class="model-main" type="button" data-select-model="' + attr(model.name) + '">',
-      '<span><strong>' + text(model.name) + '</strong><span class="subtle">' + text(model.description) + '</span></span>',
+      '<span><span class="model-title"><strong>' + text(model.name) + '</strong>' + modelBadges({ current, configured }) + '</span><span class="subtle">' + text(model.description) + '</span></span>',
       '<span class="subtle">' + text(model.meta) + '</span>',
       '</button>',
-      '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '">Switch</button>',
+      '<button class="model-use" type="button" data-use-model="' + attr(model.name) + '"' + (current ? " disabled" : "") + '>' + text(current ? "Active" : "Switch") + '</button>',
       '</article>',
     ].join("");
+  }
+
+  function isCurrentOllamaModel(name) {
+    return Boolean(state.status.currentUsesOllama && state.status.currentCodexModel === name);
+  }
+
+  function modelBadges({ current, configured }) {
+    const labels = [];
+    if (current) labels.push("Active");
+    else if (configured) labels.push("Configured");
+    return labels.map(badge).join("");
+  }
+
+  function badge(label) {
+    return '<span class="badge">' + text(label) + '</span>';
   }
 
   function recommendationMeta(model) {
@@ -294,9 +314,14 @@
       if (result.ok && action === "app-use-model") {
         state.status.appConfigured = true;
         state.status.appModel = state.selectedModel;
+        state.status.appModels = [state.selectedModel];
         state.status.currentCodexModel = state.selectedModel;
         state.status.currentCodexProvider = "ollama-launch-codex-app";
         state.status.currentUsesOllama = true;
+      }
+      if (result.ok && action === "app-setup") {
+        await refresh();
+        return;
       }
       if (result.ok && action === "app-restore") {
         state.status.currentUsesOllama = false;

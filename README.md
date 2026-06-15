@@ -78,6 +78,7 @@ The panel shows:
 - The Ollama Codex App model from Ollama's integration config.
 - Ollama's recommended Codex models, including local and cloud options when available.
 - Local Ollama models from `ollama ls`.
+- Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.
 - Direct `Switch` controls on model rows, so the panel behaves like a model switcher rather than a command list.
 - Direct action buttons for setup, restore, pull, and CLI profile changes.
 - Codex CLI install status.
@@ -88,7 +89,7 @@ Actions that may restart Codex or restore profile state are explicit button clic
 
 The Codex plugin card also gives starter prompts for the workflows Ollama documents but Codex users would otherwise need to remember manually:
 
-- Open the Ollama control panel
+- Open the Ollama model switcher
 - Check Ollama readiness for Codex
 - Set up Codex App with Ollama
 - Switch Codex App to an Ollama model
