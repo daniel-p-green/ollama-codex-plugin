@@ -11,6 +11,7 @@ bash -n "$WRAPPER"
 node --check plugins/ollama-codex/mcp/server.mjs
 node --check plugins/ollama-codex/mcp/widget-assets/control-panel/widget.js
 node scripts/probe-mcp.mjs
+node scripts/probe-widget-fixture.mjs
 
 dry_run() {
   bash "$WRAPPER" --dry-run "$@" >/dev/null

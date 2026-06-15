@@ -1,6 +1,6 @@
 {
   "name": "ollama-codex",
-  "version": "0.5.1+codex.20260615202000",
+  "version": "0.5.3+codex.20260615203600",
   "description": "An in-Codex visual control panel and command layer for configuring Codex App and Codex CLI with Ollama.",
   "author": {
     "name": "Daniel Green"

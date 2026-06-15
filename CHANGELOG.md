@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.3
+
+- Let the widget fixture probe target either the source plugin or an installed Codex cache package with `PLUGIN_CWD`.
+
+## 0.5.2
+
+- Added a widget fixture probe that executes the real panel script with Codex-like tool data and verifies the visible active/configured model-picker states.
+- Included the fixture probe in the normal validation path so picker regressions are caught before install.
+
 ## 0.5.1
 
 - Tightened the model switcher UX with active/configured badges, disabled current-model switch buttons, and clearer OpenAI/Codex restore state.

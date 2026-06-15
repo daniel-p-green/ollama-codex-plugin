@@ -18,6 +18,7 @@ WRAPPER = PLUGIN / "scripts" / "ollama-codex.sh"
 MCP_CONFIG = PLUGIN / ".mcp.json"
 MCP_SERVER = PLUGIN / "mcp" / "server.mjs"
 DEMO_SCRIPT = ROOT / "scripts" / "demo.sh"
+WIDGET_FIXTURE_PROBE = ROOT / "scripts" / "probe-widget-fixture.mjs"
 
 EXPECTED_COMMANDS = {
     "ollama-codex-status.md",
@@ -158,12 +159,16 @@ def validate_skill() -> None:
 def validate_wrapper() -> None:
     require_file(WRAPPER)
     require_file(DEMO_SCRIPT)
+    require_file(WIDGET_FIXTURE_PROBE)
     mode = WRAPPER.stat().st_mode
     if not (mode & stat.S_IXUSR):
         fail("wrapper script must be executable")
     demo_mode = DEMO_SCRIPT.stat().st_mode
     if not (demo_mode & stat.S_IXUSR):
         fail("demo script must be executable")
+    fixture_mode = WIDGET_FIXTURE_PROBE.stat().st_mode
+    if not (fixture_mode & stat.S_IXUSR):
+        fail("widget fixture probe must be executable")
     text = WRAPPER.read_text()
     for command in (
         "app-setup",
@@ -238,6 +243,7 @@ def validate_panel() -> None:
         "currentUsesOllama",
         "modelBadges",
         "Configured",
+        "badge(",
         "data-use-model",
         "kimi-k2.6:cloud",
         "Switch",
@@ -259,6 +265,10 @@ def validate_panel() -> None:
     for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active"):
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
+    fixture_text = WIDGET_FIXTURE_PROBE.read_text()
+    for required in ("OpenAI/Codex profile is active", "Restore previous Codex profile", "widget fixture probe"):
+        if required not in fixture_text:
+            fail(f"widget fixture probe missing: {required}")
     ok("in-Codex visual control panel")
 
 
