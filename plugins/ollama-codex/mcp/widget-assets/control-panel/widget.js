@@ -168,7 +168,7 @@
   function modelSummary() {
     const current = state.status.currentCodexModel || "unknown";
     const app = state.status.appModel || "not configured";
-    return "Codex/OpenAI catalog and Ollama options side by side. Active: " + current + " / Ollama App: " + app;
+    return "Codex/OpenAI catalog and Ollama choices in one panel. Active: " + current + " / Ollama App: " + app;
   }
 
   function visibleCodexModels() {
@@ -205,26 +205,25 @@
 
   function renderCodexModel(model) {
     const active = !state.status.currentUsesOllama && model.name === state.status.currentCodexModel;
-    const restoreTarget = Boolean(state.status.currentUsesOllama && model.name === state.status.previousCodexModel);
     const badges = [];
     if (active) badges.push("Active");
-    else if (restoreTarget) badges.push("Restore");
-    else badges.push("Native");
+    else if (state.status.currentUsesOllama) badges.push("Restores");
+    else badges.push("Codex");
     return [
       '<article class="model codex-profile' + (active ? " selected active" : "") + '" role="listitem">',
       '<div class="model-main passive">',
-      '<span><span class="model-title"><strong>' + text(model.displayName || model.name) + '</strong>' + badges.map(badge).join("") + '</span><span class="subtle">' + text(codexModelDescription(model, active, restoreTarget)) + '</span></span>',
+      '<span><span class="model-title"><strong>' + text(model.displayName || model.name) + '</strong>' + badges.map(badge).join("") + '</span><span class="subtle">' + text(codexModelDescription(model, active)) + '</span></span>',
       '<span class="subtle">' + text(model.meta || "Codex") + '</span>',
       '</div>',
-      restoreTarget ? '<button class="model-use" type="button" data-action="app-restore">Restore</button>' : '<button class="model-use" type="button" disabled>' + text(active ? "Active" : "Native") + '</button>',
+      active ? '<button class="model-use" type="button" disabled>Active</button>' : '<button class="model-use" type="button" data-use-codex-model="' + attr(model.name) + '">Switch</button>',
       '</article>',
     ].join("");
   }
 
-  function codexModelDescription(model, active, restoreTarget) {
-    if (restoreTarget) return "Restore previous Codex profile to use Codex's native OpenAI model selector.";
-    if (active) return "OpenAI/Codex profile is active. Use Codex's native selector for other Codex models.";
-    return model.description || "Available in Codex's native OpenAI model selector.";
+  function codexModelDescription(model, active) {
+    if (active) return "OpenAI/Codex profile is active.";
+    if (state.status.currentUsesOllama) return "Switches back to Codex/OpenAI and sets this native model.";
+    return model.description || "Switches the Codex/OpenAI profile to this native model.";
   }
 
   function codexModelMeta(model) {
@@ -346,6 +345,9 @@
     app.querySelectorAll("[data-use-model]").forEach((button) => {
       button.addEventListener("click", () => runAction("app-use-model", false, button.getAttribute("data-use-model"), true));
     });
+    app.querySelectorAll("[data-use-codex-model]").forEach((button) => {
+      button.addEventListener("click", () => runAction("app-use-codex-model", false, button.getAttribute("data-use-codex-model"), true));
+    });
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
     });
@@ -391,13 +393,14 @@
   }
 
   async function runAction(action, dryRun, modelOverride, confirmedOverride) {
-    if (modelOverride) state.selectedModel = modelOverride;
+    const targetModel = modelOverride || state.selectedModel;
+    if (modelOverride && action !== "app-use-codex-model") state.selectedModel = modelOverride;
     state.busy = true;
     render();
     try {
       const result = unwrap(await callTool("ollama_codex_action", {
         action,
-        model: state.selectedModel,
+        model: targetModel,
         dryRun,
         confirmed: Boolean(confirmedOverride),
       }));
@@ -410,6 +413,11 @@
         state.status.currentCodexModel = state.selectedModel;
         state.status.currentCodexProvider = "ollama-launch-codex-app";
         state.status.currentUsesOllama = true;
+      }
+      if (result.ok && action === "app-use-codex-model") {
+        state.status.currentUsesOllama = false;
+        state.status.currentCodexModel = targetModel;
+        state.status.currentCodexProvider = "openai";
       }
       if (result.ok && action === "app-setup") {
         await refresh();

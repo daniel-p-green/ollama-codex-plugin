@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+- Added native Codex/OpenAI row switching from the in-Codex panel with `app-use-codex-model <model>`.
+- Back up Codex App config before native model changes, restore away from an active Ollama profile when needed, and clear top-level Ollama provider pointers when returning to the OpenAI provider.
+- Updated the widget, MCP schema, slash commands, probes, README, demo, and Romain-ready notes around the two-provider visual switcher boundary.
+
 ## 0.5.8
 
 - Added Codex/OpenAI catalog rows to the in-Codex model switcher by reading Codex's visible model cache.

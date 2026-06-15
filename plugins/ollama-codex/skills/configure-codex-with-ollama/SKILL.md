@@ -1,16 +1,16 @@
 ---
 name: configure-codex-with-ollama
-description: This skill should be used when the user asks to "open the Ollama control panel", "set up Codex App with Ollama", "configure Codex CLI with Ollama", "use Ollama with Codex", "switch Codex App to an Ollama model", "run Codex with a local model", "run Codex with an Ollama Cloud model", "restore Codex after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`, `ollama launch codex`, `codex --oss`, or `codex --profile ollama-launch`.
-version: 0.3.0
+description: This skill should be used when the user asks to "open the Ollama control panel", "set up Codex App with Ollama", "configure Codex CLI with Ollama", "use Ollama with Codex", "switch Codex App to a Codex model", "switch Codex App to an Ollama model", "run Codex with a local model", "run Codex with an Ollama Cloud model", "restore Codex after Ollama", "check Ollama Codex status", or mentions `ollama launch codex-app`, `ollama launch codex`, `codex --oss`, or `codex --profile ollama-launch`.
+version: 0.4.0
 ---
 
 # Configure Codex With Ollama
 
-Use this skill to route Codex App and Codex CLI setup through Ollama's supported commands. Keep the integration thin: verify local readiness, run the official Ollama or Codex command, and report exactly what changed or what still needs attention.
+Use this skill to route Codex App and Codex CLI setup through the Ollama for Codex plugin. Keep the integration thin: verify local readiness, run the official Ollama or documented Codex config path, and report exactly what changed or what still needs attention.
 
 ## Core Rule
 
-Delegate Codex App configuration to Ollama whenever an official `ollama launch codex-app` command exists. Avoid hand-editing Codex App config files.
+Delegate Ollama-side Codex App configuration to Ollama whenever an official `ollama launch codex-app` command exists. For switching back to a native Codex/OpenAI model from the panel, use the wrapper's `app-use-codex-model <model>` command, which backs up Codex App config and edits the documented top-level `model` key.
 
 For Codex CLI profile setup, use the wrapper's deterministic `cli-config <model>` command. Live acceptance testing on Ollama 0.30.8 showed that `ollama launch codex --config --model <model>` writes the expected profile/catalog and then can still launch an interactive Codex TUI. The plugin avoids that nested-session surprise by writing the documented `ollama-launch` CLI profile and model catalog directly.
 
@@ -26,7 +26,7 @@ When the user asks for the GUI, visual panel, control panel, or easiest way to m
 
 Use the `render_ollama_codex_panel` tool from the `ollama_codex` MCP server. In Codex tool notation this is expected to appear as `mcp__ollama_codex__render_ollama_codex_panel`.
 
-The panel is the preferred user-facing surface. It renders inside Codex, shows the active Codex/OpenAI profile beside Ollama's recommended and local model choices, accepts typed cloud model tags, and uses MCP tools backed by the same wrapper for setup, model switching, restore, CLI config, and model pulls.
+The panel is the preferred user-facing surface. It renders inside Codex, shows the active Codex/OpenAI profile beside Ollama's recommended and local model choices, accepts typed cloud model tags, and uses MCP tools backed by the same wrapper for native Codex model switching, Ollama setup, Ollama model switching, restore, CLI config, and model pulls.
 
 Do not describe the plugin card, starter prompts, or localhost browser panel as the full GUI. The GUI is the MCP app widget served by `mcp/server.mjs`.
 
@@ -65,6 +65,7 @@ Use these commands for OpenAI's desktop Codex App on macOS or Windows:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-codex-model gpt-5.4
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-model gemma4:31b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-model kimi-k2.6:cloud
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-restore
@@ -79,10 +80,11 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh restore
 ```
 
 Use `app-setup` for "Set up Codex App with Ollama".
+Use `app-use-codex-model <model>` for "Switch Codex App to a native Codex/OpenAI model".
 Use `app-use-model <model>` for "Switch Codex App to an Ollama model".
 Use `app-restore` for "Restore Codex App's previous profile".
 
-The wrapper passes Ollama's `--yes` flag for Codex App setup, model switching, and restore so the command can complete the restart/profile flow. Report that Codex may restart. Do not claim the switch or restore completed unless the command completed.
+The wrapper passes Ollama's `--yes` flag for Ollama App setup, Ollama model switching, and restore so the command can complete the restart/profile flow. `app-use-codex-model` backs up Codex App config, restores away from an active Ollama profile when possible, and sets the native Codex model. Report that Codex may restart or require a fresh task. Do not claim the switch or restore completed unless the command completed.
 
 ## Codex CLI Workflows
 
@@ -115,6 +117,7 @@ Use `--dry-run` before mutating App or CLI state when verifying command routing:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-setup
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-use-codex-model gpt-5.4
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-use-model gemma4:31b
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run app-restore
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh --dry-run cli-setup

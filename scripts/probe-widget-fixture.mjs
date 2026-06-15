@@ -64,10 +64,11 @@ const openAiProfileHtml = renderFixture({
 assertIncludes(openAiProfileHtml, "Model Switcher");
 assertIncludes(openAiProfileHtml, "OpenAI/Codex profile is active");
 assertIncludes(openAiProfileHtml, "Codex/OpenAI models");
-assertIncludes(openAiProfileHtml, "Use Codex's native selector for other Codex models.");
 assertIncludes(openAiProfileHtml, "GPT-5.4");
+assertIncludes(openAiProfileHtml, "Everyday Codex model");
 assertIncludes(openAiProfileHtml, "reasoning medium");
 assertIncludes(openAiProfileHtml, "gpt-5.5");
+assertIncludes(openAiProfileHtml, 'data-use-codex-model="gpt-5.4"');
 assertIncludes(openAiProfileHtml, "gpt-oss:20b");
 assertIncludes(openAiProfileHtml, "Configured");
 assertIncludes(openAiProfileHtml, "Recommended for Codex");
@@ -133,8 +134,8 @@ const ollamaProfileHtml = renderFixture({
 assertIncludes(ollamaProfileHtml, "Codex/OpenAI models");
 assertIncludes(ollamaProfileHtml, "GPT-5.5");
 assertIncludes(ollamaProfileHtml, "GPT-5.4");
-assertIncludes(ollamaProfileHtml, "Restore previous Codex profile to use Codex's native OpenAI model selector.");
-assertIncludes(ollamaProfileHtml, ">Restore</button>");
+assertIncludes(ollamaProfileHtml, "Switches back to Codex/OpenAI and sets this native model.");
+assertIncludes(ollamaProfileHtml, 'data-use-codex-model="gpt-5.5"');
 assertIncludes(ollamaProfileHtml, ">Active</button>");
 assertIncludes(ollamaProfileHtml, "model selected active");
 

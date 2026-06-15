@@ -16,6 +16,7 @@ Open a new Codex thread and try:
 ```text
 /ollama-codex-panel
 /ollama-codex-status
+/ollama-codex-app-use-codex-model gpt-5.4
 /ollama-codex-app-use-model gemma4:31b
 /ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run-model gpt-oss:120b
@@ -44,6 +45,9 @@ The demo runs:
 + ollama launch codex-app --yes
 + ollama launch codex-app --model gemma4:31b --yes
 + ollama launch codex-app --model kimi-k2.6:cloud --yes
+[info] would back up Codex App config: ~/.codex/config.toml
+[info] would set Codex App native OpenAI model: gpt-5.4
+[info] would remove top-level Ollama provider pointers from Codex App config
 + ollama launch codex-app --restore --yes
 + ollama launch codex
 [info] would write Codex CLI profile: ~/.codex/ollama-launch.config.toml
@@ -64,6 +68,7 @@ The demo intentionally avoids real setup and restore commands. Real commands cha
 
 ```bash
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-setup
+bash plugins/ollama-codex/scripts/ollama-codex.sh app-use-codex-model gpt-5.4
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-config gpt-oss:20b
 bash plugins/ollama-codex/scripts/ollama-codex.sh app-restore
 bash plugins/ollama-codex/scripts/ollama-codex.sh cli-restore

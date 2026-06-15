@@ -65,11 +65,12 @@ try {
   }
   for (const required of [
     "data-use-model",
+    "data-use-codex-model",
     "kimi-k2.6:cloud",
     "Recommended for Codex",
     "Codex/OpenAI models",
     "Codex/OpenAI catalog",
-    "native OpenAI model selector",
+    "Switches back to Codex/OpenAI",
     "codexModelDescription",
     "currentUsesOllama",
     "modelBadges",
@@ -111,6 +112,21 @@ try {
   });
   if (!blockedAction.structuredContent?.requiresConfirmation) {
     throw new Error("non-dry-run App switch was not confirmation-gated");
+  }
+
+  const codexAction = await client.callTool({
+    name: "ollama_codex_action",
+    arguments: {
+      action: "app-use-codex-model",
+      model: "gpt-5.4",
+      dryRun: true,
+    },
+  });
+  if (!codexAction.structuredContent?.ok) {
+    throw new Error("Codex/OpenAI dry-run action failed");
+  }
+  if (!String(codexAction.structuredContent.stdout || "").includes("would set Codex App native OpenAI model: gpt-5.4")) {
+    throw new Error("Codex/OpenAI dry-run action did not route to the native model switcher");
   }
 
   console.log("[ok] MCP widget server probe");

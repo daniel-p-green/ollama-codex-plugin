@@ -27,6 +27,7 @@ EXPECTED_COMMANDS = {
     "ollama-codex-pull-model.md",
     "ollama-codex-app-setup.md",
     "ollama-codex-app-use-model.md",
+    "ollama-codex-app-use-codex-model.md",
     "ollama-codex-app-restore.md",
     "ollama-codex-setup.md",
     "ollama-codex-use-model.md",
@@ -173,6 +174,7 @@ def validate_wrapper() -> None:
     for command in (
         "app-setup",
         "app-use-model",
+        "app-use-codex-model",
         "app-restore",
         "cli-setup",
         "cli-config",
@@ -239,6 +241,7 @@ def validate_panel() -> None:
         "ollama_codex_models",
         "ollama_codex_action",
         "app-use-model",
+        "app-use-codex-model",
         "cli-config",
         "__OLLAMA_CODEX_LOGO_DATA_URI__",
         "FALLBACK_RECOMMENDATIONS",
@@ -246,7 +249,8 @@ def validate_panel() -> None:
         "Recommended for Codex",
         "Codex/OpenAI models",
         "Codex/OpenAI catalog",
-        "native OpenAI model selector",
+        "data-use-codex-model",
+        "Switches back to Codex/OpenAI",
         "visibleCodexModels",
         "codexModelDescription",
         "currentUsesOllama",
@@ -279,7 +283,7 @@ def validate_panel() -> None:
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     fixture_text = WIDGET_FIXTURE_PROBE.read_text()
-    for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "GPT-5.4", "Restore previous Codex profile", "filterText", "Installed", "local-gpt-oss", "widget fixture probe"):
+    for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "GPT-5.4", "Switches back to Codex/OpenAI", "data-use-codex-model", "filterText", "Installed", "local-gpt-oss", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
     ok("in-Codex visual control panel")
@@ -307,6 +311,9 @@ def validate_docs() -> None:
         "the easiest visual way to enable, use, and safely switch back from Ollama options in Codex",
         "inside the Codex Mac app chat",
         "does not replace Codex's built-in OpenAI model selector",
+        "one active provider profile at a time",
+        "app-use-codex-model",
+        "timestamped backup",
         "Codex/OpenAI lane and an Ollama lane at the same time",
         "actual Codex/OpenAI model catalog",
         "see the active Codex/OpenAI profile and Ollama options side by side",

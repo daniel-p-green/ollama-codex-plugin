@@ -18,6 +18,7 @@ echo "== safe App dry runs =="
 bash "$WRAPPER" --dry-run app-setup
 bash "$WRAPPER" --dry-run app-use-model gemma4:31b
 bash "$WRAPPER" --dry-run app-use-model kimi-k2.6:cloud
+bash "$WRAPPER" --dry-run app-use-codex-model gpt-5.4
 bash "$WRAPPER" --dry-run app-restore
 
 echo

@@ -15,7 +15,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - Codex plugin metadata includes an "Open the Ollama model switcher" starter prompt.
 - `/ollama-codex-panel` renders a real MCP-powered visual control panel inside the Codex Mac app chat.
 - The panel shows readiness, the visible Codex/OpenAI model catalog, the active Codex model, the Ollama App model, recommended Ollama Codex models, deduplicated local models, model filtering, counts, active/configured/installed badges, direct model `Switch` controls, App actions, CLI actions, and restore actions.
-- Model row `Switch` controls switch Codex App to the chosen Ollama model; setup, restore, pull, and CLI restore are explicit panel actions.
+- Model row `Switch` controls switch Codex App to the chosen Ollama model or back to a native Codex/OpenAI model; native model switching writes a timestamped Codex config backup first.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.
 - CLI config writes the documented `ollama-launch` profile/catalog without launching nested Codex.
@@ -44,7 +44,8 @@ Latest local checks performed during the Romain-ready pass:
 - The GUI is an MCP app widget rendered inside the Codex Mac app, not a separate browser page.
 - The plugin does not replace Codex's built-in OpenAI model selector; current plugin metadata exposes cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets.
 - The closest supported model-selector experience is the in-chat widget's side-by-side Codex/OpenAI catalog rows plus recommended/local Ollama model rows.
-- Configuration still runs through Ollama's official commands and the plugin's deterministic wrapper.
+- Codex has one active provider profile at a time; the plugin makes switching providers visual rather than claiming Codex supports per-model providers in one native picker.
+- Ollama configuration still runs through Ollama's official commands. Native Codex/OpenAI row switching uses Codex's documented `model` config key with a backup.
 - No silent restore on plugin disablement. Restore remains explicit.
 - No CI mutation of Codex App or Codex CLI profiles. CI uses validation and dry runs.
 

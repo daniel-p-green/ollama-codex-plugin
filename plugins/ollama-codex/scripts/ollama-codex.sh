@@ -13,6 +13,7 @@ Usage:
   # Codex App
   ollama-codex.sh [--dry-run] app-setup
   ollama-codex.sh [--dry-run] app-use-model <model>
+  ollama-codex.sh [--dry-run] app-use-codex-model <model>
   ollama-codex.sh [--dry-run] app-restore
 
   # Codex CLI
@@ -113,6 +114,18 @@ codex_cli_config_path() {
 
 codex_cli_catalog_path() {
   printf '%s/model.json\n' "$(codex_home)"
+}
+
+codex_app_config_path() {
+  printf '%s/config.toml\n' "$(codex_home)"
+}
+
+codex_models_cache_path() {
+  printf '%s/models_cache.json\n' "$(codex_home)"
+}
+
+codex_app_backup_dir() {
+  printf '%s/.ollama/backup/codex-app\n' "$HOME"
 }
 
 ollama_openai_base_url() {
@@ -227,6 +240,154 @@ write_cli_config() {
   ok "Codex CLI Ollama model catalog written: $catalog_path"
 }
 
+codex_config_top_level_value() {
+  local key="$1"
+  local path="$2"
+
+  awk -v key="$key" '
+    /^[[:space:]]*\[/ { exit }
+    $0 ~ "^[[:space:]]*" key "[[:space:]]*=" {
+      value=$0
+      sub("^[^\"]*\"", "", value)
+      sub("\".*$", "", value)
+      print value
+      exit
+    }
+  ' "$path" 2>/dev/null
+}
+
+codex_model_is_known() {
+  local model="$1"
+  local catalog_path
+
+  catalog_path="$(codex_models_cache_path)"
+  [[ -f "$catalog_path" ]] || return 0
+  grep -Fq "\"slug\":\"$model\"" "$catalog_path" && return 0
+  grep -Fq "\"slug\": \"$model\"" "$catalog_path" && return 0
+  return 1
+}
+
+backup_codex_app_config() {
+  local config_path="$1"
+  local backup_dir
+  local backup_path
+
+  [[ -f "$config_path" ]] || return 0
+  backup_dir="$(codex_app_backup_dir)"
+  backup_path="$backup_dir/plugin-config.toml.$(date +%s)"
+  mkdir -p "$backup_dir"
+  if cp "$config_path" "$backup_path"; then
+    ok "Codex App config backup written: $backup_path"
+  else
+    error "unable to back up Codex App config to $backup_path"
+    return 1
+  fi
+}
+
+write_codex_openai_model_config() {
+  local model="$1"
+  local config_path
+  local tmp_path
+  local escaped_model
+
+  config_path="$(codex_app_config_path)"
+  tmp_path="$config_path.tmp.$$"
+  escaped_model="$(escape_basic_string "$model")"
+  mkdir -p "$(dirname "$config_path")"
+
+  if [[ -f "$config_path" ]]; then
+    awk -v model="$escaped_model" '
+      BEGIN {
+        wrote_model = 0
+        in_top = 1
+        skip_ollama_provider = 0
+      }
+      function write_model_once() {
+        if (!wrote_model) {
+          print "model = \"" model "\""
+          wrote_model = 1
+        }
+      }
+      /^[[:space:]]*\[model_providers\.ollama-launch-codex-app\][[:space:]]*$/ {
+        skip_ollama_provider = 1
+        next
+      }
+      skip_ollama_provider && /^[[:space:]]*\[/ {
+        skip_ollama_provider = 0
+      }
+      skip_ollama_provider {
+        next
+      }
+      in_top && /^[[:space:]]*\[/ {
+        write_model_once()
+        in_top = 0
+      }
+      in_top && /^[[:space:]]*model[[:space:]]*=/ {
+        write_model_once()
+        next
+      }
+      in_top && /^[[:space:]]*model_provider[[:space:]]*=/ {
+        next
+      }
+      in_top && /^[[:space:]]*model_catalog_json[[:space:]]*=/ {
+        next
+      }
+      {
+        print
+      }
+      END {
+        if (in_top) {
+          write_model_once()
+        }
+      }
+    ' "$config_path" >"$tmp_path"
+  else
+    printf 'model = "%s"\n' "$escaped_model" >"$tmp_path"
+  fi
+
+  mv "$tmp_path" "$config_path"
+  ok "Codex App native model set: $model"
+}
+
+use_codex_openai_model() {
+  local model="$1"
+  local config_path
+  local current_provider
+
+  config_path="$(codex_app_config_path)"
+  current_provider="$(codex_config_top_level_value "model_provider" "$config_path")"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "$current_provider" == "ollama-launch-codex-app" ]]; then
+      printf '+ ollama launch codex-app --restore --yes\n'
+    fi
+    info "would back up Codex App config: $config_path"
+    info "would set Codex App native OpenAI model: $model"
+    info "would remove top-level Ollama provider pointers from Codex App config"
+    return 0
+  fi
+
+  if ! codex_model_is_known "$model"; then
+    error "Codex/OpenAI model not found in $(codex_models_cache_path): $model"
+    error "Refresh Codex's native model catalog or choose a visible Codex/OpenAI row from the panel."
+    return 1
+  fi
+
+  backup_codex_app_config "$config_path"
+
+  if [[ "$current_provider" == "ollama-launch-codex-app" ]]; then
+    if command -v ollama >/dev/null 2>&1; then
+      if ! ollama launch codex-app --restore --yes; then
+        warn "ollama restore failed; continuing with direct Codex config switch to OpenAI provider"
+      fi
+    else
+      warn "ollama executable not found; falling back to direct Codex config restore to OpenAI provider"
+    fi
+  fi
+
+  write_codex_openai_model_config "$model"
+}
+
 print_model_summary() {
   if ! command -v ollama >/dev/null 2>&1; then
     return 0
@@ -293,9 +454,11 @@ print_status() {
   if [[ -n "$codex_bin" ]]; then
     ok "codex executable: $codex_bin"
     local codex_version
-    codex_version="$(codex --version 2>&1 | head -n 1 || true)"
+    codex_version="$(codex --version 2>&1 | awk '/^codex-cli[[:space:]]/ { print; found=1; exit } END { if (!found) exit 1 }' || true)"
     if [[ -n "$codex_version" ]]; then
       info "codex version: $codex_version"
+    else
+      warn "codex version: unable to parse version from 'codex --version'"
     fi
   else
     warn "codex executable: not found in PATH"
@@ -420,6 +583,11 @@ case "$command_name" in
     require_exact_args "$command_name" 1 "$#"
     ensure_ollama || exit 1
     run_or_print ollama launch codex-app --model "$1" --yes
+    ;;
+  app-use-codex-model)
+    require_exact_args "$command_name" 1 "$#"
+    ensure_codex || exit 1
+    use_codex_openai_model "$1"
     ;;
   restore|app-restore)
     require_no_args "$command_name" "$#"

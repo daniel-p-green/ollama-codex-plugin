@@ -57,6 +57,8 @@ Important App behavior:
 - The plugin wrapper uses `--yes` for App setup, model switching, and restore so a GUI command does not fail after partially changing profile state.
 - Before overwriting Codex App config files, Ollama saves backups under `~/.ollama/backup/codex-app/`.
 - On Windows, `~` resolves to the user's profile directory.
+- Codex exposes one active `model_provider` at a time. The plugin's visual switcher shows Codex/OpenAI and Ollama rows together, but provider switching remains explicit.
+- The plugin's `app-use-codex-model <model>` path is not an Ollama command. It backs up Codex App config, restores away from an active Ollama profile when needed, and sets Codex's documented native `model` key for OpenAI/Codex rows.
 
 Troubleshooting behavior:
 
@@ -143,8 +145,8 @@ Use model names exactly as supplied by the user or Ollama docs. Preserve tags su
 
 ## Implementation Rules
 
-- Delegate App setup, App model selection, App restore, CLI setup, and CLI restore to `ollama launch`.
-- Do not patch Codex App configuration files directly.
+- Delegate Ollama App setup, Ollama model selection, App restore, CLI setup, and CLI restore to `ollama launch`.
+- For native Codex/OpenAI row switching, back up Codex App config and only edit the documented top-level `model`, `model_provider`, and `model_catalog_json` keys needed to return to the OpenAI provider.
 - Use the wrapper's documented CLI profile writer for non-launching CLI config inside Codex.
 - Keep Codex App restore and Codex CLI restore separate.
 - Treat plugin disablement as separate from restore. Disabling the plugin should not silently restore App or CLI profile state.

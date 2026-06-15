@@ -155,6 +155,7 @@ function registerTools() {
         action: z.enum([
           "app-setup",
           "app-use-model",
+          "app-use-codex-model",
           "app-restore",
           "cli-config",
           "cli-restore",
@@ -222,8 +223,8 @@ async function runAction(input) {
   const model = String(input.model || "").trim();
   const dryRun = Boolean(input.dryRun);
   const confirmed = Boolean(input.confirmed);
-  const modelActions = new Set(["app-use-model", "cli-config", "pull-model"]);
-  const confirmedActions = new Set(["app-setup", "app-use-model", "app-restore", "cli-restore", "pull-model"]);
+  const modelActions = new Set(["app-use-model", "app-use-codex-model", "cli-config", "pull-model"]);
+  const confirmedActions = new Set(["app-setup", "app-use-model", "app-use-codex-model", "app-restore", "cli-restore", "pull-model"]);
 
   if (modelActions.has(action) && !model) {
     return { ok: false, error: "Choose or enter a model first." };

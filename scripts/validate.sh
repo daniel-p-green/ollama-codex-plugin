@@ -19,6 +19,7 @@ dry_run() {
 
 dry_run app-setup
 dry_run app-use-model gemma4:31b
+dry_run app-use-codex-model gpt-5.4
 dry_run app-restore
 dry_run setup
 dry_run use-model gemma4:31b
