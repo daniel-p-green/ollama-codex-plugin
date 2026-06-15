@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+- Improved narrow-pane model row readability so Codex/OpenAI model names, badges, metadata, and descriptions remain legible in the Codex side panel.
+
 ## 0.7.0
 
 - Added a selected-model bar to the in-Codex picker so users can see the queued model and switch from one compact control after searching or selecting a row.

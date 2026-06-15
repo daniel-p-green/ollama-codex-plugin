@@ -353,6 +353,10 @@ button:disabled {
   text-align: left;
 }
 
+.model-main > span {
+  min-width: 0;
+}
+
 .model-main.passive {
   align-content: center;
 }
@@ -387,6 +391,7 @@ button:disabled {
 }
 
 .model .subtle {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -428,6 +433,20 @@ pre {
 
   .selected-model button {
     width: 100%;
+  }
+
+  .model-main {
+    grid-template-columns: 1fr;
+  }
+
+  .model-title {
+    flex-wrap: wrap;
+  }
+
+  .model-main > span > .subtle {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .provider-strip div + div {
