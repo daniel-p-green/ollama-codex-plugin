@@ -51,6 +51,7 @@
       status,
       models: Array.isArray(models.models) ? models.models : [],
       recommendations: recommendationModels,
+      filterText: String(output.filterText || ""),
       output: "Ready.",
       lastCommand: "",
       busy: false,
@@ -100,23 +101,51 @@
   }
 
   function renderModels() {
+    const recommendations = filteredModels(state.recommendations);
+    const localModels = filteredModels(state.models);
     return [
       '<section class="panel">',
       '<div class="panel-head"><div><h2>Codex App Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
       renderCodexProfile(),
       '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
+      '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Filter models" aria-label="Filter models" />',
       '<div class="model-group" aria-label="Recommended Ollama models">',
       '<p class="section-label">Recommended for Codex</p>',
-      state.recommendations.map(renderRecommendation).join(""),
+      recommendations.length ? recommendations.map(renderRecommendation).join("") : renderEmptyModels(),
       '</div>',
       '<div class="model-group" aria-label="Local Ollama models">',
       '<p class="section-label">Local models</p>',
       '<div class="models" role="list">',
-      state.models.length ? state.models.map(renderModel).join("") : '<p class="subtle">No local models found. Type a cloud model tag or pull a model.</p>',
+      localModels.length ? localModels.map(renderModel).join("") : renderEmptyModels(),
       '</div>',
       '</div>',
       '</section>',
     ].join("");
+  }
+
+  function filteredModels(models) {
+    const query = state.filterText.trim().toLowerCase();
+    if (!query) return models;
+    const terms = query.split(/\s+/).filter(Boolean);
+    return models.filter((model) => {
+      const haystack = [
+        model.name,
+        model.description,
+        model.meta,
+        model.id,
+        model.size,
+        model.requiredPlan,
+        recommendationMeta(model),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
+  }
+
+  function renderEmptyModels() {
+    return '<p class="subtle">No matching models.</p>';
   }
 
   function modelSummary() {
@@ -260,6 +289,10 @@
     });
     app.querySelector("#modelInput").addEventListener("input", (event) => {
       state.selectedModel = event.target.value;
+    });
+    app.querySelector("#modelFilter").addEventListener("input", (event) => {
+      state.filterText = event.target.value;
+      render();
     });
   }
 

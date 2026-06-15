@@ -52,6 +52,7 @@ assertIncludes(openAiProfileHtml, "gpt-oss:20b");
 assertIncludes(openAiProfileHtml, "Configured");
 assertIncludes(openAiProfileHtml, "Recommended for Codex");
 assertIncludes(openAiProfileHtml, "Local models");
+assertIncludes(openAiProfileHtml, "Filter models");
 assertIncludes(openAiProfileHtml, 'data-use-model="gpt-oss:20b"');
 
 const ollamaProfileHtml = renderFixture({
@@ -93,6 +94,49 @@ assertIncludes(ollamaProfileHtml, "Restore previous Codex profile");
 assertIncludes(ollamaProfileHtml, ">Restore</button>");
 assertIncludes(ollamaProfileHtml, ">Active</button>");
 assertIncludes(ollamaProfileHtml, "model selected active");
+
+const filteredHtml = renderFixture({
+  status: {
+    currentCodexModel: "gpt-5.5",
+    currentCodexProvider: "openai",
+    currentUsesOllama: false,
+    appConfigured: true,
+    appModel: "gpt-oss:20b",
+    ollamaVersion: "0.30.8",
+    serverReachable: true,
+    codexVersion: "codex-cli 0.137.0",
+    codexInstalled: true,
+    cliProfileConfigured: false,
+  },
+  recommendations: {
+    models: [
+      {
+        name: "kimi-k2.6:cloud",
+        description: "Cloud coding model",
+      },
+    ],
+  },
+  models: {
+    models: [
+      {
+        name: "gemma4:latest",
+        id: "local-gemma4",
+        size: "9.6 GB",
+      },
+      {
+        name: "gpt-oss:20b",
+        id: "local-gpt-oss",
+        size: "13 GB",
+      },
+    ],
+  },
+  selectedModel: "gpt-oss:20b",
+  filterText: "gemma",
+});
+
+assertIncludes(filteredHtml, 'value="gemma"');
+assertIncludes(filteredHtml, "gemma4:latest");
+assertNotIncludes(filteredHtml, "local-gpt-oss");
 
 console.log("[ok] widget fixture probe");
 
@@ -149,5 +193,11 @@ function eventTargetStub() {
 function assertIncludes(text, expected) {
   if (!text.includes(expected)) {
     throw new Error(`widget fixture missing: ${expected}`);
+  }
+}
+
+function assertNotIncludes(text, unexpected) {
+  if (text.includes(unexpected)) {
+    throw new Error(`widget fixture unexpectedly included: ${unexpected}`);
   }
 }

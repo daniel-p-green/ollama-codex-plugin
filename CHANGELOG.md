@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.5
+
+- Let model filtering match recommendation metadata such as plan and cloud/local tags, not only model names.
+
+## 0.5.4
+
+- Added model filtering to the in-Codex picker so recommended and local Ollama choices can be narrowed quickly before switching.
+- Extended the widget fixture probe to verify filtered model rows.
+
 ## 0.5.3
 
 - Let the widget fixture probe target either the source plugin or an installed Codex cache package with `PLUGIN_CWD`.

@@ -65,6 +65,8 @@ try {
     "currentUsesOllama",
     "modelBadges",
     "Configured",
+    "Filter models",
+    "filteredModels",
     "Switch",
     "confirmed: Boolean(confirmedOverride)",
     "errorMessage(error)",

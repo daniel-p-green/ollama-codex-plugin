@@ -244,6 +244,8 @@ def validate_panel() -> None:
         "modelBadges",
         "Configured",
         "badge(",
+        "Filter models",
+        "filteredModels",
         "data-use-model",
         "kimi-k2.6:cloud",
         "Switch",
@@ -262,11 +264,11 @@ def validate_panel() -> None:
     for stale_color in ("#fffdfa", "#ded6ca", "#f4efe7", "#f8f4ea"):
         if stale_color in css:
             fail(f"widget CSS contains stale beige palette color: {stale_color}")
-    for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active"):
+    for required in (".model-use", ".model.selected", ".model-group", ".badge", ".model.active", 'input[type="search"]'):
         if required not in css:
             fail(f"widget CSS missing model switcher style: {required}")
     fixture_text = WIDGET_FIXTURE_PROBE.read_text()
-    for required in ("OpenAI/Codex profile is active", "Restore previous Codex profile", "widget fixture probe"):
+    for required in ("OpenAI/Codex profile is active", "Restore previous Codex profile", "filterText", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
     ok("in-Codex visual control panel")
