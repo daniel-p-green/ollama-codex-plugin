@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+- Made the in-Codex widget more selector-like by moving search to the top, grouping Codex/OpenAI and Ollama rows below it, and moving custom Ollama tags to a dedicated row.
+
 ## 0.6.1
 
 - Made the model switcher copy explicit that Codex/OpenAI and Ollama models are visible together while Codex still has one active provider profile at a time.

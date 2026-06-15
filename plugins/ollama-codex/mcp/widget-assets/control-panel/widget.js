@@ -115,10 +115,9 @@
     const localModels = filteredModels(state.models.filter((model) => !recommendationNames.has(normalizeModelName(model.name))));
     return [
       '<section class="panel">',
-      '<div class="panel-head"><div><h2>Codex App Models</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
+      '<div class="panel-head"><div><h2>Choose Model</h2><p class="subtle">' + text(modelSummary()) + '</p></div><button class="secondary" type="button" data-action="list-models">Refresh</button></div>',
+      '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Search Codex or Ollama models" aria-label="Search Codex or Ollama models" />',
       renderCodexModels(codexModels),
-      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Model name" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
-      '<input id="modelFilter" type="search" value="' + attr(state.filterText) + '" placeholder="Filter models" aria-label="Filter models" />',
       '<div class="model-group" aria-label="Recommended Ollama models">',
       sectionLabel("Recommended for Codex", recommendations.length),
       recommendations.length ? recommendations.map(renderRecommendation).join("") : renderEmptyModels(),
@@ -128,6 +127,10 @@
       '<div class="models" role="list">',
       localModels.length ? localModels.map(renderModel).join("") : renderEmptyModels(),
       '</div>',
+      '</div>',
+      '<div class="custom-model">',
+      '<p class="section-label"><span>Use any Ollama tag</span></p>',
+      '<div class="row"><input id="modelInput" type="text" value="' + attr(state.selectedModel) + '" aria-label="Ollama model tag" /><button type="button" data-action="app-use-model">Switch</button><button class="secondary" type="button" data-action="pull-model">Pull</button></div>',
       '</div>',
       '</section>',
     ].join("");

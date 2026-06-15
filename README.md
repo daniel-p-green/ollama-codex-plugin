@@ -12,7 +12,7 @@ The missing visual model switcher for Ollama in the Codex Mac app.
 
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
-This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, see Codex/OpenAI models and Ollama models available side by side, switch back to native Codex/OpenAI models, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
+This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, search Codex/OpenAI and Ollama models from one picker, switch back to native Codex/OpenAI models, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
 
 It is intentionally thin where it matters. Ollama App setup, Ollama model switching, and Ollama restore still delegate to Ollama's official commands. Native Codex/OpenAI model rows use Codex's documented `model` config key, make a timestamped backup first, and clear top-level Ollama provider pointers when switching back to the OpenAI provider. Codex App and Codex CLI state stay separate, and restore remains explicit.
 
@@ -53,7 +53,7 @@ Open a new Codex thread, then start with the visual panel:
 /ollama-codex-panel
 ```
 
-The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
+The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
 
 Fresh-thread check: the panel header should show the installed plugin version and the model summary should include `native Codex switching enabled`. If an already-open Codex thread does not show those markers after an upgrade, open a new thread so Codex reloads the plugin MCP server.
 
@@ -84,7 +84,8 @@ The panel shows:
 - The Ollama Codex App model from Ollama's integration config.
 - Ollama's recommended Codex models, including local and cloud options when available.
 - Local Ollama models from `ollama ls`.
-- Fast filtering across recommended and local model rows.
+- Fast search across Codex/OpenAI, recommended Ollama, and local Ollama model rows.
+- A custom Ollama tag row for models not already listed.
 - Deduplicated model rows with section counts and installed badges.
 - Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.
 - Direct `Switch` controls on Codex/OpenAI and Ollama rows, so the panel behaves like a model switcher rather than a command list.

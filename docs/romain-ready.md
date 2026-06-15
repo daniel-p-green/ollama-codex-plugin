@@ -15,7 +15,7 @@ The goal is a repo someone working on Codex can inspect quickly and trust.
 - Codex plugin metadata includes an "Open the Ollama model switcher" starter prompt.
 - `/ollama-codex-panel` renders a real MCP-powered visual control panel inside the Codex Mac app chat.
 - Fresh panel renders show the installed plugin version and the phrase `native Codex switching enabled`, which distinguishes the current package from stale already-loaded MCP processes.
-- The panel shows readiness, the visible Codex/OpenAI model catalog, the active Codex model, the Ollama App model, recommended Ollama Codex models, deduplicated local models, model filtering, counts, active/configured/installed badges, direct model `Switch` controls, App actions, CLI actions, and restore actions.
+- The panel shows readiness, one search-first model picker, the visible Codex/OpenAI model catalog, the active Codex model, the Ollama App model, recommended Ollama Codex models, deduplicated local models, counts, active/configured/installed badges, direct model `Switch` controls, custom Ollama tags, App actions, CLI actions, and restore actions.
 - Model row `Switch` controls switch Codex App to the chosen Ollama model or back to a native Codex/OpenAI model; native model switching writes a timestamped Codex config backup first.
 - Slash commands cover Codex App, Codex CLI, model helpers, restore, and status.
 - Wrapper supports `--dry-run` so command routing can be verified without mutating profiles.

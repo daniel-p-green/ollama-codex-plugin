@@ -234,7 +234,8 @@ button:disabled {
   overflow: auto;
 }
 
-.model-group {
+.model-group,
+.custom-model {
   display: grid;
   gap: 7px;
   margin-top: 12px;
