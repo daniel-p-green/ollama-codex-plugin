@@ -127,8 +127,9 @@ def validate_manifest() -> None:
         fail("plugin description must cover Codex CLI")
     if data.get("mcpServers") != "./.mcp.json":
         fail("plugin manifest must declare mcpServers")
-    if "control panel" not in interface.get("longDescription", ""):
-        fail("plugin longDescription must describe the visual control panel")
+    long_description = interface.get("longDescription", "")
+    if "experimental `/ollama` widget path" not in long_description:
+        fail("plugin longDescription must describe the experimental widget boundary")
     ok("plugin manifest")
 
 
@@ -160,7 +161,7 @@ def validate_skill() -> None:
     if "This skill should be used when" not in fm:
         fail("skill description must use third-person trigger phrasing")
     text = skill.read_text()
-    for required in ("panel", "app-setup", "cli-config", "cli-run-model", "cli-restore"):
+    for required in ("experimental widget", "app-setup", "cli-config", "cli-run-model", "cli-restore"):
         if required not in text:
             fail(f"skill missing workflow: {required}")
     ok("skill metadata and routing")
@@ -336,7 +337,7 @@ def validate_panel() -> None:
     for required in ("OpenAI/Codex profile is active", "Codex/OpenAI models", "Active provider", "Saved Ollama App model", "GPT-5.4", "Switches back to Codex/OpenAI", "data-use-codex-model", "filterText", "autofocus", "Installed", "local-gpt-oss", "Plugin runtime is stale", "widget fixture probe"):
         if required not in fixture_text:
             fail(f"widget fixture probe missing: {required}")
-    ok("in-Codex visual control panel")
+    ok("experimental widget probe assets")
 
 
 def validate_docs() -> None:
@@ -361,20 +362,17 @@ def validate_docs() -> None:
         "docs/acceptance.md",
         "acceptance-preflight.sh",
         "docs/romain-ready.md",
-        "The missing visual model switcher for Ollama in the Codex Mac app",
+        "A Codex plugin command surface for using Ollama with Codex",
         "Ollama can already work with Codex",
-        "the easiest visual way to make Codex/OpenAI and Ollama model options available together in Codex",
-        "inside the Codex Mac app chat",
-        "does not replace Codex's built-in OpenAI model selector",
+        "the easiest supported way to make Ollama visible, usable, and reversible inside Codex today",
+        "Today, the GUI is Codex's plugin GUI",
+        "does not replace Codex's built-in model selector",
         "one active provider profile at a time",
         "app-use-codex-model",
         "timestamped backup",
-        "Codex/OpenAI models and Ollama models visible at the same time",
-        "actual Codex/OpenAI model catalog",
-        "see the active Codex/OpenAI profile and Ollama options side by side",
-        "Active and configured badges",
-        "Deduplicated model rows",
-        "Direct non-dry-run MCP calls still require a confirmation flag",
+        "experimental MCP widget prototype",
+        "Roadmap: Visual UI",
+        "No claim to replace Codex's built-in model dropdown unless Codex exposes that extension point",
     ):
         if required not in readme:
             fail(f"README missing Romain-ready marker: {required}")
@@ -382,11 +380,11 @@ def validate_docs() -> None:
     for required in (
         "/ollama",
         "./scripts/acceptance-preflight.sh",
-        "native Codex switching enabled",
-        "Search Codex or Ollama models",
+        "not accepted as a native visual widget inside the Codex Mac app today",
+        "JSON or structured tool output",
         "Transport closed",
-        "standalone HTML fixture or localhost page is not enough",
-        "fresh Codex thread renders `/ollama`",
+        "A standalone HTML fixture or localhost page",
+        "fresh Codex Mac app thread renders `/ollama`",
     ):
         if required not in acceptance:
             fail(f"acceptance checklist missing marker: {required}")

@@ -382,7 +382,7 @@ use_codex_openai_model() {
 
   if ! codex_model_is_known "$model"; then
     error "Codex/OpenAI model not found in $(codex_models_cache_path): $model"
-    error "Refresh Codex's native model catalog or choose a visible Codex/OpenAI row from the panel."
+    error "Refresh Codex's native model catalog or choose a known Codex/OpenAI model."
     return 1
   fi
 
@@ -500,7 +500,7 @@ print_doctor() {
   fi
 
   print_file_status "short /ollama command" "$root/commands/ollama.md"
-  print_file_status "visual panel command" "$root/commands/ollama-codex-panel.md"
+  print_file_status "experimental visual UI probe command" "$root/commands/ollama-codex-panel.md"
   print_file_status "MCP server config" "$root/.mcp.json"
   print_file_status "MCP server implementation" "$root/mcp/server.mjs"
 
@@ -522,7 +522,7 @@ print_doctor() {
   printf '\n'
   print_status
   printf '\n'
-  info "If /ollama or MCP tool calls fail with 'Transport closed' in an already-open Codex thread, open a fresh Codex thread after installing or updating the plugin."
+  info "If MCP tool calls fail with 'Transport closed' in an already-open Codex thread, open a fresh Codex thread after installing or updating the plugin."
   info "Codex currently reloads plugin MCP handles per thread; reinstalling the plugin does not hot-swap stale handles inside an existing thread."
 }
 

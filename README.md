@@ -8,30 +8,30 @@
 [![Release](https://img.shields.io/github/v/release/daniel-p-green/ollama-codex-plugin)](https://github.com/daniel-p-green/ollama-codex-plugin/releases)
 [![License](https://img.shields.io/github/license/daniel-p-green/ollama-codex-plugin)](LICENSE)
 
-The missing visual model switcher for Ollama in the Codex Mac app.
+A Codex plugin command surface for using Ollama with Codex.
 
-> Current verification status: the plugin installs, validates, exposes `/ollama`, and serves an MCP app-widget resource from the installed Codex plugin cache. The visible in-chat GUI still requires live Codex host acceptance: open a fresh Codex thread and run `/ollama`. If Codex shows JSON/tool output instead of a widget card, the package is wired correctly but the current Codex host surface is not mounting repo-local MCP app widgets in that path yet.
+> Current status: this is a supported command/control plugin for the Codex Mac app and Codex CLI. It installs through the Codex plugin system, exposes a plugin card, starter prompts, skills, slash commands, MCP tools, status checks, dry runs, setup, model switching, model listing, model pulling, diagnostics, and explicit restore flows. It does not currently provide a verified native visual model-switching widget inside the Codex Mac app. The experimental `/ollama` widget path is kept for future host support and diagnostics, but JSON/tool output from that path is expected on current Codex builds and is not a setup failure.
 
 Ollama can already work with Codex, but most people do not know that. Even when they do, using it means remembering the right `ollama launch` commands, knowing the difference between Codex App and Codex CLI profiles, and restoring things manually when they want to switch back.
 
-This plugin solves that by giving Ollama a visual, reversible home inside the Codex Mac app. Install it from the Codex plugin GUI, open the in-chat model switcher, search Codex/OpenAI and Ollama models from one picker, switch back to native Codex/OpenAI models, pick a recommended local or Ollama Cloud model, configure the App or CLI, check readiness, pull models, or restore profiles without memorizing the command surface.
+This plugin solves the supported part of that problem: it makes Ollama discoverable and usable from Codex's plugin surface. Install it from the Codex plugin GUI, use the starter prompts or slash commands, check readiness, configure Codex App or Codex CLI, switch App models, list or pull Ollama models, and restore profiles without memorizing the command surface.
 
-It is intentionally thin where it matters. Ollama App setup, Ollama model switching, and Ollama restore still delegate to Ollama's official commands. Native Codex/OpenAI model rows use Codex's documented `model` config key, make a timestamped backup first, and clear top-level Ollama provider pointers when switching back to the OpenAI provider. Codex App and Codex CLI state stay separate, and restore remains explicit.
+It is intentionally thin where it matters. Ollama App setup, Ollama model switching, and Ollama restore delegate to Ollama's official commands. Native Codex/OpenAI model switching uses Codex's documented `model` config key, makes a timestamped backup first, and clears top-level Ollama provider pointers when switching back to the OpenAI provider. Codex App and Codex CLI state stay separate, and restore remains explicit.
 
-Use it when you want a Codex plugin with an actual Codex Mac app visual panel for:
+Use it when you want a Codex plugin for:
 
-- Opening an Ollama model switcher directly inside Codex.
-- Seeing the actual Codex/OpenAI model catalog and Ollama model choices in the same panel.
-- Switching to native Codex/OpenAI rows or Ollama rows from the same visual selector.
-- Restoring the native Codex/OpenAI profile from the same place you switch into Ollama.
+- Installing, enabling, disabling, and discovering Ollama workflows through the Codex plugin GUI.
+- Starting supported Ollama workflows from Codex starter prompts and slash commands.
+- Checking whether Ollama, the Ollama server, Codex CLI, and plugin wiring are ready.
 - Setting up Codex App with local or Ollama Cloud models.
 - Switching Codex App to a specific Ollama model.
+- Switching Codex App back to a native Codex/OpenAI model with a backup first.
 - Configuring a Codex CLI Ollama profile without launching a nested Codex session.
 - Preparing exact terminal commands for Codex CLI runs with `codex --oss`, a specific model, or the generated `ollama-launch` profile.
 - Listing or pulling Ollama models from inside Codex.
 - Restoring Codex App or Codex CLI profiles safely and separately.
 
-In short: the easiest visual way to make Codex/OpenAI and Ollama model options available together in Codex, while keeping the actual provider switch explicit and reversible within the plugin surface Codex exposes today.
+In short: the easiest supported way to make Ollama visible, usable, and reversible inside Codex today, while keeping provider/profile changes explicit.
 
 Official Ollama docs:
 
@@ -49,66 +49,30 @@ codex plugin marketplace add "$PWD"
 codex plugin add ollama-codex@ollama-codex-local
 ```
 
-Open a new Codex thread, then start with the visual panel:
-
-```text
-/ollama
-```
-
-`/ollama-codex-panel` is also available as the explicit long-form command.
-
-The panel renders in chat and gives you a compact model switcher with Codex/OpenAI models and Ollama models visible at the same time. Search first, scan grouped model rows, see the queued selection in the selected-model bar, and click `Switch` on the model you want. You can see the actual Codex/OpenAI model catalog, see the active Codex/OpenAI profile and Ollama options side by side, including the previous native profile when Ollama is active, Ollama's recommended Codex models, local Ollama models, direct `Switch` actions, readiness checks, App setup, App restore, CLI config, CLI restore, model listing, and model pulls. Clicking an Ollama row's `Switch` button switches the Codex Mac app to that Ollama model. Clicking a Codex/OpenAI row's `Switch` button switches the App back to the OpenAI provider and sets the selected native model.
-
-Fresh-thread check: the panel header should show the installed plugin version and the model summary should include `native Codex switching enabled`. If an already-open Codex thread does not show those markers after an upgrade, open a new thread so Codex reloads the plugin MCP server.
-
-If a fresh thread still shows JSON or a plain tool result instead of the panel, do not treat the visual GUI as accepted. The command layer and MCP tools can still work, but the Codex Mac app host has not mounted the widget surface for this plugin in that session/build.
-
-You can still use the command layer directly:
+Open a new Codex thread, then start with the command surface:
 
 ```text
 /ollama-codex-doctor
 /ollama-codex-status
+```
+
+Then use the supported workflows directly:
+
+```text
 /ollama-codex-app-use-codex-model gpt-5.4
 /ollama-codex-app-use-model gemma4:31b
 /ollama-codex-cli-config gpt-oss:20b
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
-See [docs/demo.md](docs/demo.md) for a fuller dry-run demo, [docs/acceptance.md](docs/acceptance.md) for the fresh-thread Codex App GUI proof checklist, and [docs/share.md](docs/share.md) for a short public post.
+See [docs/demo.md](docs/demo.md) for a fuller dry-run demo, [docs/acceptance.md](docs/acceptance.md) for the current visual UI boundary and future acceptance checklist, and [docs/share.md](docs/share.md) for public copy that does not overclaim.
 
-## GUI Experience
+## Current Codex Experience
 
-After install, `/ollama` renders an MCP-powered model switcher inside the Codex Mac app chat. It is the primary GUI for the plugin. `/ollama-codex-panel` remains available as the explicit long-form command.
+Today, the GUI is Codex's plugin GUI: the plugin card, starter prompts, enable/disable controls, slash-command discovery, and command output inside a Codex thread.
 
-This does not replace Codex's built-in OpenAI model selector. Current Codex plugin metadata supports plugin cards, starter prompts, skills, commands, MCP servers, and in-chat app widgets; this plugin uses that native in-chat widget surface for model actions. Codex still has one active provider profile at a time. The panel makes both catalogs visible together, then makes the profile switch visual: Ollama rows call `ollama launch codex-app`, while Codex/OpenAI rows restore away from an active Ollama profile when needed and set Codex's native `model` config key.
+The Codex plugin card gives starter prompts for the workflows Ollama documents but Codex users would otherwise need to remember manually:
 
-The panel shows:
-
-- Ollama install/version readiness, including the v0.24.0 Codex App minimum.
-- Ollama server reachability.
-- The Codex/OpenAI lane, including the visible Codex model catalog, active native model, and the previous native profile available through restore.
-- The active Codex model from the Codex config.
-- The Ollama Codex App model from Ollama's integration config.
-- Ollama's recommended Codex models, including local and cloud options when available.
-- Local Ollama models from `ollama ls`.
-- Fast search across Codex/OpenAI, recommended Ollama, and local Ollama model rows.
-- A selected-model bar that shows the queued model and provides one compact `Switch` control after search or row selection.
-- A custom Ollama tag row for models not already listed.
-- Deduplicated model rows with section counts and installed badges.
-- Active and configured badges, so the current profile and the saved Ollama App choice are visible before switching.
-- Direct `Switch` controls on Codex/OpenAI and Ollama rows, so the panel behaves like a model switcher rather than a command list.
-- Direct action buttons for setup, restore, pull, and CLI profile changes.
-- Command results appear only after an action runs, so the default panel stays focused on choosing a model.
-- Codex CLI install status.
-- Whether the generated Codex CLI Ollama profile/catalog exists.
-- Buttons for App setup, App model switching, App restore, CLI config, CLI restore, model listing, and model pulls.
-- A doctor command for installed-plugin wiring, MCP cache mismatch, and stale-thread diagnosis.
-
-Actions that may restart Codex or restore profile state are explicit button clicks in the panel. Direct non-dry-run MCP calls still require a confirmation flag, so accidental background tool calls are blocked.
-
-The Codex plugin card also gives starter prompts for the workflows Ollama documents but Codex users would otherwise need to remember manually:
-
-- Open the Ollama model switcher
 - Check Ollama readiness for Codex
 - Set up Codex App with Ollama
 - Switch Codex App to a native Codex/OpenAI model
@@ -119,15 +83,37 @@ The Codex plugin card also gives starter prompts for the workflows Ollama docume
 
 Those prompts route to the bundled skill and deterministic shell wrapper. The wrapper supports dry runs, reports readiness, and preserves Ollama's App/CLI restore boundaries.
 
+This does not replace Codex's built-in model selector. Codex still has one active provider profile at a time. This plugin makes it easier to switch that profile deliberately, not to keep OpenAI and Ollama providers simultaneously active in one native picker.
+
+## What Is Not Supported Yet
+
+- A verified native in-chat visual model picker inside the Codex Mac app.
+- Replacing or extending Codex's built-in top model dropdown.
+- Keeping Codex/OpenAI models and Ollama models active at the same time.
+- Silently restoring Codex App or Codex CLI profile state when the plugin is disabled.
+
+The repo still contains an experimental MCP widget prototype behind `/ollama` and `/ollama-codex-panel`. It is useful for future host testing, but it is not part of the accepted product surface today. If those commands return JSON or structured tool output instead of a visible widget, that confirms the current Codex host is not mounting the widget surface for this repo-local plugin.
+
+## Roadmap: Visual UI
+
+When Codex exposes a supported plugin-hosted visual surface for repo-local plugins, the roadmap is to turn the current command/control layer into a first-class visual Ollama control panel:
+
+- A native in-Codex model picker for Ollama options.
+- Codex/OpenAI and Ollama model catalogs visible side by side for comparison.
+- Clear active-provider and saved-profile state before switching.
+- One-click setup, switch, restore, list, pull, and doctor actions.
+- Separate Codex App and Codex CLI lanes so restore boundaries stay obvious.
+- Direct handoff to Ollama's official commands for App setup, App model switching, and App restore.
+- No claim to replace Codex's built-in model dropdown unless Codex exposes that extension point.
+
 ## What It Enables
 
 For Codex App:
 
-- See native Codex/OpenAI models and Ollama models in the same in-Codex panel.
-- Switch back to a native Codex/OpenAI model from the panel with a Codex config backup.
 - Configure Codex App to use Ollama's OpenAI-compatible endpoint.
 - Use local models and Ollama Cloud models in the desktop app.
 - Switch Codex App directly to a chosen Ollama model.
+- Switch Codex App back to a native Codex/OpenAI model with a Codex config backup.
 - Restore the previous Codex App profile.
 - Keep built-in browser and review-mode workflows intact.
 
@@ -183,13 +169,20 @@ Open a new Codex thread so the plugin skill and slash commands are available.
 Status and model helpers:
 
 ```text
-/ollama
-/ollama-codex-panel
 /ollama-codex-doctor
 /ollama-codex-status
 /ollama-codex-list-models
 /ollama-codex-pull-model gemma4:31b
 ```
+
+Experimental visual UI probes:
+
+```text
+/ollama
+/ollama-codex-panel
+```
+
+These probe the future MCP widget path. They are not the accepted GUI surface today.
 
 Codex App:
 
@@ -318,9 +311,9 @@ If the status command reports the Ollama HTTP API is not reachable, start Ollama
 ollama serve
 ```
 
-If you reinstall or update the plugin while a Codex thread is already open, start a fresh Codex thread before testing the panel again. Active threads can keep MCP tool handles from the previous cache-busted plugin path until the thread is recreated.
+If you reinstall or update the plugin while a Codex thread is already open, start a fresh Codex thread before testing commands again. Active threads can keep MCP tool handles from the previous cache-busted plugin path until the thread is recreated.
 
-If `/ollama` fails with `Transport closed`, run the doctor command from the same thread or a shell:
+If any plugin MCP command fails with `Transport closed`, run the doctor command from the same thread or a shell:
 
 ```text
 /ollama-codex-doctor
@@ -332,9 +325,9 @@ bash plugins/ollama-codex/scripts/ollama-codex.sh doctor
 
 If the doctor shows the installed plugin and MCP config are current, the remaining fix is to open a fresh Codex thread so Codex reloads the plugin MCP server.
 
-For final visual acceptance, use [docs/acceptance.md](docs/acceptance.md). A source probe or standalone widget fixture is useful regression coverage, but the live GUI proof is `/ollama` rendering inside a fresh Codex Mac app thread.
+For the visual UI boundary and future acceptance checklist, use [docs/acceptance.md](docs/acceptance.md). A source probe or standalone widget fixture is useful regression coverage, but it is not proof that Codex Mac app has accepted a native plugin widget.
 
-Run the local preflight before that fresh-thread check:
+Run the local preflight before testing plugin wiring:
 
 ```bash
 ./scripts/acceptance-preflight.sh
@@ -354,7 +347,7 @@ Then reinstall from the local marketplace:
 codex plugin add ollama-codex@ollama-codex-local
 ```
 
-Open a new Codex thread to pick up updated skills, commands, and MCP widget tools.
+Open a new Codex thread to pick up updated skills, commands, and MCP tools.
 
 ## Proof
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3
+
+- Reframed the README, plugin card, skill routing, and public docs around the supported command/control plugin surface.
+- Moved the native Codex visual model picker to the roadmap until Codex exposes or accepts a plugin-hosted visual surface for repo-local plugins.
+- Kept `/ollama` and `/ollama-codex-panel` as experimental visual UI probes instead of accepted GUI entry points.
+
 ## 0.7.2
 
 - Added the primary `_meta.ui.resourceUri` app-widget contract to render results so Codex has the same UI mount signal on the tool response as on the tool descriptor.

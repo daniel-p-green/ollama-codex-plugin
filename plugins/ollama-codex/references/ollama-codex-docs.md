@@ -54,10 +54,10 @@ Important App behavior:
 - Running with a model persists that model selection for the next Codex App launch.
 - Restore switches Codex App back to the profile used before `ollama launch codex-app`.
 - If Codex App is open during restore or model switching, Ollama may ask before restarting it.
-- The plugin wrapper uses `--yes` for App setup, model switching, and restore so a GUI command does not fail after partially changing profile state.
+- The plugin wrapper uses `--yes` for App setup, model switching, and restore so a Codex command does not fail after partially changing profile state.
 - Before overwriting Codex App config files, Ollama saves backups under `~/.ollama/backup/codex-app/`.
 - On Windows, `~` resolves to the user's profile directory.
-- Codex exposes one active `model_provider` at a time. The plugin's visual switcher makes Codex/OpenAI and Ollama rows available together, but provider switching remains explicit.
+- Codex exposes one active `model_provider` at a time. The plugin makes provider switching explicit rather than claiming Codex/OpenAI and Ollama providers can be active at the same time.
 - The plugin's `app-use-codex-model <model>` path is not an Ollama command. It backs up Codex App config, restores away from an active Ollama profile when needed, and sets Codex's documented native `model` key for OpenAI/Codex rows.
 
 Troubleshooting behavior:
@@ -130,7 +130,7 @@ base_url = "http://localhost:11434/v1/"
 wire_api = "responses"
 ```
 
-Prefer Ollama's official CLI behavior when launching from a real terminal. From inside the Codex plugin GUI, prefer the wrapper's deterministic `cli-config <model>` command so setup does not nest a second Codex session.
+Prefer Ollama's official CLI behavior when launching from a real terminal. From inside Codex, prefer the wrapper's deterministic `cli-config <model>` command so setup does not nest a second Codex session.
 
 ## Ollama Model Helpers
 

@@ -20,15 +20,24 @@ Use the bundled wrapper for deterministic checks, dry-run support, and consisten
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
 ```
 
-## Visual Control Panel
+## Current User Surface
 
-When the user asks for the GUI, visual panel, control panel, or easiest way to manage Ollama in Codex, render the in-Codex MCP widget:
+When the user asks for the GUI, visual panel, control panel, or easiest way to manage Ollama in Codex, be precise about the current supported surface:
 
-Use the `render_ollama_codex_panel` tool from the `ollama_codex` MCP server. In Codex tool notation this is expected to appear as `mcp__ollama_codex__render_ollama_codex_panel`.
+- The accepted GUI today is Codex's plugin GUI: plugin card, starter prompts, enable/disable controls, slash-command discovery, and command output in the Codex conversation.
+- A native in-chat visual model picker is not currently a verified public plugin surface for this repo-local plugin.
+- The `/ollama` and `/ollama-codex-panel` commands are experimental widget probes retained for future host support and diagnostics.
 
-The panel is the preferred user-facing surface. It renders inside Codex, shows the active Codex/OpenAI profile beside Ollama's recommended and local model choices, accepts typed cloud model tags, and uses MCP tools backed by the same wrapper for native Codex model switching, Ollama setup, Ollama model switching, restore, CLI config, and model pulls.
+Start with the supported command surface:
 
-Do not describe the plugin card, starter prompts, or localhost browser panel as the full GUI. The GUI is the MCP app widget served by `mcp/server.mjs`.
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh doctor
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh status
+```
+
+If the user explicitly wants to try the experimental widget probe, use the `render_ollama_codex_panel` tool from the `ollama_codex` MCP server. In Codex tool notation this is expected to appear as `mcp__ollama_codex__render_ollama_codex_panel`.
+
+Do not call the widget probe accepted unless Codex renders it visibly inside a fresh Codex Mac app thread. If Codex returns JSON, structured tool output, or a plain text result, report that the command layer is working but the host visual surface is not available in that build/session.
 
 If the `render_ollama_codex_panel` tool is not available in the current Codex thread, or if the MCP call fails with `Transport closed`, say so plainly and run the plugin doctor if the command layer is available:
 

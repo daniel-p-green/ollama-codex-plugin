@@ -93,4 +93,5 @@ PLUGIN_CWD="$cache_path" node scripts/probe-widget-fixture.mjs
 
 echo
 echo "[ok] preflight passed"
-echo "[next] Open a fresh Codex thread and run /ollama for live visual acceptance."
+echo "[next] Open a fresh Codex thread and run /ollama-codex-doctor plus /ollama-codex-status for live command acceptance."
+echo "[next] Treat /ollama as an experimental visual UI probe until Codex renders it as a native widget."

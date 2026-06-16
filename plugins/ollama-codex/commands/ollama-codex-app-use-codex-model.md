@@ -3,7 +3,7 @@ description: Switch Codex App back to a native Codex/OpenAI model
 argument-hint: <model>
 ---
 
-Switch Codex App to a native Codex/OpenAI model from the same visual workflow used for Ollama models:
+Switch Codex App to a native Codex/OpenAI model from the same command workflow used for Ollama models:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/ollama-codex.sh app-use-codex-model $ARGUMENTS

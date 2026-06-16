@@ -36,7 +36,7 @@ const server = new McpServer(
   },
   {
     instructions:
-      "Render and operate the Ollama for Codex control panel inside Codex. The widget calls local MCP tools; those tools delegate all profile mutations to the deterministic shell wrapper.",
+      "Expose Ollama for Codex command tools and an experimental visual control panel probe. The tools delegate all profile mutations to the deterministic shell wrapper.",
   },
 );
 
@@ -53,7 +53,7 @@ function registerControlPanelResource() {
     js: readText("mcp", "widget-assets", "control-panel", "widget.js"),
   });
   const metadata = widgetMetadata({
-    description: "In-Codex visual control panel for configuring Ollama options for Codex App and Codex CLI.",
+    description: "Experimental visual control panel probe for Ollama options in Codex App and Codex CLI.",
   });
 
   server.registerResource(
@@ -83,7 +83,7 @@ function registerTools() {
     "render_ollama_codex_panel",
     {
       title: "Render Ollama for Codex Panel",
-      description: "Render the in-Codex visual control panel for Ollama.",
+      description: "Try the experimental in-Codex visual control panel probe for Ollama.",
       inputSchema: {
         model: z.string().trim().optional(),
       },
@@ -93,14 +93,14 @@ function registerTools() {
         idempotentHint: true,
         openWorldHint: false,
       },
-      _meta: toolMeta("Opening Ollama panel...", "Ollama panel ready"),
+      _meta: toolMeta("Opening experimental Ollama UI probe...", "Experimental Ollama UI probe ready"),
     },
     async (input = {}) => {
       const status = await statusPayload();
       const models = await modelPayload();
       const recommendations = recommendationPayload();
       return widgetResult({
-        message: "Rendered Ollama for Codex control panel.",
+        message: "Prepared experimental Ollama for Codex control panel payload.",
         data: {
           version: 1,
           packageVersion: manifest.version,
@@ -120,7 +120,7 @@ function registerTools() {
     "ollama_codex_status",
     {
       title: "Check Ollama Codex Status",
-      description: "Check local Ollama and Codex readiness for the control panel.",
+      description: "Check local Ollama and Codex readiness for command workflows.",
       inputSchema: {},
       annotations: {
         readOnlyHint: true,
@@ -136,7 +136,7 @@ function registerTools() {
     "ollama_codex_models",
     {
       title: "List Ollama Models",
-      description: "List local Ollama models for the control panel.",
+      description: "List local Ollama models for command workflows.",
       inputSchema: {},
       annotations: {
         readOnlyHint: true,

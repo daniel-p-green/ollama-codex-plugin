@@ -14,8 +14,6 @@ codex plugin add ollama-codex@ollama-codex-local
 Open a new Codex thread and try:
 
 ```text
-/ollama
-/ollama-codex-panel
 /ollama-codex-doctor
 /ollama-codex-status
 /ollama-codex-app-use-codex-model gpt-5.4
@@ -24,7 +22,7 @@ Open a new Codex thread and try:
 /ollama-codex-cli-run-model gpt-oss:120b
 ```
 
-The panel renders directly in the Codex conversation.
+The command surface runs directly in the Codex conversation. `/ollama` and `/ollama-codex-panel` remain experimental visual UI probes, but they are not required for the accepted demo.
 
 ## One-Command Local Proof
 
@@ -36,7 +34,7 @@ The demo runs:
 
 - Package validation.
 - Local readiness checks.
-- In-Codex panel command routing.
+- In-Codex command routing.
 - Codex App dry runs.
 - Codex CLI dry runs.
 - Model helper dry runs.
